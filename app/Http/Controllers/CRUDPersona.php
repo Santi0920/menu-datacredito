@@ -93,7 +93,6 @@ class CRUDPersona extends Controller
 
             $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
                 $filename ?? null,
-
                 $idPersona
             ]);
         } else {
@@ -105,7 +104,7 @@ class CRUDPersona extends Controller
 
     if ($request->hasFile('NombreT')) {
         $file = $request->file('NombreT');
-        $filename =  $file->getClientOriginalName();
+        $filename2 =  $file->getClientOriginalName();
         $dir3 = "";
         $ruta_carga3= "";
     
@@ -122,7 +121,7 @@ class CRUDPersona extends Controller
         }
     
         $sql4 = DB::insert('INSERT INTO documentot (NombreT, Consecutivof, Tipof, ID_Persona) VALUES (?, ?, ?, ?)', [
-            $filename ?? null,
+            $filename2 ?? null,
             $request->Consecutivof,
             $request->Tipof,
             $idPersona
@@ -148,41 +147,41 @@ class CRUDPersona extends Controller
     //Actualizar registro
     public function update(Request $request, $id)
     {
-        
-        $sql=DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? WHERE ID = $id",[
-            $request->Cedula,
-            $request->Nombre,
-            $request->Apellidos,
-            $request->Score,
-            $request->Agencia,
-            $request->Estado,
-            $request->Reporte,
+    
+        $sql=DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ? WHERE ID = $id",[
+            $request->cedula2,
+            $request->nombre3,
+            $request->apellidos3,
+            $request->score3,
+            $request->agencia3,
+            $request->estado3,
+            $request->reporte3,
+            $request->cuenta3
 
         ]);
     
         
         $sql2=DB::update("UPDATE documentosintesis SET FechaInsercion = ?, NombreS = ? WHERE ID = $id",[
-            $request->FechaInsercion,
-            $request->NombreSin,
+            $request->fecha3,
+            $request->archivo22,
             
         ]);
     
         $sql3=DB::update("UPDATE documentopn SET NombrePN = ? WHERE ID_Persona = $id",[
-            $request->NombrePN,
+            $request->archivo11
             
         ]);
     
-        $sql4=DB::update("UPDATE documentot SET NombreT=?, Consecutivof = ?, Tipof = ? WHERE ID_Persona = $id",[
-            $request->NombreT,
-            $request->Consecutivof,
-            $request->Tipof,
+        $sql4=DB::update("UPDATE documentot SET NombreT=?, Consecutivof = ? WHERE ID_Persona = $id",[
+            $request->archivo33,
+            $request->consecutivof3
 
         ]);
 
         if($sql == true && $sql2 == true && $sql3 == true && $sql4 == true){
-            return back()->with("correcto", "El usuario ".ucwords($request->Nombre)." ". strtoupper($request->Apellidos). " con identificación <?php echo $request->Cedula ?> fue actualizado correctamente!");
-        } else{
             return back()->with("incorrecto", "Error al modificar el registro!");
+        } else{
+            return back()->with("correcto", "El usuario ".ucwords($request->nombre3)." ". strtoupper($request->apellidos3). " con identificación $request->cedula2 fue actualizado correctamente!");
         }
     }
 

@@ -339,6 +339,20 @@
     
     
     scoreInput.setAttribute("maxlength", "3");
+  
+$(document).ready(function() {
+  $('#score').on('input', function() {
+    var scoreVal = $(this).val().toUpperCase();
+    if (scoreVal === 'S/E') {
+      $('#archivo3, #NombrePN, #NombreS').val('');
+      $('#archivo3, #NombrePN, #NombreS').prop('disabled', true);
+    } else {
+      $('#archivo3, #NombrePN, #NombreS').prop('disabled', false);
+    }
+  });
+});
+
+
       </script>
     
     
@@ -507,12 +521,12 @@ $(document).ready(function() {
     
       <div class="mb-3  w-100">
         <label for="exampleInputEmail1" class="form-label fw-semibold">ADJUNTAR ARCHIVO SÍNTESIS</label>
-        <input type="file" class="form-control " name="NombreS">
+        <input type="file" class="form-control " name="NombreS" id="NombreS">
       </div>
     
       <div class="mb-3 w-100">
         <label for="exampleInputEmail1" class="form-label fw-semibold">ADJUNTAR ARCHIVO PN</label>
-        <input type="file" class="form-control" name="NombrePN">
+        <input type="file" class="form-control" name="NombrePN" id="NombrePN">
       </div>
     
     
@@ -951,12 +965,12 @@ $(document).ready(function() {
               <div class="mb-3">
                   <label for="label" id="izquierda7" class="form-label fw-bold" value="">CÉDULA</label>
                   <input type="text" class="form-control" name="cedula2" readonly value="{{$item->Cedula}}" style="background-color: #EBEBEB;">
-                  <input type="hidden" name="cedula2" value="">
+                  <input type="hidden" name="cedula3" value="">
               </div>
   
               <div class="mb-3">
                 <label for="nombre3" id="izquierda3" class="form-label fw-bold">NOMBRE</label>
-                <input type="text" class="form-control" id="nombre3" name="nombre3" value="{{$item->Nombre}}">
+                <input type="text" class="form-control" id="nombre3" name="nombre3" value="{{$item->Nombre}}" required>
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
         
@@ -964,7 +978,7 @@ $(document).ready(function() {
               
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda6" class="form-label fw-bold">APELLIDOS</label>
-                  <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="{{$item->Apellidos}}">
+                  <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="{{$item->Apellidos}}" required>
                   <div id="apellidosError3" style="color: red;" class="fw-bold"></div>
               </div>
   
@@ -972,7 +986,7 @@ $(document).ready(function() {
               <!--Label3-->
               <div class="mb-3">
                   <label for="label"  id="izquierda" class="form-label fw-bold">SCORE</label>
-                  <input type="text" class="form-control" id="score3" name="score3" value="{{$item->Score}}">
+                  <input type="text" class="form-control" id="score3" name="score3" value="{{$item->Score}}" required>
                   <div id="scoreError3" style="color: red;" class="fw-bold"></div>
               </div>
   
@@ -992,19 +1006,19 @@ $(document).ready(function() {
               <!--Label5-->
               <div class="mb-3">
                   <label for="click" id="izquierda7" class="form-label fw-bold">AGENCIA</label>
-                  <input type="text" class="form-control" id="agencia3" name="agencia3" value="{{$item->Agencia}}">
+                  <input type="text" class="form-control" id="agencia3" name="agencia3" value="{{$item->Agencia}}" required>
                   <div id="agenciaError3" style="color: red;" class="fw-bold"></div>
               </div>
   
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold">FECHA</label>
-                  <input type="date" class="form-control" name="fecha3" min="2022-08-01" max="'.$max_date.'" value="{{$item->FechaInsercion}}">
+                  <input type="date" class="form-control" name="fecha3" min="2022-08-01" max="'.$max_date.'" value="{{$item->FechaInsercion}}" required>
                 </div>
   
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda9" class="form-label fw-bold">ESTADO</label>
                   <select class="form-control" name="estado3">
-                      <option value="">{{$item->Estado}}</option>
+                      <option value="{{$item->Estado}}">{{$item->Estado}}</option>
                       <option value="N">Normal</option>
                       <option value="B">Bloqueado</option>
                       <option value="S">Suspendido</option>
@@ -1017,34 +1031,25 @@ $(document).ready(function() {
   
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
-                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="{{$item->NombreS}}">
+                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="Storage/files/sintesis/{{$item->NombreS}}">
               </div> 
   
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
-                  <input type="file" class="form-control" name="archivo1" accept="application/pdf" value="{{$item->NombrePN}}">
+                  <input type="file" class="form-control" name="archivo11" accept="application/pdf" value="Storage/files/pn/{{$item->NombrePN}}">
                   </div>
                   
                   <div class="mb-3 w-100">
                   <label for="exampleInputEmail1" id="izquierda10" class="form-label fw-bold">ADJUNTAR FORMATO </label>
-                  <input type="file" class="form-control" name="archivo33" value="{{$item->NombreT}}">
+                  <input type="file" class="form-control" name="archivo33" accept="application/pdf" value="{{$ruta_carga3}}">
                 </div>
               
                 <div class="mb-3 w-100">
                   <label for="exampleInputEmail1" id="izquierda11" class="form-label fw-bold">CONSECUTIVO FORMATO</label>
-                  <input type="text" class="form-control " name="consecutivof2" id="consecutivof" readonly value="{{$item->Consecutivof}}" style="background-color: #EBEBEB;">
+                  <input type="text" class="form-control " name="consecutivof3" id="consecutivof" readonly value="{{$item->Consecutivof}}" style="background-color: #EBEBEB;">
                   <input type="hidden" name="consecutivof" value="">
                 </div>
-                
-                <div class="mb-3 w-100">
-                  <label for="tipo" class="form-label fw-bold" id="izquierda12">TIPO FORMATO</label>
-                  <select class="form-control" name="tipof"  id="tipof2">
-                  <option value="">{{$item->Tipof}}</option>
-                    <option value="N/A">N/A</option>
-                    <option value="T1">Formato T1</option>
-                    <option value="T2">Formato T2</option>
-                  </select>
-                </div>
+
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                   <button type="submit" href=""  name="editar" class="btn btn-primary" style="background-color: #005E56;">Guardar</button>
