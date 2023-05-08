@@ -71,8 +71,10 @@
             </li>
           </ul>
           
-       
-          <a onclick="return csesion()" href="../controllers/proceso_exittipo.php"><button class="btn btn-outline-success"><b>Cerrar Sesión</b></button></a>
+          <span class="mx-4" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-3" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
+          <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-outline-success"><b style="font-size: 18px;">Cerrar Sesión</b></button></a>
+
+         
         </div>
       </div>
     </nav>

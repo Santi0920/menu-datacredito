@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Menú | Coopserp</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="ResourcesAll/Bootstrap/Bootstrap.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/logoo.png" type="img/png">
   </head>
@@ -32,7 +32,7 @@
       <ul class="navbar-nav me-auto mb-lg-0">        
        
       </ul>
-      <a href="../views/login.php"><button class="btn btn-outline-success"><b>Iniciar Sesión</b></button></a>
+      <a href="{{route('login.index')}}"><button class="btn btn-outline-success"><b style="font-size: 18px;">Iniciar Sesión</b></button></a>
     </div>
   </div>
 </nav>
@@ -205,6 +205,6 @@
       </footer>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+      <script src="ResourcesAll/Bootstrap/bootstrap.js"></script>
 </body>
 </html>

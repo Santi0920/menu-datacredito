@@ -1,7 +1,12 @@
 <?php
 use App\Http\Controllers\ControllerConsultante;
-use App\Http\Controllers\CRUDPersona;
+use App\Http\Controllers\CRUDCredito;
+use App\Http\Controllers\CRUDAdmin;
+use App\Http\Controllers\CRUDAsociacion;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SessionsController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,22 +19,96 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('index', function () {
     return view('index');
 });
+//CONSULTANTE
+Route::get('consultante', [ControllerConsultante::class, 'listar'])
+->name('consultante.listar');
 
-Route::get('consultante', [ControllerConsultante::class, 'listar'])->name('consultante.listar');
+Route::get('consultante/imprimir-{id}', [ControllerConsultante::class, 'imprimir'])
+->name('consultante.imprimir');
 
-Route::get('consultante/imprimir-{id}', [ControllerConsultante::class, 'imprimir'])->name('consultante.imprimir');
 
-Route::get('datacredito', [CRUDPersona::class, 'list'])->name('crud.list');
 
-//Ruta para registrar presona
-Route::post('datacredito/registrar_persona', [CRUDPersona::class, 'create'])->name('crud.create');
 
-//Ruta para modificar persona
-Route::post('datacredito/modificar_persona-{id}', [CRUDPersona::class, 'update'])->name('crud.update');
+//ADMIN
+Route::get('datacredito', [CRUDAdmin::class, 'list'])
+->name('crud.list');
 
-//Ruta para eliminar presona
-Route::get('datacredito/eliminar_persona-{id}', [CRUDPersona::class, 'delete'])->name('crud.delete');
 
+Route::post('datacredito/crear', [CRUDAdmin::class, 'create'])
+->name('crud.create');
+
+
+Route::post('datacredito/modificar_persona-{id}', [CRUDAdmin::class, 'update'])
+->name('crud.update');
+
+
+Route::get('datacredito/eliminar_persona-{id}', [CRUDAdmin::class, 'delete'])
+->name('crud.delete');
+
+
+Route::post('datacredito/roles', [CRUDAdmin::class, 'listarRoles'])
+->name('rol.list');
+
+Route::post('datacredito/registrar_rol', [CRUDAdmin::class, 'store'])
+->name('rol.store');
+
+
+
+
+
+//LOGIN
+Route::get('inicia-sesion', [SessionsController::class, 'login'])
+->middleware('guest')
+->name('login.index');
+
+Route::post('inicia-sesion', [SessionsController::class, 'store'])
+->name('login.store');
+
+Route::get('logout', [SessionsController::class, 'destroy'])
+->middleware('auth')
+->name('login.destroy');
+
+
+
+
+
+//ASOCIACION
+Route::get('asociacion', [CRUDAsociacion::class, 'list'])->name('crud2.list');
+// ->middleware('auth.admin')
+// ->name('crud.list');
+
+
+Route::post('asociacion/registrar_persona', [CRUDAsociacion::class, 'create'])
+->name('crud2.create');
+
+
+Route::post('asociacion/modificar_persona-{id}', [CRUDAsociacion::class, 'update'])
+->name('crud2.update');
+
+
+Route::get('asociacion/eliminar_persona-{id}', [CRUDAsociacion::class, 'delete'])
+->name('crud2.delete');
+
+
+
+
+//CREDITO
+
+Route::get('credito', [CRUDCredito::class, 'list'])->name('crud3.list');
+// ->middleware('auth.admin')
+// ->name('crud.list');
+
+
+Route::post('credito/registrar_persona', [CRUDCredito::class, 'create'])
+->name('crud3.create');
+
+
+Route::post('credito/modificar_persona-{id}', [CRUDCredito::class, 'update'])
+->name('crud3.update');
+
+
+Route::get('credito/eliminar_persona-{id}', [CRUDCredito::class, 'delete'])
+->name('crud3.delete');

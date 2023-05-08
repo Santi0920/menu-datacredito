@@ -32,22 +32,6 @@
   </script>
   </div>
 @endif
-
-@error('message')
-<div>
-<script>
-  Swal.fire
-    ({
-        icon: 'error',
-        title: "Error al registrar!\n{{$message}}",
-        text: '',
-        confirmButtonColor: '#005E56'
-  
-    });  
-</script>
-</div>
-
-@enderror
     <div class="contenedor2">
       <div class="agregar2">
         <a href="datacredito.php" class="btn btn-primary" style="font-size: 35px;font-family: 'Montserrat', sans-serif; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#exampleModal3">
@@ -98,167 +82,15 @@
       </div>
     </div>
     
-    <!-- Modal para agregar consultante -->
-    <form action="{{route("rol.store")}}" class="text-center" id="" method="POST" enctype="multipart/form-data" onsubmit="validateForm3()">
-      @csrf
-        <div class="container">
-             <div class="agregar">
-                <a href="datacredito.php" type="button" class="" data-bs-toggle="modal" data-bs-target="#exampleModal2"><i class="fa-solid fa-plus icono"></i></a>
-            </div>
-        </div>
-        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                <button type="button" data-bs-dismiss="modal" class="btn-close p-3" aria-label="Close"></button>
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" >
-                        
-                        <h1 class="modal-title text-center fw-semibold" id="modificar">AGREGAR ROL</h1>
-    
-                     </div>
-                    <hr>
-    
-                    <div class="modal-body">
-        
-                    
-                    <div>
-                    <table class="table">
-                        <thead class="" style="background-color: #005E56;">
-                          <tr class="text-white">
-                            
-                            <th scope="col">USUARIO</th>
-                            <th>ROL</th>
-                            <th></th>
-                            <th></th>
-                            
-    
-                            
-                          </tr>
-                          </thead>
-                        
-    
-                          <tbody>
-                        
-                          </tbody>
-                    </table>
-                    </div>
-                   
-                <!--Label1-->  
-                <div class="mb-3">
-                    <label for="label" id="consul1" class="form-label fw-bold" value="">NOMBRE COMPLETO</label>
-                    <input type="text" class="form-control" name="name" id="name" required>
-                    <div id="nameError" style="color: red;" class="fw-bold"></div>
-                </div>
-                <!--VALIDACION CAMPO USUARIO--> 
-                <script>
-                var usernameInput = document.getElementById('name');
-                var usernameError = document.getElementById('nameError');
-    
-                usernameInput.addEventListener('keyup', function() {
-                  var username = usernameInput.value.trim();
-    
-                  if (/^[a-zA-Z\sñÑ]+$/u.test(username)) {
-                    usernameError.innerHTML = '';
-                  } else {
-                    usernameError.innerHTML = 'El nombre de usuario solo debe contener letras';
-                  }
-                });
-                usernameInput.setAttribute("maxlength", "20");
-
-                </script>
-
-  
-         
-                <!--Label2--> 
-                <div class="mb-3">
-                    <label for="label" id="consul2" class="form-label fw-bold">CORREO ELECTRÓNICO</label>
-                    <input type="email" class="form-control" name="email" id="email" required>
-                    <div id="emailError" style="color: red;" class="fw-bold"></div>
-                </div>
-                <script>
-                  var correoInput = document.getElementById('email');
-                  var correoError = document.getElementById('emailError');
-                  var correo = correoInput.value.trim();
-    
-                correoInput.setAttribute("maxlength", "40");
-                </script>
-                
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" id="consul3" class="form-label fw-bold">CONTRASEÑA</label>
-                    <input type="password" class="form-control " name="password" id="password" required>
-                    <div id="contraseñaError" style="color: red;" class="fw-bold"></div>
-                </div>
-                <script>
-                  var contraseñaInput = document.getElementById('password');
-                  var contraseñaError = document.getElementById('contraseñaError');
-    
-                  contraseñaInput.addEventListener('keyup', function() {
-                    var contraseña = contraseñaInput.value.trim();
-    
-                    if (/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/.test(contraseña)) {
-                      contraseñaError.innerHTML = '';
-                    } else {
-                      contraseñaError.innerHTML = 'La contraseña debe tener entre 8 y 12 caracteres y contener al menos una letra, un número y un símbolo';
-                    }
-                  });
-    
-                  contraseñaInput.setAttribute("maxlength", "12");
-                </script>
-    
-    
-                <!--Label3-->
-                <div class="mb-3">
-                    <label for="label"  id="consul4" class="form-label fw-bold">CONFIRMAR CONTRASEÑA</label>
-                    <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" required>
-                    <div id="ccontraseñaError" style="color: red;" class="fw-bold"></div>
-                    <div id="ccontraseñaSucces" style="color: green;" class="fw-bold"></div>
-                </div>
-                <script>
-                  var ccontraseñaInput = document.getElementById('password_confirmation');
-                  var ccontraseñaError = document.getElementById('ccontraseñaError');
-                  var ccontraseñaSucces = document.getElementById('ccontraseñaSucces');
-                  ccontraseñaInput.addEventListener('keyup', function() {
-                  var contraseña = contraseñaInput.value.trim();
-                  var ccontraseña = ccontraseñaInput.value.trim();
-    
-                  if (contraseña === ccontraseña) {
-                    ccontraseñaError.innerHTML = '';
-                    ccontraseñaSucces.innerHTML = 'Las contraseñas si coinciden!';
-                  } else {
-                    ccontraseñaError.innerHTML = 'Las contraseñas no coinciden!';
-                    ccontraseñaSucces.innerHTML = '';
-                  }
-                  });
-                </script>
-
-              <div class="mb-3 w-100">
-                <label for="estado" class="form-label fw-bold" class="consul7">ROL<span class="text-danger" style="font-size:20px;"></label>
-                <select class="form-control " name="rol" id="rol" required>
-                  <option value="">Seleccione una opción</option>
-                  <option value="Proveedor">Consultante</option>
-                  <option value="Asociacion">Asociación</option>
-                  <option value="Credito">Credito</option>
-                  <option value="Proveedor">Proveedor</option>
-                </select>
-              </div>
-            </div>
-            <div class="text-center p-2">
-            <button  type="submit" class=" btn btn-primary w-50" name="btnregistrar2" style="background-color: #005E56;">Registrar</button>
-            </div>
-                
-                </div>
-            </div>
-        </div>
-        </form>
-  
     
     <div class="container-fluid row p-5 mb-1">
-    <form action="{{route("crud.create")}}" class="col 3" method="POST" enctype= "multipart/form-data" onsubmit="return validateForm()">
+    <form action="{{route("crud2.create")}}" class="col 3" method="POST" enctype= "multipart/form-data" onsubmit="return validateForm()">
       <h2 class="p-3 text-secondary text-center"><b>Datacrédito</b></h2>
      @csrf
       
      
       <div class="mb-3 w-100" title="Este campo es obligatorio">
-        <label for="cedula" class="form-label fw-semibold">CÉDULA<span class="text-danger" style="font-size:20px;">*</span></label>
+        <label for="cedula" class="form-label fw-semibold">CÉDULA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control" name="Cedula" id="cedula" required>
         <div id="cedulaError" style="color: red;" class="fw-bold"></div>
         <div id="cedulaError2" style="color: red;" class="fw-bold"></div>
@@ -556,63 +388,36 @@ $(document).ready(function() {
         <input type="file" class="form-control" name="NombrePN" id="NombrePN">
       </div>
     
-    
-      <div class="mb-3 w-100">
-        <label for="exampleInputEmail1" class="form-label fw-semibold">ADJUNTAR FORMATO </label>
-        <input type="file" class="form-control" name="NombreT" id="archivo3">
-      </div>
-    
-      <div class="mb-3 w-100" title="Este campo es obligatorio">
-      <label for="exampleInputEmail1" class="form-label fw-semibold">CONSECUTIVO FORMATO <span class="text-danger" style="font-size:20px;">*</span></label>
-      <input type="text" class="form-control" name="Consecutivof" id="consecutivof" value="" required>
-      <div id="consecutivofError" style="color: red;" class="fw-bold"></div>
-      <div id="consecutivofError2" style="color: red;" class="fw-bold"></div>
-      <p class="formato-ayuda">Si la persona no tiene T1 ó T2, ingresar N/A(No aplica).</p>
-    </div>
+   
 
-    
-    
-    
-    <script>
-      $(document).ready(function() {
-        $('#consecutivof').change(function() {
-          if ($(this).val().toLowerCase() === 'n/a') {
-            $('#archivo3').val('');
-            $('#archivo3').attr('disabled', true);
-          } else {
-            $('#archivo3').attr('disabled', false);
-          }
-        });
-      });
-      $(document).ready(function() {
-        $("#consecutivof").on("input", function() {
-          if($.isNumeric($(this).val())) {
-            $("#tipof option[value='N/A']").prop("disabled", true);
-            $("#tipof").val("").trigger("change");
-          } else {
-            $("#tipof option[value='N/A']").prop("disabled", false);
-          }
-        });
-      
-        $("#consecutivof").on("blur", function() {
-          if($(this).val().toUpperCase() === "N/A") {
-            $("#tipof").val("N/A").prop("disabled", true);
-          } else {
-            $("#tipof").prop("disabled", false);
-          }
-        });
-      });
-      </script>
-    
+
     <div class="mb-3 w-100" title="Este campo es obligatorio">
-      <label for="tipo" class="form-label fw-semibold">TIPO FORMATO <span class="text-danger" style="font-size:20px;">*</span></label>
-      <select class="form-control" name="Tipof" id="tipof" required>
-        <option value="">Seleccione una opción</option>
-        <option value="N/A">N/A</option>
-        <option value="T1">Formato T1</option>
-        <option value="T2">Formato T2</option>
-      </select>
-    </div>
+        <label for="exampleInputEmail1" class="form-label fw-semibold">NOMINA<span class="text-danger" style="font-size:20px;">*</span></label>
+        <input type="text" class="form-control" name="Consecutivof" id="consecutivof" value="" required>
+        <div id="consecutivofError" style="color: red;" class="fw-bold"></div>
+        <div id="consecutivofError2" style="color: red;" class="fw-bold"></div>
+        <p class="formato-ayuda">Si la persona no tiene T1 ó T2, ingresar N/A(No aplica).</p>
+      </div>
+
+      <div class="mb-3 w-100" title="Este campo es obligatorio">
+        <label for="exampleInputEmail1" class="form-label fw-semibold">MONTO CAPITAL<span class="text-danger" style="font-size:20px;">*</span></label>
+        <input type="text" class="form-control" name="Consecutivof" id="consecutivof" value="" required>
+        <div id="consecutivofError" style="color: red;" class="fw-bold"></div>
+        <div id="consecutivofError2" style="color: red;" class="fw-bold"></div>
+        <p class="formato-ayuda">Si la persona no tiene T1 ó T2, ingresar N/A(No aplica).</p>
+      </div>
+
+      <div class="mb-3 w-100" title="Este campo es obligatorio">
+        <label for="tipo" class="form-label fw-semibold">GARANTIA<span class="text-danger" style="font-size:20px;">*</span></label>
+        <select class="form-control" name="Tipof" id="tipof" required>
+          <option value="">Seleccione una opción</option>
+          <option value="X">APORTES SOCIALES</option>
+          <option value="0">FONDO DE GARANTÍA</option>
+          <option value="1">CODEUDORES</option>
+          <option value="6">HIPOTECA</option>
+          <option value="6">PIGNORACIÓN</option>
+        </select>
+      </div>
     
     <script>
     var reporteInput = document.getElementById('reporte');
@@ -971,7 +776,7 @@ $(document).ready(function() {
                 <td>{!! $html2 !!}</td>
                 <td>{!! $html3 !!}</td>
                 <td class="text-uppercase">'{{$item->Consecutivof}}</td>
-                <td><a href="" type="submit" class="btn btn-small btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar" style="margin-right: 6%"><input type="hidden" name=""><i class="fa-regular fa-pen-to-square"></i><a onclick="return eliminar()" href="{{route("crud.delete",$item->ID)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></a>
+                <td><a href="" type="submit" class="btn btn-small btn-warning" data-bs-toggle="modal" data-bs-target="#modalEditar" style="margin-right: 6%"><input type="hidden" name=""><i class="fa-regular fa-pen-to-square"></i><a onclick="return eliminar()" href="{{route("crud2.delete",$item->ID)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></a>
                 
               <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -986,7 +791,7 @@ $(document).ready(function() {
   
                   <div class="modal-body">
       
-              <form action="{{route("crud.update", $item->ID)}}" class="text-center" method="POST" onsubmit="return validateForm2()">
+              <form action="{{route("crud2.update", $item->ID)}}" class="text-center" method="POST" onsubmit="return validateForm2()">
                 @csrf
               <!--Label1-->  
               <div class="mb-3">
@@ -1174,63 +979,7 @@ $(document).ready(function() {
         }
         return true;
 }
-
-            $('button[name="btnregistrar2"]').on('click', function() {
-        if ($('#name').val() === '') {
-            $('#name').css('background-color', 'mistyrose');
-            $('#name').attr('placeholder', 'Obligatorio');
-        }
-        if ($('#email').val() === '') {
-            $('#email').css('background-color', 'mistyrose');
-            $('#email').attr('placeholder', 'Obligatorio');
-        }
-        if ($('#password').val() === '') {
-            $('#password').css('background-color', 'mistyrose');
-            $('#password').attr('placeholder', 'Obligatorio');
-        }
-        if ($('#password_confirmation').val() === '') {
-            $('#password_confirmation').css('background-color', 'mistyrose');
-            $('#password_confirmation').attr('placeholder', 'Obligatorio');
-        }
     
-    });
-    
-    </script>
-
-    <script>
-       function validateForm3() {
-              var nombreInput = document.getElementById('name');
-              var nombreError2 = document.getElementById('nameError');
-              
-              if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
-                Swal.fire({
-                  icon: 'error',
-                  title: '¡Error!',
-                  text: 'El campo NOMBRE debe contener solo caracteres alfabéticos!',
-                  confirmButtonColor: '#005E56'
-                });
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                nombreError2.textContent = '';
-                return false;
-              }
-
-              var passwordInput = document.getElementById('password');
-              var passwordError = document.getElementById('passwordError');
-              var passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/;
-
-              if (!passwordRegex.test(passwordInput.value)) {   
-                Swal.fire({
-                  icon: 'error',
-                  title: '¡Error!',
-                  text: 'La contraseña debe contener al menos una letra, un número, un carácter especial (@$!%*?&) y tener entre 8 y 12 caracteres!',
-                  confirmButtonColor: '#005E56'
-                });
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                passwordError.textContent = '';
-                return false;
-              }
-              return true;
-            }
     </script>
 
           </div>

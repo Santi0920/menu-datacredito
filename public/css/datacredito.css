@@ -248,6 +248,11 @@ border-color: #fff;
     margin-left: -88%;
 }
 
+#consul7
+{
+    margin-left: -88%;
+}
+
 .blink {
     animation: blinker 2.6s linear infinite;
   }

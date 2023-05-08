@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Storage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-class CRUDPersona extends Controller
+
+class CRUDAsociacion extends Controller
 {
-    //listar
+    //
+
     public function list()
     {
         
@@ -19,7 +21,7 @@ class CRUDPersona extends Controller
         D ON C.ID_Persona = D.ID_Persona ORDER BY Nombre ASC");
         
         
-        return view("datacredito")->with("datos", $datos);
+        return view("asociacion")->with("datos", $datos);
     }
 
 
@@ -31,24 +33,39 @@ class CRUDPersona extends Controller
         if($existingPerson == true){
             return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
         } 
-    // }
-
-    // if ($request->hasFile('NombreS')) {
-    //     $file = $request->file('NombreS');
-    //     $filename =  $file->getClientOriginalName();
-    //     $dir = '';
-    //     $path = $dir . $filename;
-    
-    //     if (Storage::exists($path)) {
-    //         $message = "El archivo $filename ya existe! Error al Registrar!";
-    //         return back()->with("incorrecto", $message);
-    //     } else {
-    //         $message = "El archivo $filename es nuevo! Puede registrar.";
-    //         return back()->with("correcto", $message);
-    //     }
-    
   
+        $file = $request->file('NombreS');
+        $filename =  $file->getClientOriginalName();
+        $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE NombreS = ?", [$filename]);
+        
+            if(!empty($archivo)){
+                return back()->withErrors([
+                    'message' => 'El archivo SINTESIS - "' . $filename . '" ya existe!'
+                ]);
+            } 
 
+
+        $file2 = $request->file('NombrePN');
+        $filename2 =  $file2->getClientOriginalName();
+        $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE NombrePN = ?", [$filename2]);
+       
+            if(!empty($archivo2)){
+                return back()->withErrors([
+                    'message' => 'El archivo PN - "' . $filename2 . '" ya existe!'
+                ]);
+            }
+        
+
+            $file3 = $request->file('NombreT');
+            $filename3 =  $file3->getClientOriginalName();
+            $tipo = $request->Tipof;
+            $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE NombreT = ?", [$filename3]);
+           
+            if(!empty($archivo3)){
+                return back()->withErrors([
+                    'message' => 'El archivo FORMATO '.$tipo.' - "' . $filename3 . '" ya existe!'
+                ]);
+            }
 
     }else{
         // if ($request->Score > 950) {
@@ -247,5 +264,10 @@ class CRUDPersona extends Controller
         } else{
             return back()->with("correcto", "Registro eliminado correctamente!");
         }
-    } 
+    }
+    
+
+    public function listarRoles(){
+        $roles = DB::select("SELECT 'ID', 'username', 'pass', 'correo', 'rol' FROM tipo");
+    }
 } 
