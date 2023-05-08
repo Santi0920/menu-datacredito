@@ -60,8 +60,8 @@
               <script>
                 Swal.fire
                   ({
-                      icon: 'Error! Email o Contraseña incorrectos!',
-                      title: "",
+                      icon: 'error',
+                      title: "Error!\n Email o Contraseña incorrectos!",
                       text: '',
                       confirmButtonColor: '#005E56'
                 
