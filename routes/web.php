@@ -49,14 +49,19 @@ Route::get('datacredito/eliminar_persona-{id}', [CRUDAdmin::class, 'delete'])
 ->name('crud.delete');
 
 
-Route::post('datacredito/roles', [CRUDAdmin::class, 'listarRoles'])
+Route::post('datacredito', [CRUDAdmin::class, 'list2'])
 ->name('rol.list');
 
 Route::post('datacredito/registrar_rol', [CRUDAdmin::class, 'store'])
 ->name('rol.store');
 
 
+Route::post('datacredito/activo', [CRUDAdmin::class, 'activo'])
+->name('rol.activo');
 
+
+Route::get('datacredito/eliminar_rol-{id}', [CRUDAdmin::class, 'eliminarRol'])
+->name('rol.delete');
 
 
 //LOGIN

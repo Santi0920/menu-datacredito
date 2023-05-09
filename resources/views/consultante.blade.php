@@ -1,6 +1,8 @@
 @extends('layouts.base')
 
 @section('content')
+
+
 <div>
     <h2 class="p-3 mb-0 text-secondary"><b><span id="fechaActual">Consulta Datacrédito</span></b></h2>
   </div>
@@ -115,8 +117,7 @@
             </tr>
           @endforeach
               
-        
-          </tbody>
+    
           
         </table>
         

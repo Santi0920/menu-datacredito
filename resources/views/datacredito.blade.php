@@ -47,6 +47,7 @@
 </script>
 </div>
 
+
 @enderror
     <div class="contenedor2">
       <div class="agregar2">
@@ -129,6 +130,7 @@
                             <th>ROL</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                             
     
                             
@@ -137,6 +139,16 @@
                         
     
                           <tbody>
+                            @foreach($datos2 as $item)
+                            <tr>
+                            
+                            <td>{{$item->name}}</td>
+                            <td>{{$item->rol}}</td>
+                            <td><a onclick="return eliminar()" type="submit" name="activar" value="" class="btn btn-small btn-warning">Activar</a></td>
+                            <td><a onclick="return eliminar()" type="submit" name="desactivar" value="" class="btn btn-small btn-secondary">Desactivar</a></td>
+                            <td><a onclick="return eliminar()" href="{{route("rol.delete",$item->id)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></td>
+                          </tr>
+                            @endforeach
                         
                           </tbody>
                     </table>
@@ -405,10 +417,10 @@ $(document).ready(function() {
 $(document).ready(function() {
   $('#score').on('input', function() {
     if ($(this).val() > 0) {
-      $('.text-danger').show();
+    
       $('#reporte').prop('required', true);
     } else {
-      $('.text-danger').hide();
+  
       $('#reporte').prop('required', false);
     }
   });
@@ -479,7 +491,7 @@ $(document).ready(function() {
     
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="exampleInputEmail1" class="form-label fw-semibold">AGENCIA <span class="text-danger" style="font-size:20px;">*</span></label>
-        <input type="text" class="form-control " name="Agencia" required id="agencia">
+        <input type="text" class="form-control " name="Agencia" id="Agencia" required >
         <div id="agenciaError" style="color: red;" class="fw-bold"></div>
         <div id="agenciaError2" style="color: red;" class="fw-bold"></div>
       </div>
@@ -504,7 +516,7 @@ $(document).ready(function() {
     
     $(function() {
       $.ajax({
-        url: 'ResourcesAll/json/agencia.json',
+        url: 'ResourcesAll/agencia.json',
         dataType: 'json',
         success: function(data) {
           $('#Agencia').autocomplete({
@@ -1058,9 +1070,9 @@ $(document).ready(function() {
   
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
-                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="Storage/files/sintesis/{{$item->NombreS}}">
+                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="{{$item->NombreS}}">
               </div> 
-  
+              
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" accept="application/pdf" value="Storage/files/pn/{{$item->NombrePN}}">

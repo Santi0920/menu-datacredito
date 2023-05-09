@@ -32,6 +32,23 @@
   </script>
   </div>
 @endif
+
+@error('message')
+<div>
+<script>
+  Swal.fire
+    ({
+        icon: 'error',
+        title: "Error al registrar!\n{{$message}}",
+        text: '',
+        confirmButtonColor: '#005E56'
+  
+    });  
+</script>
+</div>
+
+
+@enderror
     <div class="contenedor2">
       <div class="agregar2">
         <a href="datacredito.php" class="btn btn-primary" style="font-size: 35px;font-family: 'Montserrat', sans-serif; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#exampleModal3">
@@ -237,10 +254,8 @@ $(document).ready(function() {
 $(document).ready(function() {
   $('#score').on('input', function() {
     if ($(this).val() > 0) {
-      $('.text-danger').show();
       $('#reporte').prop('required', true);
     } else {
-      $('.text-danger').hide();
       $('#reporte').prop('required', false);
     }
   });

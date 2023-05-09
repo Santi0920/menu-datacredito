@@ -21,7 +21,10 @@ class CRUDAdmin extends Controller
         D ON C.ID_Persona = D.ID_Persona ORDER BY Nombre ASC");
         
         
-        return view("datacredito")->with("datos", $datos);
+        $datos2 =DB::select("SELECT id, name, rol FROM users WHERE rol = 'consultante' OR rol = 'asociacion' OR rol = 'credito' OR rol = 'proveedor'");
+        
+        
+        return view("datacredito", compact("datos","datos2"));
     }
 
 
@@ -165,9 +168,83 @@ class CRUDAdmin extends Controller
 }
 }
 
-    //Actualizar registro
-    public function update(Request $request, $id)
-    {
+            //Actualizar registro
+public function update(Request $request, $id)
+{
+            
+            
+                $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+                if ($archivo) {
+                    $nombre_archivo = $archivo[0]->NombreS;
+                    
+                    $nuevo_archivo = $request->archivo22;
+                    if($archivo){
+                        $pdfactual = $nombre_archivo;
+                    }else{
+                        $pdfactual= null;
+                    }
+                }
+                if (!empty($archivo) && $archivo != $pdfactual) {
+                    $nuevo_nombre = $nuevo_archivo;
+                }
+                
+                if (isset($nombre_archivo) && isset($nuevo_nombre) && $nombre_archivo !== $nuevo_nombre ) {
+                    return back()->withErrors([
+                        'message' => 'El archivo subido contiene un nombre diferente al archivo SINTESIS actual ('.$nombre_archivo.').\n'
+                    ]);
+                }
+                
+        
+
+
+        $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
+        if ($archivo2) {
+            $nombre_archivo2 = $archivo2[0]->NombrePN;
+            
+            $nuevo_archivo2 = $request->archivo11;
+            if($archivo2){
+                $pdfactual2 = $nombre_archivo2;
+            }else{
+                $pdfactual2= null;
+            }
+        }
+
+        if (!empty($archivo2) && $archivo2 != $pdfactual2) {
+            $nuevo_nombre2 = $nuevo_archivo2;
+        }
+
+        if (isset($nombre_archivo2) && isset($nuevo_nombre2) && $nombre_archivo2 !== $nuevo_nombre2) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo PN actual ('.$nombre_archivo2.').\n'
+            ]);
+        }
+
+
+        $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
+        if ($archivo3) {
+            $nombre_archivo3 = $archivo3[0]->NombreT;
+            $tipo_archivo3 = $archivo3[0]->Tipof;
+            $nuevo_archivo3 = $request->archivo33;
+            if($archivo3){
+                $pdfactual3 = $nombre_archivo3;
+            }else{
+                $pdfactual3= null;
+            }
+        }
+
+        if (!empty($archivo3) && $archivo3 != $pdfactual3) {
+            $nuevo_nombre3 = $nuevo_archivo3;
+        }
+
+        if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo actual '.$tipo_archivo3.' ("'.$nombre_archivo3.'").\n'
+            ]);
+        }
+      
+
+           
+    else{ 
     
         $sql=DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ? WHERE ID = $id",[
             $request->cedula2,
@@ -182,22 +259,43 @@ class CRUDAdmin extends Controller
         ]);
     
         
-        $sql2=DB::update("UPDATE documentosintesis SET FechaInsercion = ?, NombreS = ? WHERE ID = $id",[
-            $request->fecha3,
-            $request->archivo22,
-            
-        ]);
-    
-        $sql3=DB::update("UPDATE documentopn SET NombrePN = ? WHERE ID_Persona = $id",[
-            $request->archivo11
-            
-        ]);
-    
-        $sql4=DB::update("UPDATE documentot SET NombreT=?, Consecutivof = ? WHERE ID_Persona = $id",[
-            $request->archivo33,
-            $request->consecutivof3
+            // Obtener el nombre de los archivos actuales
+        $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo = $archivo[0]->NombreS;
 
-        ]);
+        $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo2 = $archivo2[0]->NombrePN;
+
+        $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo3 = $archivo3[0]->NombreT;
+        
+
+        // Verificar si los archivos se enviaron en la solicitud y no son nulos
+        if ($request->archivo22 != null) {
+            // Actualizar el archivo en la tabla documentosintesis
+            $sql2 = DB::update("UPDATE documentosintesis SET FechaInsercion = ?, NombreS = ? WHERE ID = $id", [
+                $request->fecha3,
+                $request->archivo22
+            ]);
+    
+        }
+
+        if ($request->archivo11 != null) {
+            // Actualizar el archivo en la tabla documentopn
+            $sql3 = DB::update("UPDATE documentopn SET NombrePN = ? WHERE ID_Persona = $id", [
+                $request->archivo11,
+            ]);
+       
+        }
+
+        if ($request->archivo33 != null) {
+            // Actualizar el archivo en la tabla documentot
+            $sql4 = DB::update("UPDATE documentot SET NombreT = ?, Consecutivof = ? WHERE ID_Persona = $id", [
+                $request->archivo33,
+                $request->consecutivof3
+            ]);
+ 
+        }
 
         if($sql == true && $sql2 == true && $sql3 == true && $sql4 == true){
             return back()->with("incorrecto", "Error al modificar el registro!");
@@ -205,7 +303,8 @@ class CRUDAdmin extends Controller
             return back()->with("correcto", "El usuario ".ucwords($request->nombre3)." ". strtoupper($request->apellidos3). " con identificación $request->cedula2 fue actualizado correctamente!");
         }
     }
-
+}
+    
     public function delete($id)
     {
         
@@ -271,11 +370,13 @@ class CRUDAdmin extends Controller
     }
     
 
-    public function listarRoles(){
-        $datos=DB::select("SELECT * FROM users");
-        
-        return view("datacredito")->with("datos", $datos);
+    public function list2(){
+           
+      
     }
+
+
+    
 
     public function store(Request $request){
         $existingPerson = DB::select('SELECT * FROM users WHERE email = ?', [$request->email]);
@@ -297,6 +398,23 @@ class CRUDAdmin extends Controller
         return redirect()->to('datacredito')->with("correcto", "Persona Registrada correctamente!");
      
             
+    }
+
+
+    public function activo(){
+
+    }
+
+    public function eliminarRol($id){
+        $sql=DB::update("DELETE FROM users WHERE id=$id",[
+        ]);
+
+
+        if($sql == true){
+            return back()->with("incorrecto", "Error al eliminar!");
+        } else{
+            return back()->with("correcto", "Registro eliminado correctamente!");
+        }
     }
 } 
 
