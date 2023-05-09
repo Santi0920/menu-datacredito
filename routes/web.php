@@ -56,8 +56,11 @@ Route::post('datacredito/registrar_rol', [CRUDAdmin::class, 'store'])
 ->name('rol.store');
 
 
-Route::post('datacredito/activo', [CRUDAdmin::class, 'activo'])
+Route::get('datacredito/activo-{id}', [CRUDAdmin::class, 'activo'])
 ->name('rol.activo');
+
+Route::get('datacredito/desactivar-{id}', [CRUDAdmin::class, 'desactivar'])
+->name('rol.desactivar');
 
 
 Route::get('datacredito/eliminar_rol-{id}', [CRUDAdmin::class, 'eliminarRol'])

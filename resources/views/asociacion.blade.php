@@ -918,11 +918,11 @@ $(document).ready(function() {
                   <input type="file" class="form-control" name="archivo33" accept="application/pdf" value="{{$ruta_carga3}}">
                 </div>
               
-                <div class="mb-3 w-100">
+                {{-- <div class="mb-3 w-100">
                   <label for="exampleInputEmail1" id="izquierda11" class="form-label fw-bold">CONSECUTIVO FORMATO</label>
                   <input type="text" class="form-control " name="consecutivof3" id="consecutivof" readonly value="{{$item->Consecutivof}}" style="background-color: #EBEBEB;">
                   <input type="hidden" name="consecutivof" value="">
-                </div>
+                </div> --}}
 
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

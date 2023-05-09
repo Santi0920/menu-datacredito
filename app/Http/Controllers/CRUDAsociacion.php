@@ -216,27 +216,27 @@ class CRUDAsociacion extends Controller
            }
    
    
-           $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
-           if ($archivo3) {
-               $nombre_archivo3 = $archivo3[0]->NombreT;
-               $tipo_archivo3 = $archivo3[0]->Tipof;
-               $nuevo_archivo3 = $request->archivo33;
-               if($archivo3){
-                   $pdfactual3 = $nombre_archivo3;
-               }else{
-                   $pdfactual3= null;
-               }
-           }
+        //    $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
+        //    if ($archivo3) {
+        //        $nombre_archivo3 = $archivo3[0]->NombreT;
+        //        $tipo_archivo3 = $archivo3[0]->Tipof;
+        //        $nuevo_archivo3 = $request->archivo33;
+        //        if($archivo3){
+        //            $pdfactual3 = $nombre_archivo3;
+        //        }else{
+        //            $pdfactual3= null;
+        //        }
+        //    }
    
-           if (!empty($archivo3) && $archivo3 != $pdfactual3) {
-               $nuevo_nombre3 = $nuevo_archivo3;
-           }
+        //    if (!empty($archivo3) && $archivo3 != $pdfactual3) {
+        //        $nuevo_nombre3 = $nuevo_archivo3;
+        //    }
    
-           if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
-               return back()->withErrors([
-                   'message' => 'El archivo subido contiene un nombre diferente al archivo actual '.$tipo_archivo3.' ("'.$nombre_archivo3.'").\n'
-               ]);
-           }
+        //    if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+        //        return back()->withErrors([
+        //            'message' => 'El archivo subido contiene un nombre diferente al archivo actual '.$tipo_archivo3.' ("'.$nombre_archivo3.'").\n'
+        //        ]);
+        //    }
          
    
               
@@ -255,48 +255,37 @@ class CRUDAsociacion extends Controller
            ]);
        
            
-               // Obtener el nombre de los archivos actuales
+             
            $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
            $nombre_archivo = $archivo[0]->NombreS;
    
            $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
            $nombre_archivo2 = $archivo2[0]->NombrePN;
    
-           $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE ID_Persona = ?", [$id]);
-           $nombre_archivo3 = $archivo3[0]->NombreT;
+
            
    
-           // Verificar si los archivos se enviaron en la solicitud y no son nulos
+       
            if ($request->hasFile('archivo22') && $request->archivo22 != null) {
                // Actualizar el archivo en la tabla documentosintesis
                $sql2 = DB::update("UPDATE documentosintesis SET FechaInsercion = ?, NombreS = ? WHERE ID = $id", [
                    $request->fecha3,
-                   $request->archivo22,
+                   $request->archivo22
                ]);
-               // Obtener el nuevo nombre del archivo
-               $nombre_archivo = $request->archivo22;
+             
            }
    
            if ($request->hasFile('archivo11') && $request->archivo11 != null) {
                // Actualizar el archivo en la tabla documentopn
                $sql3 = DB::update("UPDATE documentopn SET NombrePN = ? WHERE ID_Persona = $id", [
-                   $request->archivo11,
+                   $request->archivo11
                ]);
-               // Obtener el nuevo nombre del archivo
-               $nombre_archivo2 = $request->archivo11;
+           
            }
    
-           if ($request->hasFile('archivo33') && $request->archivo33 != null) {
-               // Actualizar el archivo en la tabla documentot
-               $sql4 = DB::update("UPDATE documentot SET NombreT = ?, Consecutivof = ? WHERE ID_Persona = $id", [
-                   $request->archivo33,
-                   $request->consecutivof3
-               ]);
-               // Obtener el nuevo nombre del archivo
-               $nombre_archivo3 = $request->archivo33;
-           }
+    
    
-           if($sql == true && $sql2 == true && $sql3 == true && $sql4 == true){
+           if($sql == true && $sql2 == true && $sql3 == true){
                return back()->with("incorrecto", "Error al modificar el registro!");
            } else{
                return back()->with("correcto", "El usuario ".ucwords($request->nombre3)." ". strtoupper($request->apellidos3). " con identificación $request->cedula2 fue actualizado correctamente!");

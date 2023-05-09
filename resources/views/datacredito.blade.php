@@ -144,8 +144,8 @@
                             
                             <td>{{$item->name}}</td>
                             <td>{{$item->rol}}</td>
-                            <td><a onclick="return eliminar()" type="submit" name="activar" value="" class="btn btn-small btn-warning">Activar</a></td>
-                            <td><a onclick="return eliminar()" type="submit" name="desactivar" value="" class="btn btn-small btn-secondary">Desactivar</a></td>
+                            <td><a onclick="return eliminar()" type="submit" href="{{route("rol.activo",$item->id)}}" name="activar" id="activar" class="btn btn-small btn-warning">Activar</a></td>
+                            <td><a onclick="return eliminar()" type="submit" href="{{route("rol.desactivar",$item->id)}}" name="desactivar" id="desactivar" class="btn btn-small btn-secondary">Desactivar</a></td>
                             <td><a onclick="return eliminar()" href="{{route("rol.delete",$item->id)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></td>
                           </tr>
                             @endforeach
@@ -998,7 +998,7 @@ $(document).ready(function() {
   
                   <div class="modal-body">
       
-              <form action="{{route("crud.update", $item->ID)}}" class="text-center" method="POST" onsubmit="return validateForm2()">
+              <form action="{{route("crud.update", $item->ID)}}" class="text-center" method="POST" enctype="multipart/form-data" onsubmit="return validateForm2()">
                 @csrf
               <!--Label1-->  
               <div class="mb-3">
@@ -1070,18 +1070,18 @@ $(document).ready(function() {
   
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
-                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="{{$item->NombreS}}">
+                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="">
               </div> 
               
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
-                  <input type="file" class="form-control" name="archivo11" accept="application/pdf" value="Storage/files/pn/{{$item->NombrePN}}">
+                  <input type="file" class="form-control" name="archivo11" accept="application/pdf" value="">
                   </div>
                   
-                  <div class="mb-3 w-100">
+                  {{-- <div class="mb-3 w-100">
                   <label for="exampleInputEmail1" id="izquierda10" class="form-label fw-bold">ADJUNTAR FORMATO </label>
                   <input type="file" class="form-control" name="archivo33" accept="application/pdf" value="{{$ruta_carga3}}">
-                </div>
+                </div> --}}
               
                 <div class="mb-3 w-100">
                   <label for="exampleInputEmail1" id="izquierda11" class="form-label fw-bold">CONSECUTIVO FORMATO</label>

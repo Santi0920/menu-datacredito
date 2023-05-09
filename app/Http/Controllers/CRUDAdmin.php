@@ -176,8 +176,12 @@ public function update(Request $request, $id)
                 $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
                 if ($archivo) {
                     $nombre_archivo = $archivo[0]->NombreS;
+                    if($request->hasFile('archivo22')){
+                        $file = $request->file('archivo22');
+                        $filename =  $file->getClientOriginalName();
+                    }
                     
-                    $nuevo_archivo = $request->archivo22;
+                    $nuevo_archivo = $filename;
                     if($archivo){
                         $pdfactual = $nombre_archivo;
                     }else{
@@ -190,7 +194,7 @@ public function update(Request $request, $id)
                 
                 if (isset($nombre_archivo) && isset($nuevo_nombre) && $nombre_archivo !== $nuevo_nombre ) {
                     return back()->withErrors([
-                        'message' => 'El archivo subido contiene un nombre diferente al archivo SINTESIS actual ('.$nombre_archivo.').\n'
+                        'message' => 'El archivo subido contiene un nombre diferente al archivo SINTESIS '.$nombre_archivo.' actual ('.$nombre_archivo.').\n'
                     ]);
                 }
                 
@@ -219,28 +223,28 @@ public function update(Request $request, $id)
             ]);
         }
 
+        //archivoT
+        // $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
+        // if ($archivo3) {
+        //     $nombre_archivo3 = $archivo3[0]->NombreT;
+        //     $tipo_archivo3 = $archivo3[0]->Tipof;
+        //     $nuevo_archivo3 = $request->archivo33;
+        //     if($archivo3){
+        //         $pdfactual3 = $nombre_archivo3;
+        //     }else{
+        //         $pdfactual3= null;
+        //     }
+        // }
 
-        $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
-        if ($archivo3) {
-            $nombre_archivo3 = $archivo3[0]->NombreT;
-            $tipo_archivo3 = $archivo3[0]->Tipof;
-            $nuevo_archivo3 = $request->archivo33;
-            if($archivo3){
-                $pdfactual3 = $nombre_archivo3;
-            }else{
-                $pdfactual3= null;
-            }
-        }
+        // if (!empty($archivo3) && $archivo3 != $pdfactual3) {
+        //     $nuevo_nombre3 = $nuevo_archivo3;
+        // }
 
-        if (!empty($archivo3) && $archivo3 != $pdfactual3) {
-            $nuevo_nombre3 = $nuevo_archivo3;
-        }
-
-        if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
-            return back()->withErrors([
-                'message' => 'El archivo subido contiene un nombre diferente al archivo actual '.$tipo_archivo3.' ("'.$nombre_archivo3.'").\n'
-            ]);
-        }
+        // if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+        //     return back()->withErrors([
+        //         'message' => 'El archivo subido contiene un nombre diferente al archivo actual '.$tipo_archivo3.' ("'.$nombre_archivo3.'").\n'
+        //     ]);
+        // }
       
 
            
@@ -257,8 +261,15 @@ public function update(Request $request, $id)
             $request->cuenta3
 
         ]);
-    
-        
+            
+       
+            $file_path = 'Storage/files/sintesis/'.$nombre_archivo;
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+            $dir = 'Storage/files/sintesis/';
+            $uploadSucces = $request->file('archivo22')->move($dir, $filename);
+                
             // Obtener el nombre de los archivos actuales
         $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
         $nombre_archivo = $archivo[0]->NombreS;
@@ -266,8 +277,8 @@ public function update(Request $request, $id)
         $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
         $nombre_archivo2 = $archivo2[0]->NombrePN;
 
-        $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE ID_Persona = ?", [$id]);
-        $nombre_archivo3 = $archivo3[0]->NombreT;
+        // $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE ID_Persona = ?", [$id]);
+        // $nombre_archivo3 = $archivo3[0]->NombreT;
         
 
         // Verificar si los archivos se enviaron en la solicitud y no son nulos
@@ -288,16 +299,16 @@ public function update(Request $request, $id)
        
         }
 
-        if ($request->archivo33 != null) {
-            // Actualizar el archivo en la tabla documentot
-            $sql4 = DB::update("UPDATE documentot SET NombreT = ?, Consecutivof = ? WHERE ID_Persona = $id", [
-                $request->archivo33,
-                $request->consecutivof3
-            ]);
+        // if ($request->archivo33 != null) {
+        //     // Actualizar el archivo en la tabla documentot
+        //     $sql4 = DB::update("UPDATE documentot SET NombreT = ?, Consecutivof = ? WHERE ID_Persona = $id", [
+        //         $request->archivo33,
+        //         $request->consecutivof3
+        //     ]);
  
-        }
+        // }
 
-        if($sql == true && $sql2 == true && $sql3 == true && $sql4 == true){
+        if($sql == true && $sql2 == true && $sql3 == true){
             return back()->with("incorrecto", "Error al modificar el registro!");
         } else{
             return back()->with("correcto", "El usuario ".ucwords($request->nombre3)." ". strtoupper($request->apellidos3). " con identificación $request->cedula2 fue actualizado correctamente!");
@@ -368,13 +379,6 @@ public function update(Request $request, $id)
             return back()->with("correcto", "Registro eliminado correctamente!");
         }
     }
-    
-
-    public function list2(){
-           
-      
-    }
-
 
     
 
@@ -382,7 +386,7 @@ public function update(Request $request, $id)
         $existingPerson = DB::select('SELECT * FROM users WHERE email = ?', [$request->email]);
        
             if($existingPerson == true){
-                return back()->with("incorrecto", "Correo registrado en la base de datos! Error al Registrar!");
+                return back()->with("correcto", "Correo registrado en la base de datos! Error al Registrar!");
             } 
             $this->validate(request(), [
                 'name' => 'required',
@@ -396,13 +400,34 @@ public function update(Request $request, $id)
 
         if(auth()->login($user));
         return redirect()->to('datacredito')->with("correcto", "Persona Registrada correctamente!");
-     
+        
             
     }
 
 
-    public function activo(){
+    public function activo($id){
+        $sql=DB::update("UPDATE users SET activo=1 WHERE ID=$id",[
+        ]);
+        
+        if($sql == true){
+            return back()->with("correcto", "EL USUARIO SE HA ACTIVADO CORRECTAMENTE!");
+            
+        } elseif($sql == false){
+            return back()->with("incorrecto", "EL USUARIO YA ESTA ACTIVADO!");
+        }
+    }
 
+    public function desactivar($id){
+        $sql=DB::update("UPDATE users SET activo=0 WHERE ID=$id",[
+        ]);
+        
+        if($sql == true){
+            return back()->with("correcto", "EL USUARIO SE HA DESACTIVADO CORRECTAMENTE!");
+            
+        } elseif($sql == false){
+            return back()->with("incorrecto", "EL USUARIO YA ESTA DESACTIVADO!");
+            
+        }
     }
 
     public function eliminarRol($id){
@@ -411,9 +436,10 @@ public function update(Request $request, $id)
 
 
         if($sql == true){
-            return back()->with("incorrecto", "Error al eliminar!");
-        } else{
             return back()->with("correcto", "Registro eliminado correctamente!");
+            
+        } else{
+            return back()->with("correcto", "El usuario ya ha sido eliminado!");
         }
     }
 } 
