@@ -93,7 +93,6 @@
           <div class="modal-footer">
           <h5 class="fw-semibold text-secondary" style="font-size: 35px; margin-right: 320px;">Abr 2023</h5>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="font-size: 20px;">Cerrar</button>
-    
           </div>
         </div>
       </div>
@@ -155,6 +154,7 @@
                     </table>
                     </div>
                    <hr>
+                   
                 <!--Label1-->  
                 <div class="mb-3 mt-3">
                     <label for="label" id="consul1" class="form-label fw-bold" value="">NOMBRE COMPLETO</label>

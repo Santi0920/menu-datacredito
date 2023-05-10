@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-05-2023 a las 07:07:37
+-- Tiempo de generación: 10-05-2023 a las 07:53:03
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -600,7 +600,13 @@ INSERT INTO `documentopn` (`ID`, `NombrePN`, `ID_Persona`) VALUES
 (574, 'PN-51668973.pdf', 574),
 (575, 'PN-52029097.pdf', 575),
 (576, 'PN-1077033805.pdf', 576),
-(684, '.pdf', 589);
+(684, '.pdf', 589),
+(685, NULL, 590),
+(686, 'C:\\xampp\\tmp\\php7D1A.tmp', 591),
+(687, 'C:\\xampp\\tmp\\phpD03D.tmp', 592),
+(688, 'C:\\xampp\\tmp\\php694A.tmp', 593),
+(689, 'prueba (2).pdf', 594),
+(690, 'prueba (2) (3).pdf', 595);
 
 -- --------------------------------------------------------
 
@@ -934,7 +940,7 @@ INSERT INTO `documentosintesis` (`ID`, `NombreS`, `FechaInsercion`, `ID_Persona`
 (325, '93461297 - ACERO.pdf', '2023-03-30', 325),
 (326, '31330383 - VALENCIA.pdf', '2023-03-30', 326),
 (327, '1112872380 - CAICEDO.pdf', '2023-03-30', 327),
-(328, '2569367 - ORTIZ.pdf', '2023-03-30', 328),
+(328, 'C:\\xampp\\tmp\\php73AE.tmp', '2023-03-31', 328),
 (329, '1123310515 - ARANGO.pdf', '2023-03-30', 329),
 (330, '42101467 - VASQUEZ.pdf', '2023-03-30', 330),
 (331, '37840681 - BARRERA.pdf', '2023-03-30', 331),
@@ -1182,7 +1188,9 @@ INSERT INTO `documentosintesis` (`ID`, `NombreS`, `FechaInsercion`, `ID_Persona`
 (574, '51668973 - BELTRAN.pdf', '2023-04-14', 574),
 (575, '52029097 - RODRIGUEZ.pdf', '2023-04-14', 575),
 (576, '1077033805 - GONZALEZ.pdf', '2023-04-14', 576),
-(684, '52690343 - VELA.pdf', '2023-04-03', 589);
+(684, '52690343 - VELA.pdf', '2023-04-03', 589),
+(689, 'prueba (2).pdf', '2022-08-01', 594),
+(690, NULL, '2023-05-09', 595);
 
 -- --------------------------------------------------------
 
@@ -1764,7 +1772,9 @@ INSERT INTO `documentot` (`Consecutivof`, `Tipof`, `NombreT`, `ID_Persona`) VALU
 ('574', 'T1', 'PATRICIA.pdf', 574),
 ('575', 'T1', 'DIANA.pdf', 575),
 ('576', 'T1', 'LINDA.pdf', 576),
-('N/A17', 'N/A', '.pdf', 589);
+('N/A17', 'N/A', '.pdf', 589),
+('12345', 'T1', 'prueba (2).pdf', 594),
+('N/A', 'N/A', NULL, 595);
 
 -- --------------------------------------------------------
 
@@ -2133,7 +2143,7 @@ INSERT INTO `persona` (`ID`, `Cedula`, `Nombre`, `Apellidos`, `Score`, `Reporte`
 (325, '93461297', 'DANILO  ', 'ACERO BOHORQUEZ', '853', 'N', '118212', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (326, '31330383', 'MARIA NATACHA ', 'VALENCIA RIOS', '458', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (327, '1112872380', 'ALBA XIMENA ', 'CAICEDO GUACA', '765', 'N', '118213', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
-(328, '2569367', 'ANTONIO  ', 'ORTIZ PARRA', '340', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
+(328, '2569367', 'ANTONIO', 'ORTIZ PARRA', '340', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (329, '1123310515', 'CARLOS HUMBERTO ', 'ARANGO RENGIFO', '702', 'N', '118235', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (330, '42101467', 'JUDITH  ', 'VASQUEZ MARTHA', '796', 'N', '118200', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (331, '37840681', 'MARIA ISABEL ', 'BARRERA SUAREZ', '802', 'N', '118230', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
@@ -2382,7 +2392,9 @@ INSERT INTO `persona` (`ID`, `Cedula`, `Nombre`, `Apellidos`, `Score`, `Reporte`
 (574, '51668973', 'PATRICIA  ', 'BELTRAN MENDEZ', '738', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (575, '52029097', 'DIANA MARIA ', 'RODRIGUEZ SANTAMARIA', '842', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
 (576, '1077033805', 'LINDA JESSENIA ', 'GONZALEZ AMAYA', '784', 'N', 'N/A', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
-(589, '52690343', 'Ademid', 'VELA PAEZ', 'S/E', 'N', 'N/A14', 'Cali', 'N', '', '', '', '', '', '', '', '', '', '');
+(589, '52690343', 'Ademid', 'VELA PAEZ', 'S/E', 'N', 'N/A14', 'Cali', 'N', '', '', '', '', '', '', '', '', '', ''),
+(594, '1006051717', 'Santiagoas', 'Henaoa', '650', 'C,N', '12345', 'calis', 'B', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(595, '1006051715', 'Santiago', 'Henao', '123', 'C,N', '12345', 'cali', 'N', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2406,29 +2418,6 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tipo`
---
-
-CREATE TABLE `tipo` (
-  `ID` int(10) NOT NULL,
-  `username` varchar(100) NOT NULL,
-  `pass` varchar(12) NOT NULL,
-  `correo` varchar(255) NOT NULL,
-  `rol` varchar(20) NOT NULL,
-  `activo` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tipo`
---
-
-INSERT INTO `tipo` (`ID`, `username`, `pass`, `correo`, `rol`, `activo`) VALUES
-(1, 'Admin', '123456', 'tesoreria@coopserp.com', 'Administrador', 1),
-(53, 'Consultante', '123', 'santicashe0920@gmail.com', 'Consultante', 1);
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `users`
 --
 
@@ -2439,6 +2428,7 @@ CREATE TABLE `users` (
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `rol` varchar(255) NOT NULL,
+  `activo` varchar(255) NOT NULL DEFAULT '1',
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2448,10 +2438,12 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `rol`, `remember_token`, `created_at`, `updated_at`) VALUES
-(21, 'Admin', 'Admin@gmail.com', NULL, '$2y$10$SE7fdEqzht.C20ESRfl2O.pu28g5LLA/IVFKAW5t0D0ujggWxVwWy', 'Admin', NULL, '2023-05-08 11:14:24', '2023-05-08 11:14:24'),
-(23, 'Santiago Henao', 'santicashe0920@gmail.com', NULL, '$2y$10$5Qc6sDHwLN5mfbKQ4SaSSe4Th9Ghxnqg1XjH3J2mndZ9a/Q8irFTK', 'Asociacion', NULL, '2023-05-08 11:37:31', '2023-05-08 11:37:31'),
-(24, 'GIOVANNA HENAO', 'giova01022015@gmail.com', NULL, '$2y$10$JIj71olwVW852KMladoWEuwzjXmc.SB59yy.u3XkswvWywsNd.WBS', 'Proveedor', NULL, '2023-05-08 11:41:35', '2023-05-08 11:41:35');
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `rol`, `activo`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 'Santiago Henao', 'santicashe0920@gmail.com', NULL, '$2y$10$VW509JQT0zQcDbbQ3rDPv.Giznc9r1hudtCLt8wiZMXENhbF0GCm6', 'Admin', '1', NULL, '2023-05-09 11:49:39', '2023-05-09 11:49:39'),
+(8, 'Santiago Henao', 'giova01022015@gmail.com', NULL, '$2y$10$6oCYmKIDawqKjj.9o1SGsO5T2KX/5/7m177Gf6FCety9LRiLWzta.', 'Asociacion', '1', NULL, '2023-05-10 02:35:11', '2023-05-10 02:35:11'),
+(10, 'Giovanna Henao', 'testing@gmail.com', NULL, '$2y$10$gK3Qio8MP3Wgju0co4E08.Lt70Au5BIkVlHNpDvVsfL.FJUJVu2Uq', 'Credito', '1', NULL, '2023-05-10 03:26:30', '2023-05-10 03:26:30'),
+(11, 'Giovanna Henao', 'sando@gmail.com', NULL, '$2y$10$ry3VGHAaqBFxOplUg4N1k.IKM2kEue6FuRdt3dFKWb/yamN4sjp/K', 'Proveedor', '1', NULL, '2023-05-10 03:28:27', '2023-05-10 03:28:27'),
+(12, 'Juan Jose Sandoval', 'sandoval@gmail.com', NULL, '$2y$10$Qmqu87dv1nKTJIVIXzP2Ee5QYRkO3r8roxY3OMdGy3oZ88PwNA/k2', 'Consultante', '1', NULL, '2023-05-10 04:36:21', '2023-05-10 04:36:21');
 
 --
 -- Índices para tablas volcadas
@@ -2498,12 +2490,6 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
--- Indices de la tabla `tipo`
---
-ALTER TABLE `tipo`
-  ADD PRIMARY KEY (`ID`);
-
---
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
@@ -2518,13 +2504,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `documentopn`
 --
 ALTER TABLE `documentopn`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=685;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=691;
 
 --
 -- AUTO_INCREMENT de la tabla `documentosintesis`
 --
 ALTER TABLE `documentosintesis`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=685;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=691;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -2536,7 +2522,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=590;
+  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=596;
 
 --
 -- AUTO_INCREMENT de la tabla `personal_access_tokens`
@@ -2545,16 +2531,10 @@ ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `tipo`
---
-ALTER TABLE `tipo`
-  MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
-
---
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

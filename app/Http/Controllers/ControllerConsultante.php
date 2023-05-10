@@ -132,9 +132,11 @@ public function imprimir($id)
         $nombre_archivo4 = '../files/sintesis/'.$resultado->Cedula.'-'.$resultado->Apellidos.'.pdf';
         
         
-        $url_qr = 'Proyecto/controllers/descargar.php?qr='.$resultado->ID;
+        $url_qr = 'Storage/files/temp/qr-'.$resultado->ID;
+        
         
         QrCode::format('png')->generate('Welcome to Makitweb');
+        
 
         // Store QR code for download
         
@@ -144,6 +146,7 @@ public function imprimir($id)
         // QrCode::format('png')->size(25)->generate('/asociacion')->save('Storage/files/temp/QR-'.$nombre_archivo);
         // Agregar código QR al PDF
         // $fpdf->Image('Storage/files/temp/QR-'.$nombre_archivo.'.png', 2, 105, 100, 100);
+        $fpdf->Image("Img/adquisitivo.png", 2, 105, 100, 100);
         $fpdf->Ln();
         $fpdf->SetFont('Helvetica', 'B',48);
         $fpdf->Cell(72,40,'Agencia: ');
