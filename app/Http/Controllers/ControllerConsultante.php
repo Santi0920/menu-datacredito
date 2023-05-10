@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+
 class ControllerConsultante extends Controller
 {
         //listar
@@ -129,11 +130,16 @@ public function imprimir($id)
         $nombre_archivo2 = '../files/pn/PN-'.$resultado->Cedula.'.pdf';
         $nombre_archivo3 = '../files/sintesis/'.$resultado->Cedula.'-'.$resultado->Apellidos.'.pdf';
         $nombre_archivo4 = '../files/sintesis/'.$resultado->Cedula.'-'.$resultado->Apellidos.'.pdf';
+        
+        
         $url_qr = 'Proyecto/controllers/descargar.php?qr='.$resultado->ID;
+        
+        QrCode::format('png')->generate('Welcome to Makitweb');
 
-  
+        // Store QR code for download
+        
         //QRcode::png($url_qr, 'Storage/temp/'.$nombre_archivo.'.png', QR_ECLEVEL_L, 5);
-
+        
         
         // QrCode::format('png')->size(25)->generate('/asociacion')->save('Storage/files/temp/QR-'.$nombre_archivo);
         // Agregar código QR al PDF

@@ -20,6 +20,6 @@ class AdminAuth
             return $next($request);
             }
         }
-        return redirect()->to('index');
+        return redirect()->to('inicia-sesion');
     }
 }

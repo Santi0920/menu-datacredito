@@ -22,18 +22,34 @@ use App\Http\Controllers\SessionsController;
 Route::get('index', function () {
     return view('index');
 });
-//CONSULTANTE
-Route::get('consultante', [ControllerConsultante::class, 'listar'])
-->name('consultante.listar');
-
-Route::get('consultante/imprimir-{id}', [ControllerConsultante::class, 'imprimir'])
-->name('consultante.imprimir');
 
 
+//LOGIN
+Route::get('inicia-sesion', [SessionsController::class, 'login'])
+->middleware('guest')
+->name('login.index');
+
+Route::post('inicia-sesion', [SessionsController::class, 'admin'])
+->name('login.admin');
+
+Route::post('inicia-sesion', [SessionsController::class, 'asociacion'])
+->name('login.asociacion');
+
+Route::post('inicia-sesion', [SessionsController::class, 'credito'])
+->name('login.credito');
+
+Route::post('inicia-sesion', [SessionsController::class, 'consultante'])
+->name('login.consultante');
+
+
+Route::get('logout', [SessionsController::class, 'destroy'])
+->middleware('auth')
+->name('login.destroy');
 
 
 //ADMIN
 Route::get('datacredito', [CRUDAdmin::class, 'list'])
+->middleware('auth.admin')
 ->name('crud.list');
 
 
@@ -67,26 +83,16 @@ Route::get('datacredito/eliminar_rol-{id}', [CRUDAdmin::class, 'eliminarRol'])
 ->name('rol.delete');
 
 
-//LOGIN
-Route::get('inicia-sesion', [SessionsController::class, 'login'])
-->middleware('guest')
-->name('login.index');
 
-Route::post('inicia-sesion', [SessionsController::class, 'store'])
-->name('login.store');
-
-Route::get('logout', [SessionsController::class, 'destroy'])
-->middleware('auth')
-->name('login.destroy');
 
 
 
 
 
 //ASOCIACION
-Route::get('asociacion', [CRUDAsociacion::class, 'list'])->name('crud2.list');
-// ->middleware('auth.admin')
-// ->name('crud.list');
+Route::get('asociacion', [CRUDAsociacion::class, 'list'])
+->middleware('auth.asociacion')
+->name('crud2.list');
 
 
 Route::post('asociacion/registrar_persona', [CRUDAsociacion::class, 'create'])
@@ -105,8 +111,10 @@ Route::get('asociacion/eliminar_persona-{id}', [CRUDAsociacion::class, 'delete']
 
 //CREDITO
 
-Route::get('credito', [CRUDCredito::class, 'list'])->name('crud3.list');
-// ->middleware('auth.admin')
+Route::get('credito', [CRUDCredito::class, 'list'])
+->middleware('auth.credito')
+->name('crud3.list');
+
 // ->name('crud.list');
 
 
@@ -120,3 +128,12 @@ Route::post('credito/modificar_persona-{id}', [CRUDCredito::class, 'update'])
 
 Route::get('credito/eliminar_persona-{id}', [CRUDCredito::class, 'delete'])
 ->name('crud3.delete');
+
+
+//CONSULTANTE
+Route::get('consultante', [ControllerConsultante::class, 'listar'])
+->middleware('auth.consultante')
+->name('consultante.listar');
+
+Route::get('consultante/imprimir-{id}', [ControllerConsultante::class, 'imprimir'])
+->name('consultante.imprimir');

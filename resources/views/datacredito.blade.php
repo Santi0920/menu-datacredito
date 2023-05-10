@@ -111,7 +111,7 @@
             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                 <button type="button" data-bs-dismiss="modal" class="btn-close p-3" aria-label="Close"></button>
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" >
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                         
                         <h1 class="modal-title text-center fw-semibold" id="modificar">AGREGAR ROL</h1>
     
@@ -121,13 +121,14 @@
                     <div class="modal-body">
         
                     
-                    <div>
+                    <div style="max-height: 12.5rem; overflow: auto;">
                     <table class="table">
                         <thead class="" style="background-color: #005E56;">
                           <tr class="text-white">
                             
                             <th scope="col">USUARIO</th>
                             <th>ROL</th>
+                            {{-- <th>EMAIL</th> --}}
                             <th></th>
                             <th></th>
                             <th></th>
@@ -142,8 +143,8 @@
                             @foreach($datos2 as $item)
                             <tr>
                             
-                            <td>{{$item->name}}</td>
-                            <td>{{$item->rol}}</td>
+                            <td title="{{ $item->email }}">{{$item->name}}</td>
+                            <td title="{{ $item->email }}">{{$item->rol}}</td>
                             <td><a onclick="return eliminar()" type="submit" href="{{route("rol.activo",$item->id)}}" name="activar" id="activar" class="btn btn-small btn-warning">Activar</a></td>
                             <td><a onclick="return eliminar()" type="submit" href="{{route("rol.desactivar",$item->id)}}" name="desactivar" id="desactivar" class="btn btn-small btn-secondary">Desactivar</a></td>
                             <td><a onclick="return eliminar()" href="{{route("rol.delete",$item->id)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></td>
@@ -153,9 +154,9 @@
                           </tbody>
                     </table>
                     </div>
-                   
+                   <hr>
                 <!--Label1-->  
-                <div class="mb-3">
+                <div class="mb-3 mt-3">
                     <label for="label" id="consul1" class="form-label fw-bold" value="">NOMBRE COMPLETO</label>
                     <input type="text" class="form-control" name="name" id="name" required>
                     <div id="nameError" style="color: red;" class="fw-bold"></div>
@@ -243,7 +244,7 @@
                 </script>
 
               <div class="mb-3 w-100">
-                <label for="estado" class="form-label fw-bold" class="consul7">ROL<span class="text-danger" style="font-size:20px;"></label>
+                <label for="estado" class="form-label fw-bold" style="margin-left: -93%;">ROL<span class="text-danger" style="font-size:20px;"></label>
                 <select class="form-control " name="rol" id="rol" required>
                   <option value="">Seleccione una opción</option>
                   <option value="Proveedor">Consultante</option>
@@ -383,10 +384,10 @@ $(document).ready(function() {
   $('#score').on('input', function() {
     var scoreVal = $(this).val().toUpperCase();
     if (scoreVal === 'S/E') {
-      $('#archivo3, #NombrePN, #NombreS').val('');
-      $('#archivo3, #NombrePN, #NombreS').prop('disabled', true);
+      $('#NombrePN, #NombreS').val('');
+      $('#NombrePN, #NombreS').prop('disabled', true);
     } else {
-      $('#archivo3, #NombrePN, #NombreS').prop('disabled', false);
+      $('#NombrePN, #NombreS').prop('disabled', false);
     }
   });
 });
@@ -1051,7 +1052,7 @@ $(document).ready(function() {
   
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold">FECHA</label>
-                  <input type="date" class="form-control" name="fecha3" min="2022-08-01" max="'.$max_date.'" value="{{$item->FechaInsercion}}" required>
+                  <input type="date" class="form-control" name="fecha3" id="fecha3" min="2022-08-01" max="{{$max_date}}" value="{{$item->FechaInsercion}}" required>
                 </div>
   
               <div class="mb-3">
@@ -1070,12 +1071,12 @@ $(document).ready(function() {
   
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
-                <input type="file" class="form-control" name="archivo22" accept="application/pdf" value="">
+                <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="{{$item->NombreS}}">
               </div> 
               
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
-                  <input type="file" class="form-control" name="archivo11" accept="application/pdf" value="">
+                  <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="{{$item->NombrePN}}">
                   </div>
                   
                   {{-- <div class="mb-3 w-100">
@@ -1209,7 +1210,7 @@ $(document).ready(function() {
     
     </script>
 
-    <script>
+    {{-- <script>
        function validateForm3() {
               var nombreInput = document.getElementById('name');
               var nombreError2 = document.getElementById('nameError');
@@ -1243,7 +1244,7 @@ $(document).ready(function() {
               }
               return true;
             }
-    </script>
+    </script> --}}
 
           </div>
         </div>

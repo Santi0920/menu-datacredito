@@ -220,10 +220,10 @@ $(document).ready(function() {
   $('#score').on('input', function() {
     var scoreVal = $(this).val().toUpperCase();
     if (scoreVal === 'S/E') {
-      $('#archivo3, #NombrePN, #NombreS').val('');
-      $('#archivo3, #NombrePN, #NombreS').prop('disabled', true);
+      $('#NombrePN, #NombreS').val('');
+      $('#NombrePN, #NombreS').prop('disabled', true);
     } else {
-      $('#archivo3, #NombrePN, #NombreS').prop('disabled', false);
+      $('#NombrePN, #NombreS').prop('disabled', false);
     }
   });
 });
