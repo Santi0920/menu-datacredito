@@ -15,8 +15,8 @@ class ConsultanteAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check()) {
-            if (auth()->user()->rol == 'Consultante') {
+        if(auth()->check()) {
+            if(auth()->user()->rol == 'Consultante'){
                 return $next($request);
             }
         }

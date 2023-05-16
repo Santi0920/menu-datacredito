@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 
+
 class SessionsController extends Controller
 {
     //
@@ -12,64 +13,28 @@ class SessionsController extends Controller
         return view("login");
     }
 
-    public function admin() {
-        if(auth()->attempt(request(['email', 'password']))== false){
-            return back()->withErrors([
-                'message' => 'El usuario o la contraseña es incorrecto!'
-            ]);
-        }else{
-            if(auth()->user()->rol == 'Admin'){
-                return redirect()->route('crud.list');
-            }else{
-                return redirect()->to('inicia-sesion');
-            }
-        }
-        
-    }
+    public function login_post() {
 
-    public function asociacion() {
         if(auth()->attempt(request(['email', 'password']))== false){
             return back()->withErrors([
                 'message' => 'El usuario o la contraseña es incorrecto!'
             ]);
-        }else{
-            if(auth()->user()->rol == 'Asociacion'){
-                return redirect()->to('asociacion');
-            }else{
-                return redirect()->to('inicia-sesion');
-            }
         }
-        
-    }
 
-    public function credito() {
-        if(auth()->attempt(request(['email', 'password']))== false){
-            return back()->withErrors([
-                'message' => 'El usuario o la contraseña es incorrecto!'
-            ]);
-        }else{
-            if(auth()->user()->rol == 'Credito'){
-                return redirect()->to('credito');
-            }else{
-                return redirect()->to('inicia-sesion');
-            }
+        if(auth()->user()->rol == 'Admin'){
+            return redirect()->route('crud.list');
+        }elseif(auth()->user()->rol == 'Asociacion'){
+            return redirect()->route('crud2.list');
+        }elseif(auth()->user()->rol == 'Credito'){
+            return redirect()->to('credito');
+        }elseif(auth()->user()->rol == 'Consultante'){
+            return redirect()->to('consultante');
+        }elseif(auth()->user()->rol == 'Proveedor'){
+            return redirect()->to('proveedor');
         }
-        
-    }
-
-    public function consultante() {
-        if(auth()->attempt(request(['email', 'password']))== false){
-            return back()->withErrors([
-                'message' => 'El usuario o la contraseña es incorrecto!'
-            ]);
-        }else{
-            if(auth()->user()->rol == 'Consultante'){
-                return redirect()->to('consultante');
-            }else{
-                return redirect()->to('inicia-sesion');
-            }
-        }
-        
+    
+        return redirect()->to('inicia-sesion');
+      
     }
 
     public function destroy(){

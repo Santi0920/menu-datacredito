@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
 
 
 class ControllerConsultante extends Controller
@@ -24,6 +25,84 @@ class ControllerConsultante extends Controller
             
             return view("consultante")->with("datos", $datos);
         }
+
+        public function descargar($id, Request $request)
+        {
+            $sql = DB::select("SELECT persona.ID, persona.Cedula, documentosintesis.NombreS, documentopn.NombrePN, documentot.NombreT, documentot.Tipof
+                FROM persona
+                INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_Persona
+                INNER JOIN documentopn ON documentosintesis.ID = documentopn.ID_Persona
+                INNER JOIN documentot ON documentosintesis.ID = documentot.ID_Persona
+                WHERE persona.ID = $id");
+        
+            $Cedula = DB::select("SELECT Cedula FROM persona WHERE ID = ?", [$id]);
+            $CedulaPersona = $Cedula[0]->Cedula;
+            $rutaticket = "Storage/files/tickets/Ticket-" . $CedulaPersona . ".pdf";
+        
+            $NombreS = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+            $NombreSintesis = $NombreS[0]->NombreS;
+            $ruta_sintesis = "Storage/files/sintesis/" . $NombreSintesis;
+        
+            $Nombre = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
+            $NombrePN = $Nombre[0]->NombrePN;
+            $ruta_pn = "Storage/files/pn/" . $NombrePN;
+        
+            $Nombret = DB::select("SELECT NombreT FROM documentot WHERE ID_Persona = ?", [$id]);
+            $NombreT = $Nombret[0]->NombreT;
+        
+            $tipo = DB::select("SELECT Tipof FROM documentot WHERE ID_Persona = ?", [$id]);
+            $TipoF = $tipo[0]->Tipof;
+            if ($TipoF == "T1") {
+                $ruta_t = "Storage/files/t1/" . $NombreT;
+            } elseif ($TipoF == "T2") {
+                $ruta_t = "Storage/files/t2/" . $NombreT;
+            }
+        
+            if (file_exists(public_path($rutaticket))) {
+                echo "<a href='" . asset($rutaticket) . "' download id='enlace-descarga1'></a>";
+            }
+        
+            if (file_exists(public_path($ruta_sintesis))) {
+                echo "<a href='" . asset($ruta_sintesis) . "' download id='enlace-descarga2'></a>";
+            }
+        
+            if (file_exists(public_path($ruta_pn))) {
+                echo "<a href='" . asset($ruta_pn) . "' download id='enlace-descarga3'></a>";
+            }
+        
+            if (file_exists(public_path($ruta_t))) {
+                echo "<a href='" . asset($ruta_t) . "' download id='enlace-descarga4'></a>";
+            }
+            
+        
+            echo '<script>
+                    if (document.getElementById("enlace-descarga1")) {
+                        document.getElementById("enlace-descarga1").click();
+                    }
+                    if (document.getElementById("enlace-descarga2")) {
+                        document.getElementById("enlace-descarga2").click();
+                    }
+                    if (document.getElementById("enlace-descarga3")) {
+                        document.getElementById("enlace-descarga3").click();
+                    }
+                    if (document.getElementById("enlace-descarga4")) {
+                        document.getElementById("enlace-descarga4").click();
+                    }
+                    setTimeout(function() {
+                        window.location.href = "http://localhost/menu_datacredito/public/index";
+                    }, 100);
+                </script>';
+              
+        }
+
+
+        
+           
+            
+            
+        
+    
+
 
 public function imprimir($id)
     {
@@ -126,15 +205,14 @@ public function imprimir($id)
 
 
 
-    $nombre_archivo = $resultado->Cedula;
-        $nombre_archivo2 = '../files/pn/PN-'.$resultado->Cedula.'.pdf';
-        $nombre_archivo3 = '../files/sintesis/'.$resultado->Cedula.'-'.$resultado->Apellidos.'.pdf';
-        $nombre_archivo4 = '../files/sintesis/'.$resultado->Cedula.'-'.$resultado->Apellidos.'.pdf';
+    
         
         
-        $url_qr = 'Proyecto/controllers/descargar.php?qr='.$resultado->ID;
+        $url_qr = 'Storage/files/temp/qr-'.$resultado->ID;
         
-        QrCode::format('png')->generate('Welcome to Makitweb');
+        QrCode::format('png')->generate('http://localhost/menu_datacredito/public/consultante/descargar-'.$id ,public_path('Storage/files/tickets/qr/QR-'.$id.'.png'));
+   
+        
 
         // Store QR code for download
         
@@ -144,6 +222,7 @@ public function imprimir($id)
         // QrCode::format('png')->size(25)->generate('/asociacion')->save('Storage/files/temp/QR-'.$nombre_archivo);
         // Agregar código QR al PDF
         // $fpdf->Image('Storage/files/temp/QR-'.$nombre_archivo.'.png', 2, 105, 100, 100);
+        $fpdf->Image("Storage/files/tickets/qr/QR-".$id.".png", 15, 107, 90, 90);
         $fpdf->Ln();
         $fpdf->SetFont('Helvetica', 'B',48);
         $fpdf->Cell(72,40,'Agencia: ');

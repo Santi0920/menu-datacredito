@@ -15,8 +15,8 @@ class AsociacionAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check()) {
-            if (auth()->user()->rol == 'Asociacion') {
+        if(auth()->check()) {
+            if(auth()->user()->rol == 'Asociacion'){
                 return $next($request);
             }
         }

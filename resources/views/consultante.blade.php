@@ -112,6 +112,7 @@
                     <img src="img/pdf.png" style="height: 3.5rem;"> GENERAR PDF
                   </p>
                 </a>
+          
               </td>
               <td style="font-size: 2.8125rem;" class="fw-semibold">{{$item->Agencia}}</td>
             </tr>

@@ -26,21 +26,11 @@ Route::get('index', function () {
 
 //LOGIN
 Route::get('inicia-sesion', [SessionsController::class, 'login'])
-->middleware('guest')
+//->middleware('guest')
 ->name('login.index');
 
-Route::post('inicia-sesion', [SessionsController::class, 'admin'])
-->name('login.admin');
-
-Route::post('inicia-sesion', [SessionsController::class, 'asociacion'])
-->name('login.asociacion');
-
-Route::post('inicia-sesion', [SessionsController::class, 'credito'])
-->name('login.credito');
-
-Route::post('inicia-sesion', [SessionsController::class, 'consultante'])
-->name('login.consultante');
-
+Route::post('inicia-sesion', [SessionsController::class, 'login_post'])
+->name('login');
 
 Route::get('logout', [SessionsController::class, 'destroy'])
 ->middleware('auth')
@@ -48,10 +38,13 @@ Route::get('logout', [SessionsController::class, 'destroy'])
 
 
 //ADMIN
+
 Route::get('datacredito', [CRUDAdmin::class, 'list'])
 ->middleware('auth.admin')
 ->name('crud.list');
 
+
+Route::get('datacredito/datatable', [CRUDAdmin::class, 'data'])->name('datatable.admin');
 
 Route::post('datacredito/crear', [CRUDAdmin::class, 'create'])
 ->name('crud.create');
@@ -137,3 +130,6 @@ Route::get('consultante', [ControllerConsultante::class, 'listar'])
 
 Route::get('consultante/imprimir-{id}', [ControllerConsultante::class, 'imprimir'])
 ->name('consultante.imprimir');
+
+Route::get('consultante/descargar-{id}', [ControllerConsultante::class, 'descargar'])
+->name('consultante.descargar');

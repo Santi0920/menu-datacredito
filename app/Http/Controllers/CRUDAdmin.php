@@ -9,22 +9,30 @@ use App\Models\User;
 
 class CRUDAdmin extends Controller
 {
-    //listar
-    public function list()
-    {
 
-
-        $datos = DB::select("
+    public function data(){
+        $user = DB::select("
         SELECT A.ID, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado,
         A.Reporte, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT 
         FROM persona
         A JOIN documentosintesis B ON A.ID = B.ID_Persona JOIN documentopn C ON B.ID_Persona = C.ID_Persona JOIN documentot
         D ON C.ID_Persona = D.ID_Persona ORDER BY Nombre ASC");
 
+        return datatables()->of($user)->toJson();
 
+
+    }
+    public function list()
+    {
+        $datos = DB::select("
+        SELECT A.ID, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado,
+        A.Reporte, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT 
+        FROM persona
+        A JOIN documentosintesis B ON A.ID = B.ID_Persona JOIN documentopn C ON B.ID_Persona = C.ID_Persona JOIN documentot
+        D ON C.ID_Persona = D.ID_Persona ORDER BY Nombre ASC");
         $datos2 = DB::select("SELECT * FROM users WHERE rol = 'consultante' OR rol = 'asociacion' OR rol = 'credito' OR rol = 'proveedor'");
-        $max_date = date(DATE_ATOM);
-        return view("datacredito", compact("datos", "datos2"));
+        
+        return view("datacredito", compact("datos","datos2"));
     }
 
 
@@ -59,18 +67,19 @@ class CRUDAdmin extends Controller
             }
         }
 
-        if ($request->hasFile('NombreT') != null) {
-            $file3 = $request->file('NombreT');
-            $filename3 =  $file3->getClientOriginalName();
-            $tipo = $request->Tipof;
-            $archivo3 = DB::select("SELECT NombreT, Tipof FROM documentot WHERE NombreT = ?", [$filename3]);
-
-            if (!empty($archivo3)) {
-                return back()->withErrors([
-                    'message' => 'El archivo FORMATO ' . $tipo . ' - "' . $filename3 . '" ya existe!'
-                ]);
+            if ($request->hasFile('NombreT') != null) {
+                $file3 = $request->file('NombreT');
+                $filename3 =  $file3->getClientOriginalName();
+                $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE NombreT = ?", [$filename3]);
             }
-        } else {
+                if (!empty($archivo3)) {
+                    return back()->withErrors([
+                        'message' => 'El archivo con Formato '.$request->Tipof.' - "' . $filename3 . '" ya existe!'
+                    ]);
+                    
+                
+            }
+         else {
             // if ($request->Score > 950) {
             //     $request->Score = 950;
             // }
@@ -94,16 +103,17 @@ class CRUDAdmin extends Controller
 
                 $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
                     $request->FechaInsercion,
-                    $filename ?? null,
+                    $filename ?? "Vacío",
                     $idPersona
                 ]);
             } else {
                 $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
                     $request->FechaInsercion,
-                    null,
+                    "Vacío",
                     $idPersona
                 ]);
             }
+            
 
             if ($request->hasFile('NombrePN')) {
                 $file = $request->file('NombrePN');
@@ -112,21 +122,21 @@ class CRUDAdmin extends Controller
                 $uploadSucces = $request->file('NombrePN')->move($dir, $filename);
 
                 $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                    $filename ?? null,
+                    $filename ?? "Vacío",
                     $idPersona
                 ]);
             } else {
                 $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                    null,
+                    "Vacío",
                     $idPersona
                 ]);
             }
-
             if ($request->hasFile('NombreT')) {
                 $file = $request->file('NombreT');
                 $filename2 =  $file->getClientOriginalName();
                 $dir3 = "";
                 $ruta_carga3 = "";
+                
 
                 if ($request->Tipof == "T1") {
                     $dir3 = "Storage/files/t1/";
@@ -154,6 +164,13 @@ class CRUDAdmin extends Controller
                     $idPersona
                 ]);
             }
+
+
+            
+
+
+         
+
 
             if ($sql && $sql2 && $sql3 && $sql4) {
                 return back()->with("correcto", "Persona Registrada correctamente!");
