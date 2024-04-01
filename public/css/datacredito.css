@@ -1,3 +1,41 @@
+
+.lista {
+    text-decoration: none;
+    color: white; 
+  }
+  .menu-bar{
+    background-color: #005E56;
+    text-align: center;
+    
+
+  }
+
+  .active:hover{
+    background: #005e566d;
+    border-radius: 0px;
+} 
+.dropdown .dropdown-menu{
+    display: none;
+    
+}
+.dropdown:hover > .dropdown-menu, .dropend:hover > .dropdown-menu {
+    display: block;
+    margin-top: -3%;
+    margin-left: 0%;
+    padding: 15px;
+
+}
+@media screen and (min-width:769px){
+    .dropend:hover > .dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 99%;
+        margin-left: .125em;
+    }
+}
+
+
+
 .size25{
     font-size: 1.5625rem;
 }
@@ -72,7 +110,7 @@
     border-color: #fff;
     display: inline-block;
   transform-origin: center bottom;
-  animation: rebote 2.0s ease infinite;
+  animation: rebote 2.0s ease;
 
     }
     @keyframes rebote {
@@ -181,6 +219,22 @@ margin-left: -58%;
 #izquierda12{
     margin-left: -73%;
 }
+
+#izquierda13{
+    margin-left: -85%;
+}
+
+#izquierda14{
+    margin-left: -58%;
+}
+
+#izquierda15{
+    margin-left: -63%;
+}
+
+#izquierda16{
+    margin-left: -71%;
+}
  
  
 hr {
@@ -195,23 +249,21 @@ width: 100%;margin-left: auto;margin-right: auto; margin-top: auto;
 }
 
 
-
-.agregar a{
-display: block;
-text-decoration: none;
-background: #005E56;
-color: #fff;
-width: 4.0625rem;
-height: 4.0625rem;
-line-height: 4.0625rem;
-text-align: center;
-font-size: 1.875rem;
-border-radius: 50%;
-box-shadow: 0rem 0.0625rem 0.625rem rgba(0,0,0,0.4);
-transition: all 500ms ease;
-border-color: #fff;
-
-}
+.agregar a {
+    display: block;
+    text-decoration: none;
+    background: #005E56;
+    color: #fff;
+    width: 4.0625rem;
+    height: 4.0625rem;
+    line-height: 4.0625rem;
+    text-align: center;
+    font-size: 1.875rem;
+    border-radius: 50%;
+    border: 1px solid #fff; /* Cambiado a 'border' en lugar de 'border-color' */
+    box-shadow: 0rem 0.0625rem 0.625rem rgba(0, 0, 0, 0.4);
+    transition: all 500ms ease;
+  }
 
 .cuenta-input {
     caret-color: transparent;
@@ -219,6 +271,7 @@ border-color: #fff;
 .agregar a:hover{
     background: #6cd0cb;
     color: #005E56;
+    
 }
 #consul1{
     margin-left: -62%;

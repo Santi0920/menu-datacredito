@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" >
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="img/logoo.png" type="image/png">
     <script src="ResourcesAll/jquery/jquery-3.6.0.js"></script>
     <script src="ResourcesAll/jquery/jquery-ui.js"></script>
-    <link rel="stylesheet" href="css/Bootstrap/jquery-1.13.css">
+    
     <script src="ResourcesAll/fontawesome/fontawesome.js"></script>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <script src="ResourcesAll/Sweetalert/sweetalert2.js"></script>
@@ -17,74 +17,61 @@
     <link rel="stylesheet" href="ResourcesAll/Bootstrap/Bootstrap2.css">
     <link rel="stylesheet" href="ResourcesAll/Bootstrap/dataTablesbootstrap5.css">
     <style>@media print {@page {size: landscape;}}</style>
+    <script src="js/index.js" defer></script>
   </head>
   
   
-  <body>
+  <body data-bs-theme="auto">
 
-    <!-- HEADER DEL CONTACTO-->
-      <header class="container-fluid d-flex justify-content-center top-fixed text-white" style="background-color: #005E56;">
-        <p class="mb-0 p-2 fs-6">Contáctame 321-871-2282</p>
-      </header>
+
       
-      <!-- NAV DE LISTA-->
-      <a name="arriba"></a>
-      <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-        <div class="container-fluid">
-          <!-- Coopserp.com-->
-          
-          <!-- Botón que aparece al reducir pantalla--> 
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-          </button>
-    
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <!-- Foto Coopserp--> 
-        <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2">
-          
-        
-        <ul class="navbar-nav me-auto mb-lg-0 header">        
-            <!-- DataCreditos-->       
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active text-primary text-opacity-50" href="#" id="data" role="button" data-bs-toggle="dropdown" aria-expanded="false">Datacredito</a>
-                <ul class="dropdown-menu" aria-labelledby="data">
-                    <li><a class="dropdown-item" href="#p">Datacredito Asociación</a></li>
-                    <li><a class="dropdown-item" href="#">Datacredito Crédito</a></li>
-                    <li><a class="dropdown-item" href="#">Datacredito Proveedores</a></li>
-                </ul>
-          </li>
-            <!-- Anticipados-->  
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#" id="data" >Anticipos</a>
-            </li>
-            <!-- Cuentas H-->  
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#" id="data">Cuentas H</a>
-            </li>
-             <!-- Cartera Castigada-->  
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#" id="data">Cartera Castigada</a>
-            </li>
-            <!-- Fondo de Garantia-->
-            <li class="nav-item" >
-              <a class="nav-link active" aria-current="page" href="#" id="data">Fondo de Garantía</a>
-            </li>
-          </ul>
-          
-          <span class="mx-4" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-3" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
-          <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-outline-success"><b style="font-size: 18px;">Cerrar Sesión</b></button></a>
-
-         
+      <div class="contenedor2">
+        <div class="agregar2">
+          <a href="datacredito.php" class="btn btn-primary" style="font-size: 35px;font-family: 'Montserrat', sans-serif; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+            <span style="margin-bottom: 30px; margin-top: 20px;">V1</span>
+          </a>
         </div>
       </div>
-    </nav>
-
-    <div class="">
+      
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 600px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-semibold text-center"  style="font-size: 2.5rem; margin-left: 30%;" id="exampleModalLabel3">VERSIÓN #1.3</h5>
+              <button type="button" data-bs-dismiss="modal" class="btn-close p-3" aria-label="Close"></button>
+            </div>
+            <div class="modal-body texto-justificado">
+              <!-- Contenido del modal -->
+              <p style="font-size: 20px;" class="text-justify">
+              Esta  aplicación fue creada para el control en la generación de datacréditos.
+              </p>
+              <ul style="font-size: 20px; text-justify:distribute-all-lines" class="">
+                <li><strong>Se adicionó en la parte superior derecha cambio del color de fondo(claro,oscuro, automatico).</strong></li>
+                <li>El datacrédito tiene vigencia de <strong>180 días/6 meses</strong>.</li>
+                <li>El campo agencia <strong>desaparece</strong>.</li>
+                <li>El sistema genera advertencias una vez los documentos estén <strong>vencidos</strong>.</li>
+                <li>El sistema genera <strong>tickets</strong> con la información de la persona para su posterior impresión.</li>
+                <li>El sistema es compatible con impresora <strong>LabelWriter 450</strong>  con tickets referencia: <strong>30336 1 in x 2-1/8 in</strong> con escala <strong>35</strong>.</li>
+                <li>Propiedad de <strong>COOPSERP</strong>.</li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+            <h5 class="fw-semibold text-secondary" style="font-size: 35px; margin-right: 48%;">Enero 2024</h5>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="font-size: 20px;">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div>
+      @yield('nav')
+    </div>
+    <div class="" >
         @yield('content')
     </div>
          
     <!-- Pie de pagina -->
-            <footer>
+            <footer class="mt-2">
             <div class="container-fluid">
               <div class="row p-5 pb-2 text-white text-left" style="background-color: #005E56;">
       
@@ -99,16 +86,16 @@
                     <a href="#arriba" class="text-light text-decoration-none">Datacrédito</a>
                   </div>
                   <div class="mb-2">
-                    <a href="./anticipos.php" class="text-light text-decoration-none">Anticipos</a>
+                    <a href="#" class="text-light text-decoration-none">Anticipos</a>
                   </div>
                   <div class="mb-2">
-                    <a href="./cuentash.php" class="text-light text-decoration-none">Cuentas H</a>
+                    <a href="#" class="text-light text-decoration-none">Cuentas H</a>
                   </div>
                   <div class="mb-2">
-                    <a href="./carteracastigada.php" class="text-light text-decoration-none">Cartera Castigada</a>
+                    <a href="#" class="text-light text-decoration-none">Cartera Castigada</a>
                   </div>
                   <div class="mb-2">
-                    <a href="./fgarantia.php" class="text-light text-decoration-none">Fondo de Garantía</a>
+                    <a href="#" class="text-light text-decoration-none">Fondo de Garantía</a>
                   </div>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-3">
@@ -132,7 +119,7 @@
                     <a href="https://github.com/Santi0920/Coopserp" class="text-light text-decoration-none">Github</a>
                   </div>
                 </div>
-                <p class="text-center text-white mt-4">Coopserp Web &copy; 2023 Diseñado y Desarrollado por <a class="text-warning text-decoration-none fw-semibold" href="https://github.com/Santi0920">Santiago Henao</a></p>
+                <p class="text-center text-white mt-4">Coopserp Web &copy; 2024 Diseñado y Desarrollado por <a class="text-warning text-decoration-none fw-semibold" target="_blank" href="https://github.com/Santi0920">Santiago Henao</a></p>
               </div>
             </div>
           </footer>

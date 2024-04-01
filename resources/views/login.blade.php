@@ -13,7 +13,37 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   </head>
 <body class="bg-light">
+@if (session("correcto"))
+  <div>
+  <script>
+    Swal.fire
+      ({
+          icon: 'success',
+          title: "{{session('correcto')}}",
+          text: '',
+          confirmButtonColor: '#005E56',
+          timer: 3000
+    
+      });  
+  </script>
+  </div>
+@endif
 
+@if (session("incorrecto"))
+<div>
+  <script>
+    Swal.fire
+      ({
+          icon: 'error',
+          title: "{{session('incorrecto')}}",
+          text: '',
+          confirmButtonColor: '#005E56',
+          timer: 10000
+    
+      });  
+  </script>
+  </div>
+@endif
   <section>
     <div class="row g-0">
       <div class="col-lg-7 d-none d-lg-block">
@@ -49,11 +79,11 @@
              @csrf
             <div class="mb-4">
               <label for="exampleInputEmail1" class="form-label fw-bold fs-5" style="color: #005E56;">Correo Electrónico</label>
-              <input type="text" class="form-control fs-6" name="email" id="email" placeholder="Email" aria-describedby="emailHelp">
+              <input type="text" class="form-control fs-6" name="email" id="email" placeholder="Email" aria-describedby="emailHelp" required>
             </div>
             <div class="mb-4">
               <label for="exampleInputPassword1" class="form-label fw-bold fs-5" style="color: #005E56;">Contraseña</label>
-              <input type="password" class="form-control bg-light-x fs-6" name="password" id="password" placeholder="Contraseña">
+              <input type="password" class="form-control bg-light-x fs-6" name="password" id="password" placeholder="Contraseña" required>
             </div>
             @error('message')
             <div>
@@ -69,18 +99,16 @@
               </script>
               </div>
             @enderror
-
-            <div class="mt-2 fs-5 finalizar">
-              <a href="../login-system-main/recover_psw.php" class="form-text text-nuted text-decoration-none text-seconday fw-semibold ">¿Has olvidado tu contraseña?</a>
-            </div>
         
-          <button type="submit" class="btn fw-bold fs-5 text-light mt-4 w-100" name="Sesion" style="background-color: #005E56;" value="" id="">INGRESAR</button>
+          <button type="submit" class="btn fw-bold fs-5 text-light mt-4 w-100" name="Sesion" style="background-color: #005E56;" value="" id="Sesion">INGRESAR</button>
           </form>
           
         </div>
       </div>
     </div>
   </section>
+
+
 <!-- script bootstrap -->
 <script src="ResourcesAll/Bootstrap/bootstrap.js"></script>
 <link rel="stylesheet" href="ResourcesAll/Sweetalert/sweetalert2.css">

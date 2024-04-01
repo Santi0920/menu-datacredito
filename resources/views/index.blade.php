@@ -11,14 +11,9 @@
   
   
 <body>
-<!-- HEADER DEL CONTACTO-->
-  <header class="container-fluid d-flex justify-content-center top-fixed text-white" style="background-color: #005E56;">
-    <p class="mb-0 p-2 fs-6">Contáctame 321-871-2282</p>
-  </header>
-  
-  <!-- NAV DE LISTA-->
+    <!-- NAV DE LISTA-->
   <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-    <div class="container-fluid">
+    <div class="container-fluid"  style="background-color: #005E56;">
       <!-- Coopserp.com-->
       
       <!-- Botón que aparece al reducir pantalla--> 
@@ -28,11 +23,11 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <!-- Foto Coopserp--> 
-    <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data"></a>
+    <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2" style="filter: drop-shadow(0 2px 0.8px white);"></a>
       <ul class="navbar-nav me-auto mb-lg-0">        
        
       </ul>
-      <a href="{{route('login.index')}}"><button class="btn btn-outline-success"><b style="font-size: 18px;">Iniciar Sesión</b></button></a>
+      <a href="{{route('login.index')}}"><button class="btn btn-light"><b style="font-size: 25px;">Iniciar Sesión</b></button></a>
     </div>
   </div>
 </nav>
@@ -73,7 +68,7 @@
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active" data-bs-interval="4000">
-            <img src="img/foto2.jpg" class="d-block w-100" alt="CreditoSalud">
+            <img src="img/fondo-datacredito.jpg" class="d-block w-100" alt="CreditoSalud">
           </div>
           
           <div class="carousel-item" data-bs-interval="4000">
@@ -108,39 +103,48 @@
 <!-- Servicios que ofrece la pagina -->
 <section class="container-fluid">
         <h1 class=" mt-2 p-3 fs-2 text-center"><b>Nuestros Servicios Principales</b></h1>
-        
+        <style>
+        .click-transform {
+              transition: transform 0.3s ease;
+        }
+
+        .click-transform:hover {
+              transform: scale(0.8);
+        }
+        </style>
         <div class="row w-75 mx-auto servicio-fila">
           <div class="col-lg-6 col-md-12 col-sm-12 my-5 icono-wrap text-center">
-            <img src="img/adquisitivo.png" class="rounded img-fluid" alt="Datacrédito" width="190" height="210" >
+            <img style="" src="img/adquisitivo.png" class="rounded img-fluid click-transform" alt="Datacrédito" width="190" height="210" >
             <a href="#" class="text-decoration-none">
-            <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center">Datacrédito</h2></a>
+            <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center  fw-bold">Datacrédito</h2></a>
             <p class="px-4 fs-5">Se encarga de almacenar y suministrar información sobre el comportamiento financiero de las <span class="text-success">personas</span> y las <span class="text-success">empresas</span>.</p>
           </div>
           <div class="col-lg-6 col-md-12 col-sm-12 my-5 icono-wrap text-center">
            
-            <img src="img/anticipo.png" class="rounded img-fluid" alt="Anticipos" width="188">
+            <img src="img/anticipo.png" class="rounded img-fluid click-transform" alt="Anticipos" width="188">
             <a href="#" class="text-decoration-none">
-            <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center">Anticipos</h2></a>
-            <p class="px-4 fs-5">Se refiere a un pago que se realiza por adelantado para recibir un <span class="text-success">bien</span> o <span class="text-success">servicio</span>.</p>
+            <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center fw-bold">Aprobación de Créditos</h2></a>
+            <p class="px-4 fs-5">Se encarga de <span class="text-success">aprobar</span> o <span class="text-danger">rechazar</span> los créditos según la fecha de reporte de las nominas.</p>
+            <!-- <p class="px-4 fs-5">Se refiere a un pago que se realiza por adelantado para recibir un <span class="text-success">bien</span> o <span class="text-success">servicio</span>.</p> -->
           </div>
         </div>
 
-        <div class="row w-75 mx-auto servicio-fila">
+        <div class="row w-75 mx-auto servicio-fila d-none">
           <div class="col-lg-6 col-md-12 col-sm-12 my-5 icono-wrap text-center">
-            <img src="img/letter-h.png" class="rounded img-fluid" alt="Cuentas H" width="200" >
+            <img src="img/letter-h.png" class="rounded img-fluid click-transform" alt="Cuentas H" width="200" >
             <a href="#" class="text-decoration-none">
             <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center">Cuentas H</h2></a>
             <p class="px-4 fs-5 text-left">Son aquellas cuentas de asociados que no generan descuento de aportes durante <span class="text-success">6 meses continuos</span>.</p>
           </div>
           <div class="col-lg-6 col-md-12 col-sm-12 my-5 icono-wrap text-center">
-            <img src="img/revisar.png" class="rounded img-fluid" alt="CarteraCastigada" width="196" >
+            <img src="img/revisar.png" class="rounded img-fluid click-transform" alt="CarteraCastigada" width="196" >
             <a href="#" class="text-decoration-none">
             <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center">Cartera Castigada</h2></a>
             <p class="px-4 fs-5 text-left">Son préstamos o créditos concedidos que no están siendo pagados de manera regular y han sido considerados como <span class="text-success">irrecuperables</span>.</p>
           </div>
 
           <div class="col-lg-6 col-md-12 col-sm-12 my-5 icono-wrap text-center" id="centrar">
-            <img src="img/garantia.png" class="rounded img-fluid" alt="FondoGarantia" width="200" >
+            <img src="img/garantia.png" class="rounded img-fluid click-transform" alt="FondoGarantia" width="200" >
             <a href="#" class="text-decoration-none">
             <h2 class="fs-4 mt-4 px-4 pb-1 text-dark text-center">Cartera Castigada</h2></a>
             <p class="px-4 fs-5 text-left">Es un mecanismo de protección que se utiliza para cubrir las <span class="text-success">obligaciones</span>.</p>
