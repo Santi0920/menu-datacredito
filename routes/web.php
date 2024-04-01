@@ -36,139 +36,139 @@ Route::get('index', function () {
 
 //LOGIN
 Route::get('inicia-sesion', [SessionsController::class, 'login'])
-//->middleware('guest')
-->name('login.index');
+    //->middleware('guest')
+    ->name('login.index');
 
 Route::post('inicia-sesion', [SessionsController::class, 'login_post'])
-->name('login');
+    ->name('login');
 
 Route::get('logout', [SessionsController::class, 'destroy'])
-->middleware('auth')
-->name('login.destroy');
+    ->middleware('auth')
+    ->name('login.destroy');
 
 
 //ADMIN
 
 Route::get('admin', [CRUDAdmin::class, 'view'])
-->middleware('auth.admin')
-->name('crud.list');
+    ->middleware('auth.admin')
+    ->name('crud.list');
 
 Route::get('admin/datatable', [CRUDAdmin::class, 'data'])
-->middleware('auth.admin')
-->name('datatable.admin');
+    ->middleware('auth.admin')
+    ->name('datatable.admin');
 
 Route::get('admin/datatable2', [CRUDAdmin::class, 'data2'])
-->middleware('auth.admin')
-->name('datatable2.admin');
+    ->middleware('auth.admin')
+    ->name('datatable2.admin');
 
 
 Route::get('admineliminadoa', [CRUDAdmin::class, 'view2'])
-->middleware('auth.admin')
-->name('crud.list2');
+    ->middleware('auth.admin')
+    ->name('crud.list2');
 
 
 Route::get('admineliminadoe', [CRUDAdmin::class, 'view4'])
-->middleware('auth.admin')
-->name('crud.list4');
+    ->middleware('auth.admin')
+    ->name('crud.list4');
 
 Route::get('admineliminadop', [CRUDAdmin::class, 'view5'])
-->middleware('auth.admin')
-->name('crud.list5');
+    ->middleware('auth.admin')
+    ->name('crud.list5');
 
 Route::get('adminproveedor', [CRUDAdmin::class, 'view6'])
-->middleware('auth.admin')
-->name('crud.list6');
+    ->middleware('auth.admin')
+    ->name('crud.list6');
 
 Route::get('admineliminadoe/datatable', [CRUDAdmin::class, 'data4'])
-->middleware('auth.admin')
-->name('datatable4.admin');
+    ->middleware('auth.admin')
+    ->name('datatable4.admin');
 
 Route::get('admineliminadop/datatable', [CRUDAdmin::class, 'data5'])
-->middleware('auth.admin')
-->name('datatable5.admin');
+    ->middleware('auth.admin')
+    ->name('datatable5.admin');
 
 Route::get('adminproveedor/datatable', [CRUDAdmin::class, 'data6'])
-->middleware('auth.admin')
-->name('datatable.proveedora');
+    ->middleware('auth.admin')
+    ->name('datatable.proveedora');
 
 Route::post('adminproveedor/crear', [CRUDAdmin::class, 'create3'])
-->name('cruda.createproveedor');
+    ->name('cruda.createproveedor');
 
 Route::post('adminproveedor/modificar_persona-{id}', [ControllerConsultante::class, 'update3'])
-->name('cruda.modificarproveedor');
+    ->name('cruda.modificarproveedor');
 
 Route::get('admineliminadoe/eliminar_persona-{id}', [CRUDAdmin::class, 'delete3'])
-->name('crud.delete3');
+    ->name('crud.delete3');
 
 Route::get('admineliminadop/eliminar_persona-{id}', [CRUDAdmin::class, 'delete4'])
-->name('crud.delete4');
+    ->name('crud.delete4');
 
 Route::post('admin/crear', [CRUDAdmin::class, 'create'])
-->name('crud.create');
+    ->name('crud.create');
 
 
 Route::post('admin/modificar_persona-{id}', [CRUDAdmin::class, 'update'])
-->name('crud.update');
+    ->name('crud.update');
 
 
 Route::get('admin/eliminar_persona-{id}', [CRUDAdmin::class, 'delete'])
-->name('crud.delete');
+    ->name('crud.delete');
 
 
 
 Route::get('admin/desactivar_persona-{id}', [CRUDAdmin::class, 'delete2'])
-->name('crud.deactivate');
+    ->name('crud.deactivate');
 
 Route::get('admin/activar_persona-{id}', [CRUDAdmin::class, 'activate'])
-->name('crud.activate');
+    ->name('crud.activate');
 
 
 Route::post('admin', [CRUDAdmin::class, 'list2'])
-->name('rol.list');
+    ->name('rol.list');
 
 Route::post('admin/registrar_rol', [CRUDAdmin::class, 'store'])
-->name('rol.store');
+    ->name('rol.store');
 
 Route::get('admin/email/{id}', [CRUDAdmin::class, 'verifyEmail'])->name('verification.verify');
 
 
 
 Route::get('admin/activo-{id}', [CRUDAdmin::class, 'activo'])
-->name('rol.activo');
+    ->name('rol.activo');
 
 Route::get('admin/desactivar-{id}', [CRUDAdmin::class, 'desactivar'])
-->name('rol.desactivar');
+    ->name('rol.desactivar');
 
 
 Route::get('admin/eliminar_rol-{id}', [CRUDAdmin::class, 'eliminarRol'])
-->name('rol.delete');
+    ->name('rol.delete');
 
 
 Route::post('admin/modificar_fechareporte-{id}', [CRUDAdmin::class, 'updateFechaReporte'])
-->name('crud.updateFechaReporte');
+    ->name('crud.updateFechaReporte');
 
 //empleado admin
 Route::get('adminempleado', [CRUDAdmin::class, 'view3'])
-->middleware('auth.admin')
-->name('crud.list3');
+    ->middleware('auth.admin')
+    ->name('crud.list3');
 
 
 Route::get('adminempleado/datatable', [CRUDAdmin::class, 'data3'])
-->middleware('auth.admin')
-->name('datatable.data3');
+    ->middleware('auth.admin')
+    ->name('datatable.data3');
 
 Route::post('adminempleado/crear', [CRUDAdmin::class, 'create2'])
-->name('cruda.create2');
+    ->name('cruda.create2');
 
 Route::post('adminempleado/modificar-{id}', [CRUDAdmin::class, 'update2'])
-->name('cruda.update2');
+    ->name('cruda.update2');
 
 
 Route::get('admineliminadoa/eliminarp', [CRUDAdmin::class, 'eliminarTotal'])
-->name('eliminar.total');
+    ->name('eliminar.total');
 
 Route::get('admineliminadop/eliminarpro', [CRUDAdmin::class, 'eliminarTotalPro'])
-->name('eliminar.totalPro');
+    ->name('eliminar.totalPro');
 
 Route::get('adminpagare', function () {
     return view('Admin/pagare');
@@ -176,8 +176,8 @@ Route::get('adminpagare', function () {
 
 
 Route::get('adminpagare/datatable', [CRUDAdmin::class, 'data7'])
-->middleware('auth.admin')
-->name('datatable.data7');
+    ->middleware('auth.admin')
+    ->name('datatable.data7');
 
 
 
@@ -190,20 +190,20 @@ Route::get('coordinador', function () {
 
 
 Route::get('coordinador/datatable', [CRUDCoordinador::class, 'data'])
-->middleware('auth.asociacion')
-->name('datatable.coordinador');
+    ->middleware('auth.asociacion')
+    ->name('datatable.coordinador');
 
 
 Route::post('coordinador/modificar_persona-{id}', [CRUDCoordinador::class, 'update'])
-->name('crud2.update');
+    ->name('crud2.update');
 
 Route::get('coordinador/eliminar_persona-{id}', [CRUDCoordinador::class, 'delete2'])
-->name('crud.deactivate2');
+    ->name('crud.deactivate2');
 
 
 
 Route::get('coordinadorcredito/eliminar_persona-{id}', [CRUDCoordinador::class, 'delete3'])
-->name('crud2.deactivate2');
+    ->name('crud2.deactivate2');
 
 
 Route::get('coordinadorcredito', function () {
@@ -211,8 +211,8 @@ Route::get('coordinadorcredito', function () {
 })->middleware('auth.asociacion');
 
 Route::get('coordinadorcredito/datatable', [CRUDCoordinador::class, 'data2'])
-->middleware('auth.asociacion')
-->name('datatable.coordinadorcredito');
+    ->middleware('auth.asociacion')
+    ->name('datatable.coordinadorcredito');
 
 Route::post('coordinadorcredito/modificar{id}', [CRUDCoordinador::class, 'updatecredito'])
     ->name('crud.updatecreditoo');
@@ -224,8 +224,8 @@ Route::get('credito', function () {
 
 
 Route::get('credito/datatable', [CRUDCredito::class, 'data'])
-->middleware('auth.credito')
-->name('datatable.credito');
+    ->middleware('auth.credito')
+    ->name('datatable.credito');
 
 Route::post('credito/modificar{id}', [CRUDCredito::class, 'update']);
 
@@ -333,7 +333,11 @@ Route::middleware('auth.consultante')->group(function () {
     });
 
     Route::get('director/prueba/datatable', [ControllerConsultante::class, 'datosPagare'])
-    ->name('datatable.prueba2');
+        ->name('datatable.prueba2');
+
+    Route::get('solicitud', function () {
+        return view('Consultante/solicitarautorizacion');
+    });
 });
 
 
@@ -345,16 +349,16 @@ Route::get('thumano', function () {
 })->middleware('auth.thumano');
 
 Route::get('thumano/datatable', [CRUDThumano::class, 'data'])
-->middleware('auth.thumano')
-->name('datatable.thumano');
+    ->middleware('auth.thumano')
+    ->name('datatable.thumano');
 
 
 
 Route::post('thumano/crear', [CRUDThumano::class, 'create'])
-->name('crudt.create');
+    ->name('crudt.create');
 
 Route::post('thumano/modificar-{id}', [CRUDThumano::class, 'update'])
-->name('crudt.update');
+    ->name('crudt.update');
 
 Route::get('thumanocredito', function () {
     return view('Thumano/creditoempleado');
@@ -369,8 +373,8 @@ Route::get('thproveedor', function () {
 });
 
 Route::get('thproveedor/datatable2', [CRUDThumano::class, 'data2'])
-->middleware('auth.thumano')
-->name('datatable.tproveedor');
+    ->middleware('auth.thumano')
+    ->name('datatable.tproveedor');
 
 
 Route::post('thproveedor/modificar{id}', [CRUDThumano::class, 'update3'])
@@ -384,32 +388,32 @@ Route::get('control', function () {
 });
 
 Route::get('control/datatable', [ViewControl::class, 'data'])
-->middleware('auth.control')
-->name('datatableaso.control');
+    ->middleware('auth.control')
+    ->name('datatableaso.control');
 
 Route::get('creditocontrol', function () {
     return view('Control/creditocontrol');
 });
 
 Route::get('creditocontrol/datatable2', [ViewControl::class, 'data2'])
-->middleware('auth.control')
-->name('datatablecre.control');
+    ->middleware('auth.control')
+    ->name('datatablecre.control');
 
 Route::get('empleadocontrol', function () {
     return view('Control/empleadocontrol');
 });
 
 Route::get('empleadocontrol/datatable3', [ViewControl::class, 'data3'])
-->middleware('auth.control')
-->name('datatableemp.control');
+    ->middleware('auth.control')
+    ->name('datatableemp.control');
 
 Route::get('proveedorcontrol', function () {
     return view('Control/proveedorcontrol');
 });
 
 Route::get('proveedorcontrol/datatable', [ViewControl::class, 'data4'])
-->middleware('auth.control')
-->name('datatableprov.control');
+    ->middleware('auth.control')
+    ->name('datatableprov.control');
 
 //NUEVO EMPLEADOS
 Route::get('nuevosempleados', function () {
@@ -418,43 +422,43 @@ Route::get('nuevosempleados', function () {
 
 
 Route::get('nuevosempleados/datatable', [ControllerNuevoEmpleado::class, 'data'])
-->middleware('auth.nuevoempleado')
-->name('datatable.nuevoempleado');
+    ->middleware('auth.nuevoempleado')
+    ->name('datatable.nuevoempleado');
 
 
 
 Route::post('nuevosempleados/crear', [ControllerNuevoEmpleado::class, 'create'])
-->name('crudnuevo.create');
+    ->name('crudnuevo.create');
 
 
 Route::post('nuevosempleados/modificar{id}', [ControllerNuevoEmpleado::class, 'update'])
     ->name('crudnuevo.update');
 
 
-    Route::get('nuevosempleadosconsultar', function () {
-        return view('NuevosEmpleados/consultarnuevoempleado');
-    })->middleware('auth.nuevoempleado');
+Route::get('nuevosempleadosconsultar', function () {
+    return view('NuevosEmpleados/consultarnuevoempleado');
+})->middleware('auth.nuevoempleado');
 
 
-    Route::get('nuevosempleadosconsultar/imprimir-{id}', [ControllerNuevoEmpleado::class, 'imprimir'])
+Route::get('nuevosempleadosconsultar/imprimir-{id}', [ControllerNuevoEmpleado::class, 'imprimir'])
     ->name('imprimir.nuevoempleado');
 
-    Route::get('nuevosempleadosconsultar/datatable', [ControllerNuevoEmpleado::class, 'data2'])
+Route::get('nuevosempleadosconsultar/datatable', [ControllerNuevoEmpleado::class, 'data2'])
     ->middleware('auth.nuevoempleado')
     ->name('datatable.nuevoempleado2');
 
 
 
-    Route::get('proveedortah', function () {
-        return view('NuevosEmpleados/agregarprov');
-    })->middleware('auth.nuevoempleado');
+Route::get('proveedortah', function () {
+    return view('NuevosEmpleados/agregarprov');
+})->middleware('auth.nuevoempleado');
 
 Route::get('proveedortah/datatable', [ControllerNuevoEmpleado::class, 'data3'])
-->middleware('auth.nuevoempleado')
-->name('datatable.proveedortah');
+    ->middleware('auth.nuevoempleado')
+    ->name('datatable.proveedortah');
 
 Route::post('proveedortah/crear', [ControllerNuevoEmpleado::class, 'createprov'])
-->name('crudnuevo.createproveedor');
+    ->name('crudnuevo.createproveedor');
 
 
 Route::post('proveedortah/modificar{id}', [ControllerNuevoEmpleado::class, 'updateprov'])
@@ -465,22 +469,22 @@ Route::get('consultarprovtah', function () {
 })->middleware('auth.nuevoempleado');
 
 Route::get('consultarprovconsult/datatable', [ControllerNuevoEmpleado::class, 'data4'])
-->middleware('auth.nuevoempleado')
-->name('datatable.solicitudprov');
+    ->middleware('auth.nuevoempleado')
+    ->name('datatable.solicitudprov');
 
-    //GERENCIA
-    Route::get('gerenciaproveedor', function () {
-        return view('Gerencia/gerencia');
-    })->middleware('auth.gerencia');
+//GERENCIA
+Route::get('gerenciaproveedor', function () {
+    return view('Gerencia/gerencia');
+})->middleware('auth.gerencia');
 
 
 
 Route::get('gerenciaproveedor/datatable', [CRUDGerencia::class, 'data'])
-->middleware('auth.gerencia')
-->name('datatable.gerencia');
+    ->middleware('auth.gerencia')
+    ->name('datatable.gerencia');
 
 Route::post('gerenciaproveedor/crear', [CRUDGerencia::class, 'create'])
-->name('crudger.createproveedor');
+    ->name('crudger.createproveedor');
 
 
 Route::post('gerenciaproveedor/modificar{id}', [CRUDGerencia::class, 'update'])
@@ -491,158 +495,158 @@ Route::get('consultarproveedorger', function () {
 })->middleware('auth.gerencia');
 
 Route::get('consultarproveedorger/datatable', [CRUDGerencia::class, 'data2'])
-->middleware('auth.gerencia')
-->name('datatable.consultarproveger');
+    ->middleware('auth.gerencia')
+    ->name('datatable.consultarproveger');
 
 
-    //COORDINACION
-    Route::get('coordinacion', function () {
-        return view('Coordinacion/coordinacion');
-    })->middleware('auth.coordinacion');
+//COORDINACION
+Route::get('coordinacion', function () {
+    return view('Coordinacion/coordinacion');
+})->middleware('auth.coordinacion');
 
-    Route::get('coordinacion/datatable', [CRUDCoordinacion::class, 'data'])
+Route::get('coordinacion/datatable', [CRUDCoordinacion::class, 'data'])
     ->middleware('auth.coordinacion')
     ->name('datatable.proveedorcoordi');
 
-    Route::post('coordinacion/crear', [CRUDCoordinacion::class, 'create'])
+Route::post('coordinacion/crear', [CRUDCoordinacion::class, 'create'])
     ->name('crudcoord.createproveedor');
 
 
-    Route::post('coordinacion/modificar{id}', [CRUDCoordinacion::class, 'update'])
-        ->name('crudcoor.update');
+Route::post('coordinacion/modificar{id}', [CRUDCoordinacion::class, 'update'])
+    ->name('crudcoor.update');
 
-        Route::get('consultarprovc', function () {
-            return view('Coordinacion/consultarproveedor');
-        })->middleware('auth.coordinacion');
+Route::get('consultarprovc', function () {
+    return view('Coordinacion/consultarproveedor');
+})->middleware('auth.coordinacion');
 
-        Route::get('consultarprovc/datatable', [CRUDCoordinacion::class, 'data2'])
-        ->middleware('auth.coordinacion')
-        ->name('datatable.coordiproveconsulta');
+Route::get('consultarprovc/datatable', [CRUDCoordinacion::class, 'data2'])
+    ->middleware('auth.coordinacion')
+    ->name('datatable.coordiproveconsulta');
 
-        Route::get('coorpagare', function () {
-            return view('Coordinacion/pagare');
-        })->middleware('auth.coordinacion');
+Route::get('coorpagare', function () {
+    return view('Coordinacion/pagare');
+})->middleware('auth.coordinacion');
 
-        Route::get('coorpagare/datatable', [CRUDCoordinacion::class, 'data3'])
+Route::get('coorpagare/datatable', [CRUDCoordinacion::class, 'data3'])
     ->middleware('auth.coordinacion')
     ->name('datatable.coordipagare');
 
-    Route::get('registrarpagare', function () {
-        return view('Coordinacion/registrarpagare');
-    })->middleware('auth.coordinacion');
+Route::get('registrarpagare', function () {
+    return view('Coordinacion/registrarpagare');
+})->middleware('auth.coordinacion');
 
-    Route::get('registrarpagare/datatable', [CRUDCoordinacion::class, 'data4'])
+Route::get('registrarpagare/datatable', [CRUDCoordinacion::class, 'data4'])
     ->middleware('auth.coordinacion')
     ->name('datatable.consultarpagareger');
 
-    Route::post('registrarpagare/crear', [CRUDCoordinacion::class, 'createpagare'])
+Route::post('registrarpagare/crear', [CRUDCoordinacion::class, 'createpagare'])
     ->name('crudger.createpagare');
 
 
 
-    Route::get('registrarpagare/rechazados', [CRUDCoordinacion::class, 'data5'])
+Route::get('registrarpagare/rechazados', [CRUDCoordinacion::class, 'data5'])
     ->middleware('auth.coordinacion')
     ->name('datatable.rechazados');
 
-    Route::get('registrarpagare/aprobado', [CRUDCoordinacion::class, 'data6'])
+Route::get('registrarpagare/aprobado', [CRUDCoordinacion::class, 'data6'])
     ->middleware('auth.coordinacion')
     ->name('datatable.aprobados');
 
-    Route::get('registrarpagare/pendientes', [CRUDCoordinacion::class, 'data7'])
+Route::get('registrarpagare/pendientes', [CRUDCoordinacion::class, 'data7'])
     ->middleware('auth.coordinacion')
     ->name('datatable.pendientes');
 
-    Route::post('coorpagarefecha', [CRUDCoordinacion::class, 'FechaReporte'])
+Route::post('coorpagarefecha', [CRUDCoordinacion::class, 'FechaReporte'])
     ->middleware('auth.coordinacion')
     ->name('crudcoord.FechaReporte');
 
-    Route::post('registrarpagare/modificar/{id}', [CRUDCoordinacion::class, 'adjuntarAutorizacion'])
+Route::post('registrarpagare/modificar/{id}', [CRUDCoordinacion::class, 'adjuntarAutorizacion'])
     ->name('crudger.adjuntarautorizacion');
 
 
 
-    Route::get('coorpagarefiltrar', function () {
-        return view('Coordinacion/filtrar');
-    })->middleware('auth.coordinacion');
+Route::get('coorpagarefiltrar', function () {
+    return view('Coordinacion/filtrar');
+})->middleware('auth.coordinacion');
 
 
-    Route::get('registrarpagare/pendientes', [CRUDCoordinacion::class, 'data6'])
+Route::get('registrarpagare/pendientes', [CRUDCoordinacion::class, 'data6'])
     ->middleware('auth.coordinacion')
     ->name('datatable.pendientes');
 
 
-    Route::get('registrarpagareordinario', function () {
-        return view('Coordinacion/registrarpagareordinario');
-    })->middleware('auth.coordinacion');
+Route::get('registrarpagareordinario', function () {
+    return view('Coordinacion/registrarpagareordinario');
+})->middleware('auth.coordinacion');
 
 
-    Route::get('pagarecorreos', function () {
-        return view('Coordinacion/pagarecorreos');
-    })->middleware('auth.coordinacion');
+Route::get('pagarecorreos', function () {
+    return view('Coordinacion/pagarecorreos');
+})->middleware('auth.coordinacion');
 
-    Route::get('pagarecorreos/datatable', [CRUDCoordinacion::class, 'data8'])
+Route::get('pagarecorreos/datatable', [CRUDCoordinacion::class, 'data8'])
     ->middleware('auth.coordinacion')
     ->name('datatable.coordipagarecorreos');
 
 
-    Route::get('pagarecorreos/{id}', [CRUDCoordinacion::class, 'updateaprobado'])
+Route::get('pagarecorreos/{id}', [CRUDCoordinacion::class, 'updateaprobado'])
     ->name('crud.pagarecorreo');
 
 
-    Route::get('pagarecorreosrecha/{id}', [CRUDCoordinacion::class, 'updatearechazado'])
+Route::get('pagarecorreosrecha/{id}', [CRUDCoordinacion::class, 'updatearechazado'])
     ->name('crud.pagarecorreorecha');
 
 
-    Route::post('registrarpagareordinario/crear', [CRUDCoordinacion::class, 'createpagareordinario'])
+Route::post('registrarpagareordinario/crear', [CRUDCoordinacion::class, 'createpagareordinario'])
     ->name('crudger.createpagareordinario');
 
-    Route::get('registrarpagareordinario/datatable', [CRUDCoordinacion::class, 'data9'])
+Route::get('registrarpagareordinario/datatable', [CRUDCoordinacion::class, 'data9'])
     ->middleware('auth.coordinacion')
     ->name('datatable.ordinarios');
 
-    Route::post('registrarpagare/REPORTE-ASEGURABILIDAD', [CRUDCoordinacion::class, 'asegurabilidad'])
+Route::post('registrarpagare/REPORTE-ASEGURABILIDAD', [CRUDCoordinacion::class, 'asegurabilidad'])
     ->name('crudcor.asegurabilidad');
 
-    Route::post('registrarpagare/REPORTE-PAGARE', [CRUDCoordinacion::class, 'generarpdf'])
+Route::post('registrarpagare/REPORTE-PAGARE', [CRUDCoordinacion::class, 'generarpdf'])
     ->name('crudger.generarpdf');
 
-    Route::post('registrarpagare/asegurabilidad/{id}', [CRUDCoordinacion::class, 'adjuntarAsegurabilidad'])
+Route::post('registrarpagare/asegurabilidad/{id}', [CRUDCoordinacion::class, 'adjuntarAsegurabilidad'])
     ->name('crudcor.adjuntarasegurabilidad');
 
-    Route::get('prueba', function () {
-        return view('Coordinacion/prueba');
-    })->middleware('auth.coordinacion');
+Route::get('prueba', function () {
+    return view('Coordinacion/prueba');
+})->middleware('auth.coordinacion');
 
-    Route::get('prueba/datatable', [CRUDCoordinacion::class, 'datosPagare'])
+Route::get('prueba/datatable', [CRUDCoordinacion::class, 'datosPagare'])
     ->middleware('auth.coordinacion')
     ->name('datatable.prueba');
 
-    Route::get('info/datatable', [CRUDCoordinacion::class, 'data10'])
+Route::get('info/datatable', [CRUDCoordinacion::class, 'data10'])
     ->middleware('auth.coordinacion')
     ->name('datatable.info');
 
-    Route::get('coordinacion/aprobar{id}', [CRUDCoordinacion::class, 'aprobarCredito'])
+Route::get('coordinacion/aprobar{id}', [CRUDCoordinacion::class, 'aprobarCredito'])
     ->name('crudcoor.aprobarcred');
 
-    Route::get('coordinacion/rechazar{id}', [CRUDCoordinacion::class, 'rechazarCredito'])
+Route::get('coordinacion/rechazar{id}', [CRUDCoordinacion::class, 'rechazarCredito'])
     ->name('crudcoor.rechazarcred');
 
-    Route::get('coordinacionconsultarp/imprimir-{id}', [CRUDCoordinacion::class, 'imprimir3'])->name('coordinadorr.imprimir3');
+Route::get('coordinacionconsultarp/imprimir-{id}', [CRUDCoordinacion::class, 'imprimir3'])->name('coordinadorr.imprimir3');
 
 
 
-    //JEFATURAS
+//JEFATURAS
 
-    Route::get('jefaturaproveedor', function () {
-        return view('Jefatura/jefatura');
-    })->middleware('auth.jefatura');
+Route::get('jefaturaproveedor', function () {
+    return view('Jefatura/jefatura');
+})->middleware('auth.jefatura');
 
 Route::get('jefaturaproveedor/datatable', [CRUDJefatura::class, 'data'])
-->middleware('auth.jefatura')
-->name('datatable.proveedorjefa');
+    ->middleware('auth.jefatura')
+    ->name('datatable.proveedorjefa');
 
 Route::post('jefaturaproveedor/crear', [CRUDJefatura::class, 'create'])
-->name('crudjefa.createproveedor');
+    ->name('crudjefa.createproveedor');
 
 
 Route::post('jefaturaproveedor/modificar{id}', [CRUDJefatura::class, 'update'])
@@ -653,8 +657,8 @@ Route::get('consultarproveedor', function () {
 })->middleware('auth.jefatura');
 
 Route::get('consultarproveedor2/datatable', [CRUDJefatura::class, 'data2'])
-->middleware('auth.jefatura')
-->name('datatable.consultanteprove');
+    ->middleware('auth.jefatura')
+    ->name('datatable.consultanteprove');
 
 
 //CONTROL MASIVO
@@ -663,11 +667,11 @@ Route::get('controlmasivoproveedor', function () {
 })->middleware('auth.controlmasivo');
 
 Route::get('controlmasivoproveedor/datatable', [CRUDControlMasivo::class, 'data'])
-->middleware('auth.controlmasivo')
-->name('datatable.proveedormasivo');
+    ->middleware('auth.controlmasivo')
+    ->name('datatable.proveedormasivo');
 
 Route::post('controlmasivo/crear', [CRUDControlMasivo::class, 'create'])
-->name('crudmasivo.createproveedor');
+    ->name('crudmasivo.createproveedor');
 
 
 Route::post('controlmasivo/modificar{id}', [CRUDControlMasivo::class, 'update'])
@@ -678,8 +682,8 @@ Route::get('consultarproveedormas', function () {
 })->middleware('auth.controlmasivo');
 
 Route::get('consultarproveedormas/datatable', [CRUDControlMasivo::class, 'data2'])
-->middleware('auth.controlmasivo')
-->name('datatable.consultanteprov');
+    ->middleware('auth.controlmasivo')
+    ->name('datatable.consultanteprov');
 
 //
 Route::get('controlmasivo', function () {
@@ -687,32 +691,32 @@ Route::get('controlmasivo', function () {
 });
 
 Route::get('controlmasivo/datatable', [CRUDControlMasivo::class, 'data3'])
-->middleware('auth.controlmasivo')
-->name('datatableaso.controlmasivo');
+    ->middleware('auth.controlmasivo')
+    ->name('datatableaso.controlmasivo');
 
 Route::get('creditocontrolmasivo', function () {
     return view('ControlMasivo/creditocontrol');
 });
 
 Route::get('creditocontrolmasivo/datatable2', [CRUDControlMasivo::class, 'data4'])
-->middleware('auth.controlmasivo')
-->name('datatablecre.controlmasivo');
+    ->middleware('auth.controlmasivo')
+    ->name('datatablecre.controlmasivo');
 
 Route::get('empleadocontrolmasivo', function () {
     return view('ControlMasivo/empleadocontrol');
 });
 
 Route::get('empleadocontrolmasivo/datatable3', [CRUDControlMasivo::class, 'data5'])
-->middleware('auth.controlmasivo')
-->name('datatableemp.controlmasivo');
+    ->middleware('auth.controlmasivo')
+    ->name('datatableemp.controlmasivo');
 
 Route::get('proveedorcontrolmasivo', function () {
     return view('ControlMasivo/proveedorcontrol');
 });
 
 Route::get('proveedorcontrolmasivo/datatable', [CRUDControlMasivo::class, 'data6'])
-->middleware('auth.controlmasivo')
-->name('datatableprov.controlmasivo');
+    ->middleware('auth.controlmasivo')
+    ->name('datatableprov.controlmasivo');
 
 
 

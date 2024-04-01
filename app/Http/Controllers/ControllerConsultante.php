@@ -29,7 +29,8 @@ class ControllerConsultante extends Controller
 {
 
 
-    public function data(){
+    public function data()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -51,10 +52,10 @@ class ControllerConsultante extends Controller
 
 
 
-        //listar
-        public function listar()
-        {
-            $datos=DB::select("
+    //listar
+    public function listar()
+    {
+        $datos = DB::select("
             SELECT A.ID, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado,
             A.Reporte, A.Enviado, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT
             FROM persona
@@ -62,33 +63,33 @@ class ControllerConsultante extends Controller
             D ON C.ID_Persona = D.ID_Persona ORDER BY Nombre ASC");
 
 
-            return view("Consultante/consultante")->with("datos", $datos);
-        }
+        return view("Consultante/consultante")->with("datos", $datos);
+    }
 
 
 
 
 
-        public function imprimir2($id)
-        {
-            $sql=DB::select("SELECT persona.*, documentosintesis.FechaInsercion FROM persona
+    public function imprimir2($id)
+    {
+        $sql = DB::select("SELECT persona.*, documentosintesis.FechaInsercion FROM persona
             INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_persona
             WHERE persona.ID = $id");
 
-            $fpdf = new Fpdf('P','mm', 'A4');
-            $fpdf = new Fpdf('P','mm', 'A4');
-            $fpdf->AddPage("landscape");
-            $x = 3;
-            $y = 3;
-            $w = $fpdf->GetPageWidth() - 150;
-            $h = $fpdf->GetPageHeight() - 134;
-            $fpdf->Rect($x, $y, $w, $h, 'D');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
+        $fpdf->AddPage("landscape");
+        $x = 3;
+        $y = 3;
+        $w = $fpdf->GetPageWidth() - 150;
+        $h = $fpdf->GetPageHeight() - 134;
+        $fpdf->Rect($x, $y, $w, $h, 'D');
 
-            foreach ($sql as $resultado) {
-                $fecha_actual = Carbon::now('America/Bogota');
-                $fecha_string = $fecha_actual->format('d/m/Y');
-                $fecha_insercion = Carbon::parse($resultado->FechaInsercion);
-                $diferencia = $fecha_actual->diff($fecha_insercion);
+        foreach ($sql as $resultado) {
+            $fecha_actual = Carbon::now('America/Bogota');
+            $fecha_string = $fecha_actual->format('d/m/Y');
+            $fecha_insercion = Carbon::parse($resultado->FechaInsercion);
+            $diferencia = $fecha_actual->diff($fecha_insercion);
             if ($diferencia->days <= 180) {
                 $dias_restantes = 180 - $diferencia->days;
                 $diferencia_str = "Vence " . ($dias_restantes == 1 ? "1 día" : "$dias_restantes días");
@@ -97,54 +98,54 @@ class ControllerConsultante extends Controller
             }
 
             //Cedula
-            $fpdf->SetFont('Helvetica', 'B',30);
+            $fpdf->SetFont('Helvetica', 'B', 30);
             $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
-            $fpdf->SetFont('Helvetica', 'B',38);
+            $fpdf->SetFont('Helvetica', 'B', 38);
             $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
-            $fpdf->Cell(20, 12,"");
+            $fpdf->Cell(20, 12, "");
             $fpdf->Ln();
 
 
 
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(26,5,utf8_decode('Cédula: '));
-            $fpdf->SetFont('Helvetica', '',28);
-            $fpdf->Cell(64.8,5,$resultado->Cedula);
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(26, 5, utf8_decode('Cédula: '));
+            $fpdf->SetFont('Helvetica', '', 28);
+            $fpdf->Cell(64.8, 5, $resultado->Cedula);
 
 
 
             //Nombre
             $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(30,15,'Nombre: ');
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(60.5,15,mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(30, 15, 'Nombre: ');
+            $fpdf->SetFont('Helvetica', '', 20);
+            $fpdf->Cell(60.5, 15, mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
 
             //Apellidos
             $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(35,5,'Apellidos: ');
-            $fpdf->SetFont('Arial', '',20);
-            $fpdf->Cell(70.5,5, strtoupper(utf8_decode($resultado->Apellidos)));
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(35, 5, 'Apellidos: ');
+            $fpdf->SetFont('Arial', '', 20);
+            $fpdf->Cell(70.5, 5, strtoupper(utf8_decode($resultado->Apellidos)));
 
             //fecha
             $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(59,13.1,''.utf8_decode($diferencia_str));
-            $fpdf->SetFont('Helvetica', '',20);
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(59, 13.1, '' . utf8_decode($diferencia_str));
+            $fpdf->SetFont('Helvetica', '', 20);
 
 
             //Cuenta Asociada
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(37,13,'Fecha Imp: ');
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(1,13, $fecha_string);
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(37, 13, 'Fecha Imp: ');
+            $fpdf->SetFont('Helvetica', '', 20);
+            $fpdf->Cell(1, 13, $fecha_string);
 
             //Score
             $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',31);
-            $fpdf->Cell(35.7,8,'Score: ');
-            $fpdf->SetFont('Helvetica', 'B',48);
+            $fpdf->SetFont('Helvetica', 'B', 31);
+            $fpdf->Cell(35.7, 8, 'Score: ');
+            $fpdf->SetFont('Helvetica', 'B', 48);
 
 
 
@@ -169,12 +170,12 @@ class ControllerConsultante extends Controller
 
 
 
-            $url_qr = 'Storage/files/temp/qr-'.$resultado->ID;
+            $url_qr = 'Storage/files/temp/qr-' . $resultado->ID;
 
-            QrCode::format('png')->generate('http://app.coopserp.com/menu-datacredito/descargare-'.$id ,public_path('Storage/files/tickets/qr/QR-'.$id.'.png'));
+            QrCode::format('png')->generate('http://app.coopserp.com/menu-datacredito/descargare-' . $id, public_path('Storage/files/tickets/qr/QR-' . $id . '.png'));
 
 
-                $fpdf->Image("Storage/files/tickets/qr/QR-".$id.".png", 15, 107, 90, 90);
+            $fpdf->Image("Storage/files/tickets/qr/QR-" . $id . ".png", 15, 107, 90, 90);
 
             //QRcode::png($url_qr, 'Storage/temp/'.$nombre_archivo.'.png', QR_ECLEVEL_L, 5);
 
@@ -184,40 +185,40 @@ class ControllerConsultante extends Controller
             // $fpdf->Image('Storage/files/temp/QR-'.$nombre_archivo.'.png', 2, 105, 100, 100);
             // $fpdf->Image("Storage/files/tickets/qr/QR-".$id.".png", 15, 107, 90, 90);
             $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',48);
-            $fpdf->Cell(72,40,'Agencia: ');
-            $fpdf->SetFont('Helvetica', '',48);
-            $fpdf->Cell(83,40, utf8_decode($resultado->Agencia));
+            $fpdf->SetFont('Helvetica', 'B', 48);
+            $fpdf->Cell(72, 40, 'Agencia: ');
+            $fpdf->SetFont('Helvetica', '', 48);
+            $fpdf->Cell(83, 40, utf8_decode($resultado->Agencia));
 
-            $fpdf->Output('I', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
-            $fpdf->Output('F', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
+            $fpdf->Output('I', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
+            $fpdf->Output('F', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
             exit;
 
-            }
         }
+    }
 
 
-        public function imprimir3($id)
-        {
-            $sql=DB::select("SELECT persona.*, documentosintesis.FechaInsercion, proveedor.* FROM persona
+    public function imprimir3($id)
+    {
+        $sql = DB::select("SELECT persona.*, documentosintesis.FechaInsercion, proveedor.* FROM persona
             INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_persona
             INNER JOIN proveedor ON persona.ID = proveedor.ID_persona
             WHERE persona.ID = $id");
 
-            $fpdf = new Fpdf('P','mm', 'A4');
-            $fpdf = new Fpdf('P','mm', 'A4');
-            $fpdf->AddPage("landscape");
-            $x = 3;
-            $y = 3;
-            $w = $fpdf->GetPageWidth() - 150;
-            $h = $fpdf->GetPageHeight() - 134;
-            $fpdf->Rect($x, $y, $w, $h, 'D');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
+        $fpdf->AddPage("landscape");
+        $x = 3;
+        $y = 3;
+        $w = $fpdf->GetPageWidth() - 150;
+        $h = $fpdf->GetPageHeight() - 134;
+        $fpdf->Rect($x, $y, $w, $h, 'D');
 
-            foreach ($sql as $resultado) {
-                $fecha_actual = Carbon::now('America/Bogota');
-                $fecha_string = $fecha_actual->format('d/m/Y');
-                $fecha_insercion = Carbon::parse($resultado->FechaInsercion);
-                $diferencia = $fecha_actual->diff($fecha_insercion);
+        foreach ($sql as $resultado) {
+            $fecha_actual = Carbon::now('America/Bogota');
+            $fecha_string = $fecha_actual->format('d/m/Y');
+            $fecha_insercion = Carbon::parse($resultado->FechaInsercion);
+            $diferencia = $fecha_actual->diff($fecha_insercion);
             if ($diferencia->days <= 180) {
                 $dias_restantes = 180 - $diferencia->days;
                 $diferencia_str = "Vence " . ($dias_restantes == 1 ? "1 día" : "$dias_restantes días");
@@ -229,172 +230,172 @@ class ControllerConsultante extends Controller
             $tipoproveedor = $tipoprov[0]->TipoProveedor;
 
 
-            if($tipoproveedor == "PN"){
-            //Cedula
-            $fpdf->SetFont('Helvetica', 'B',30);
-            $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
-            $fpdf->SetFont('Helvetica', 'B',38);
-            $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
-            $fpdf->Cell(20, 12,"");
-            $fpdf->Ln();
-
-
-
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(26,5,utf8_decode('Cédula: '));
-            $fpdf->SetFont('Helvetica', '',28);
-            $fpdf->Cell(64.8,5,$resultado->Cedula);
-
-
-
-            //Nombre
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(30,15,'Nombre: ');
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(60.5,15,mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
-
-            //Apellidos
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(35,5,'Apellidos: ');
-            $fpdf->SetFont('Arial', '',20);
-            $fpdf->Cell(70.5,5, strtoupper(utf8_decode($resultado->Apellidos)));
-
-            //fecha
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(59,13.1,''.utf8_decode($diferencia_str));
-            $fpdf->SetFont('Helvetica', '',20);
-
-
-            //Cuenta Asociada
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(37,13,'Fecha Imp: ');
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(1,13, $fecha_string);
-
-            //Score
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',31);
-            $fpdf->Cell(35.7,8,'Score: ');
-            $fpdf->SetFont('Helvetica', 'B',48);
-
-
-
-            if ($resultado->Score >= 650) {
-                if (!empty($resultado->Reporte)) {
-                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
-                } else {
-                    $fpdf->Cell(76, 8, $resultado->Score);
-                }
+            if ($tipoproveedor == "PN") {
+                //Cedula
+                $fpdf->SetFont('Helvetica', 'B', 30);
+                $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
+                $fpdf->SetFont('Helvetica', 'B', 38);
+                $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
+                $fpdf->Cell(20, 12, "");
                 $fpdf->Ln();
+
+
+
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(26, 5, utf8_decode('Cédula: '));
+                $fpdf->SetFont('Helvetica', '', 28);
+                $fpdf->Cell(64.8, 5, $resultado->Cedula);
+
+
+
+                //Nombre
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(30, 15, 'Nombre: ');
+                $fpdf->SetFont('Helvetica', '', 20);
+                $fpdf->Cell(60.5, 15, mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
+
+                //Apellidos
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(35, 5, 'Apellidos: ');
+                $fpdf->SetFont('Arial', '', 20);
+                $fpdf->Cell(70.5, 5, strtoupper(utf8_decode($resultado->Apellidos)));
+
+                //fecha
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(59, 13.1, '' . utf8_decode($diferencia_str));
+                $fpdf->SetFont('Helvetica', '', 20);
+
+
+                //Cuenta Asociada
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(37, 13, 'Fecha Imp: ');
+                $fpdf->SetFont('Helvetica', '', 20);
+                $fpdf->Cell(1, 13, $fecha_string);
+
+                //Score
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 31);
+                $fpdf->Cell(35.7, 8, 'Score: ');
+                $fpdf->SetFont('Helvetica', 'B', 48);
+
+
+
+                if ($resultado->Score >= 650) {
+                    if (!empty($resultado->Reporte)) {
+                        $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                    } else {
+                        $fpdf->Cell(76, 8, $resultado->Score);
+                    }
+                    $fpdf->Ln();
+                } else {
+                    if (!empty($resultado->Reporte)) {
+                        $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                    } else {
+                        $fpdf->Cell(76, 8, $resultado->Score);
+                    }
+                    $fpdf->Ln();
+                }
+
             } else {
-                if (!empty($resultado->Reporte)) {
-                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
-                } else {
-                    $fpdf->Cell(76, 8, $resultado->Score);
-                }
+                //Cedula
+                $fpdf->SetFont('Helvetica', 'B', 30);
+                $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
+                $fpdf->SetFont('Helvetica', 'B', 38);
+                $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
+                $fpdf->Cell(20, 12, "");
                 $fpdf->Ln();
+
+
+
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(15, 5, utf8_decode('NIT: '));
+                $fpdf->SetFont('Helvetica', '', 28);
+                $fpdf->Cell(64.8, 5, $resultado->NIT);
+
+
+
+                //Nombre
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(47, 15, utf8_decode('Razón Social: '));
+                $fpdf->SetFont('Helvetica', '', 20);
+                $fpdf->Cell(60.5, 15, mb_convert_case($resultado->RazonSocial, MB_CASE_TITLE, "UTF-8"));
+
+                //Apellidos
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(19, 5, 'Tipo: ');
+                $fpdf->SetFont('Arial', '', 20);
+                $fpdf->Cell(70.5, 5, utf8_decode("Persona Jurídica."));
+
+                //fecha
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(59, 13.1, '' . utf8_decode($diferencia_str));
+                $fpdf->SetFont('Helvetica', '', 20);
+
+
+                //Cuenta Asociada
+                $fpdf->SetFont('Helvetica', 'B', 20);
+                $fpdf->Cell(37, 13, 'Fecha Imp: ');
+                $fpdf->SetFont('Helvetica', '', 20);
+                $fpdf->Cell(1, 13, $fecha_string);
+
+                //Score
+                $fpdf->Ln();
+                $fpdf->SetFont('Helvetica', 'B', 31);
+                $fpdf->Cell(35.7, 8, 'Score: ');
+                $fpdf->SetFont('Helvetica', 'B', 48);
+
+
+
+                if ($resultado->Score >= 650) {
+                    if (!empty($resultado->Reporte)) {
+                        $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                    } else {
+                        $fpdf->Cell(76, 8, $resultado->Score);
+                    }
+                    $fpdf->Ln();
+                } else {
+                    if (!empty($resultado->Reporte)) {
+                        $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                    } else {
+                        $fpdf->Cell(76, 8, $resultado->Score);
+                    }
+                    $fpdf->Ln();
+                }
             }
 
-        }else{
-            //Cedula
-            $fpdf->SetFont('Helvetica', 'B',30);
-            $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
-            $fpdf->SetFont('Helvetica', 'B',38);
-            $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
-            $fpdf->Cell(20, 12,"");
+
+
+
+
+
+
+            $fpdf->Image("Storage/files/tickets/qr/QR-" . $id . ".png", 15, 107, 90, 90);
             $fpdf->Ln();
+            $fpdf->SetFont('Helvetica', 'B', 48);
+            $fpdf->Cell(72, 40, 'Agencia: ');
+            $fpdf->SetFont('Helvetica', '', 48);
+            $fpdf->Cell(83, 40, utf8_decode($resultado->Agencia));
 
-
-
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(15,5,utf8_decode('NIT: '));
-            $fpdf->SetFont('Helvetica', '',28);
-            $fpdf->Cell(64.8,5,$resultado->NIT);
-
-
-
-            //Nombre
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(47,15,utf8_decode('Razón Social: '));
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(60.5,15,mb_convert_case($resultado->RazonSocial, MB_CASE_TITLE, "UTF-8"));
-
-            //Apellidos
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(19,5,'Tipo: ');
-            $fpdf->SetFont('Arial', '',20);
-            $fpdf->Cell(70.5,5, utf8_decode("Persona Jurídica."));
-
-            //fecha
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(59,13.1,''.utf8_decode($diferencia_str));
-            $fpdf->SetFont('Helvetica', '',20);
-
-
-            //Cuenta Asociada
-            $fpdf->SetFont('Helvetica', 'B',20);
-            $fpdf->Cell(37,13,'Fecha Imp: ');
-            $fpdf->SetFont('Helvetica', '',20);
-            $fpdf->Cell(1,13, $fecha_string);
-
-            //Score
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',31);
-            $fpdf->Cell(35.7,8,'Score: ');
-            $fpdf->SetFont('Helvetica', 'B',48);
-
-
-
-            if ($resultado->Score >= 650) {
-                if (!empty($resultado->Reporte)) {
-                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
-                } else {
-                    $fpdf->Cell(76, 8, $resultado->Score);
-                }
-                $fpdf->Ln();
+            if ($tipoproveedor == "PN") {
+                $fpdf->Output('I', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
+                $fpdf->Output('F', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
             } else {
-                if (!empty($resultado->Reporte)) {
-                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
-                } else {
-                    $fpdf->Cell(76, 8, $resultado->Score);
-                }
-                $fpdf->Ln();
-            }
-        }
-
-
-
-
-
-
-
-            $fpdf->Image("Storage/files/tickets/qr/QR-".$id.".png", 15, 107, 90, 90);
-            $fpdf->Ln();
-            $fpdf->SetFont('Helvetica', 'B',48);
-            $fpdf->Cell(72,40,'Agencia: ');
-            $fpdf->SetFont('Helvetica', '',48);
-            $fpdf->Cell(83,40, utf8_decode($resultado->Agencia));
-
-            if($tipoproveedor == "PN"){
-            $fpdf->Output('I', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
-            $fpdf->Output('F', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
-            }else{
-            $fpdf->Output('I', 'Storage/files/tickets/Ticket-'.$resultado->NIT.'.pdf');
-            $fpdf->Output('F', 'Storage/files/tickets/Ticket-'.$resultado->NIT.'.pdf');
+                $fpdf->Output('I', 'Storage/files/tickets/Ticket-' . $resultado->NIT . '.pdf');
+                $fpdf->Output('F', 'Storage/files/tickets/Ticket-' . $resultado->NIT . '.pdf');
             }
             exit;
 
-            }
         }
-        public function descargar3($id, Request $request)
-        {
-            $sql = DB::select("SELECT persona.ID, persona.TipoProveedor, persona.Cedula, proveedor.NIT, documentosintesis.NombreS, documentopn.NombrePN
+    }
+    public function descargar3($id, Request $request)
+    {
+        $sql = DB::select("SELECT persona.ID, persona.TipoProveedor, persona.Cedula, proveedor.NIT, documentosintesis.NombreS, documentopn.NombrePN
                 FROM persona
                 INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_Persona
                 INNER JOIN documentopn ON documentosintesis.ID = documentopn.ID_Persona
@@ -402,11 +403,11 @@ class ControllerConsultante extends Controller
                 WHERE persona.ID = $id");
 
 
-            $tipoprov = DB::select("SELECT TipoProveedor FROM persona WHERE ID = ?", [$id]);
-            $tipoproveedor = $tipoprov[0]->TipoProveedor;
+        $tipoprov = DB::select("SELECT TipoProveedor FROM persona WHERE ID = ?", [$id]);
+        $tipoproveedor = $tipoprov[0]->TipoProveedor;
 
 
-            if($tipoproveedor == "PN"){
+        if ($tipoproveedor == "PN") {
             $Cedula = DB::select("SELECT Cedula FROM persona WHERE ID = ?", [$id]);
             $CedulaPersona = $Cedula[0]->Cedula;
             $rutaticket = "Storage/files/tickets/Ticket-" . $CedulaPersona . ".pdf";
@@ -418,7 +419,7 @@ class ControllerConsultante extends Controller
             $Nombre = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
             $NombrePN = $Nombre[0]->NombrePN;
             $ruta_pn = "Storage/files/pn/" . $NombrePN;
-            }else if($tipoproveedor == "PJ"){
+        } else if ($tipoproveedor == "PJ") {
             $NIT = DB::select("SELECT NIT FROM proveedor WHERE ID_Persona = ?", [$id]);
             $NITPersona = $NIT[0]->NIT;
             $rutaticket = "Storage/files/tickets/Ticket-" . $NITPersona . ".pdf";
@@ -431,23 +432,23 @@ class ControllerConsultante extends Controller
             $NombrePN = $Nombre[0]->NombrePN;
             $ruta_pn = "Storage/files/pn/" . $NombrePN;
 
-            }
+        }
 
 
 
-            if (file_exists(public_path($rutaticket))) {
-                echo "<a href='" . asset($rutaticket) . "' download id='enlace-descarga1'></a>";
-            }
+        if (file_exists(public_path($rutaticket))) {
+            echo "<a href='" . asset($rutaticket) . "' download id='enlace-descarga1'></a>";
+        }
 
-            if (file_exists(public_path($ruta_sintesis))) {
-                echo "<a href='" . asset($ruta_sintesis) . "' download id='enlace-descarga2'></a>";
-            }
+        if (file_exists(public_path($ruta_sintesis))) {
+            echo "<a href='" . asset($ruta_sintesis) . "' download id='enlace-descarga2'></a>";
+        }
 
-            if (file_exists(public_path($ruta_pn))) {
-                echo "<a href='" . asset($ruta_pn) . "' download id='enlace-descarga3'></a>";
-            }
+        if (file_exists(public_path($ruta_pn))) {
+            echo "<a href='" . asset($ruta_pn) . "' download id='enlace-descarga3'></a>";
+        }
 
-            echo '<script>
+        echo '<script>
                     if (document.getElementById("enlace-descarga1")) {
                         document.getElementById("enlace-descarga1").click();
                     }
@@ -462,16 +463,16 @@ class ControllerConsultante extends Controller
                     }, 100);
                 </script>';
 
-        }
+    }
 
-public function imprimir($id)
+    public function imprimir($id)
     {
-        $sql=DB::select("SELECT persona.*, documentosintesis.FechaInsercion FROM persona
+        $sql = DB::select("SELECT persona.*, documentosintesis.FechaInsercion FROM persona
         INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_persona
         WHERE persona.ID = $id");
 
-        $fpdf = new Fpdf('P','mm', 'A4');
-        $fpdf = new Fpdf('P','mm', 'A4');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
+        $fpdf = new Fpdf('P', 'mm', 'A4');
         $fpdf->AddPage("landscape");
         $x = 3;
         $y = 3;
@@ -484,102 +485,102 @@ public function imprimir($id)
             $fecha_string = $fecha_actual->format('d/m/Y');
             $fecha_insercion = Carbon::parse($resultado->FechaInsercion);
             $diferencia = $fecha_actual->diff($fecha_insercion);
-        if ($diferencia->days <= 180) {
-            $dias_restantes = 180 - $diferencia->days;
-            $diferencia_str = "Vence " . ($dias_restantes == 1 ? "1 día" : "$dias_restantes días");
-        } else {
-            $diferencia_str = "Vencido";
-        }
-
-        //Cedula
-        $fpdf->SetFont('Helvetica', 'B',30);
-        $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
-        $fpdf->SetFont('Helvetica', 'B',38);
-        $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
-        $fpdf->Cell(20, 12,"");
-        $fpdf->Ln();
-
-
-
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(26,5,utf8_decode('Cédula: '));
-        $fpdf->SetFont('Helvetica', '',28);
-        $fpdf->Cell(64.8,5,$resultado->Cedula);
-
-        //Estado
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(27,5,'Estado: ');
-        $fpdf->SetFont('Helvetica', '',20);
-        $fpdf->Cell(1,5, strtoupper($resultado->Estado));
-        $fpdf->Ln();
-
-        //Nombre
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(30,15,'Nombre: ');
-        $fpdf->SetFont('Helvetica', '',20);
-        $fpdf->Cell(60.5,15,mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
-
-        //Apellidos
-        $fpdf->Ln();
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(35,5,'Apellidos: ');
-        $fpdf->SetFont('Arial', '',20);
-        $fpdf->Cell(70.5,5, strtoupper(utf8_decode($resultado->Apellidos)));
-
-        //fecha
-        $fpdf->Ln();
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(59,13.1,''.utf8_decode($diferencia_str));
-        $fpdf->SetFont('Helvetica', '',20);
-
-
-        //Cuenta Asociada
-        $fpdf->SetFont('Helvetica', 'B',20);
-        $fpdf->Cell(37,13,'Fecha Imp: ');
-        $fpdf->SetFont('Helvetica', '',20);
-        $fpdf->Cell(1,13, $fecha_string);
-
-        //Score
-        $fpdf->Ln();
-        $fpdf->SetFont('Helvetica', 'B',31);
-        $fpdf->Cell(35.7,8,'Score: ');
-        $fpdf->SetFont('Helvetica', 'B',48);
-
-
-
-        if ($resultado->Score >= 650) {
-            if (!empty($resultado->Reporte)) {
-                $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+            if ($diferencia->days <= 180) {
+                $dias_restantes = 180 - $diferencia->days;
+                $diferencia_str = "Vence " . ($dias_restantes == 1 ? "1 día" : "$dias_restantes días");
             } else {
-                $fpdf->Cell(76, 8, $resultado->Score);
+                $diferencia_str = "Vencido";
             }
+
+            //Cedula
+            $fpdf->SetFont('Helvetica', 'B', 30);
+            $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
+            $fpdf->SetFont('Helvetica', 'B', 38);
+            $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
+            $fpdf->Cell(20, 12, "");
             $fpdf->Ln();
-        } else {
-            if (!empty($resultado->Reporte)) {
-                $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+
+
+
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(26, 5, utf8_decode('Cédula: '));
+            $fpdf->SetFont('Helvetica', '', 28);
+            $fpdf->Cell(64.8, 5, $resultado->Cedula);
+
+            //Estado
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(27, 5, 'Estado: ');
+            $fpdf->SetFont('Helvetica', '', 20);
+            $fpdf->Cell(1, 5, strtoupper($resultado->Estado));
+            $fpdf->Ln();
+
+            //Nombre
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(30, 15, 'Nombre: ');
+            $fpdf->SetFont('Helvetica', '', 20);
+            $fpdf->Cell(60.5, 15, mb_convert_case($resultado->Nombre, MB_CASE_TITLE, "UTF-8"));
+
+            //Apellidos
+            $fpdf->Ln();
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(35, 5, 'Apellidos: ');
+            $fpdf->SetFont('Arial', '', 20);
+            $fpdf->Cell(70.5, 5, strtoupper(utf8_decode($resultado->Apellidos)));
+
+            //fecha
+            $fpdf->Ln();
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(59, 13.1, '' . utf8_decode($diferencia_str));
+            $fpdf->SetFont('Helvetica', '', 20);
+
+
+            //Cuenta Asociada
+            $fpdf->SetFont('Helvetica', 'B', 20);
+            $fpdf->Cell(37, 13, 'Fecha Imp: ');
+            $fpdf->SetFont('Helvetica', '', 20);
+            $fpdf->Cell(1, 13, $fecha_string);
+
+            //Score
+            $fpdf->Ln();
+            $fpdf->SetFont('Helvetica', 'B', 31);
+            $fpdf->Cell(35.7, 8, 'Score: ');
+            $fpdf->SetFont('Helvetica', 'B', 48);
+
+
+
+            if ($resultado->Score >= 650) {
+                if (!empty($resultado->Reporte)) {
+                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                } else {
+                    $fpdf->Cell(76, 8, $resultado->Score);
+                }
+                $fpdf->Ln();
             } else {
-                $fpdf->Cell(76, 8, $resultado->Score);
+                if (!empty($resultado->Reporte)) {
+                    $fpdf->Cell(76, 8, $resultado->Score . "-" . $resultado->Reporte);
+                } else {
+                    $fpdf->Cell(76, 8, $resultado->Score);
+                }
+                $fpdf->Ln();
             }
+
+
+
+
+
+            QrCode::format('png')->generate('http://app.coopserp.com/menu-datacredito/descargar-' . $id, public_path('Storage/files/tickets/qr/QR-' . $id . '.png'));
+
+
+            $fpdf->Image("Storage/files/tickets/qr/QR-" . $id . ".png", 15, 107, 90, 90);
             $fpdf->Ln();
-        }
+            $fpdf->SetFont('Helvetica', 'B', 48);
+            $fpdf->Cell(72, 40, 'Agencia: ');
+            $fpdf->SetFont('Helvetica', '', 48);
+            $fpdf->Cell(83, 40, utf8_decode($resultado->Agencia));
 
-
-
-
-
-        QrCode::format('png')->generate('http://app.coopserp.com/menu-datacredito/descargar-'.$id ,public_path('Storage/files/tickets/qr/QR-'.$id.'.png'));
-
-
-        $fpdf->Image("Storage/files/tickets/qr/QR-".$id.".png", 15, 107, 90, 90);
-        $fpdf->Ln();
-        $fpdf->SetFont('Helvetica', 'B',48);
-        $fpdf->Cell(72,40,'Agencia: ');
-        $fpdf->SetFont('Helvetica', '',48);
-        $fpdf->Cell(83,40, utf8_decode($resultado->Agencia));
-
-        $fpdf->Output('I', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
-        $fpdf->Output('F', 'Storage/files/tickets/Ticket-'.$resultado->Cedula.'.pdf');
-        exit;
+            $fpdf->Output('I', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
+            $fpdf->Output('F', 'Storage/files/tickets/Ticket-' . $resultado->Cedula . '.pdf');
+            exit;
 
         }
     }
@@ -592,69 +593,66 @@ public function imprimir($id)
 
         if ($existingPerson == true) {
             return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
-        }
-
-         else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
-                $usuarioActual = Auth::user();
-                $agencia = $usuarioActual->agenciau;
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+            $usuarioActual = Auth::user();
+            $agencia = $usuarioActual->agenciau;
 
-                date_default_timezone_set('America/Bogota');
-                $fechaHoraActual = date('Y-m-d H:i:s');
-                $idPersona = DB::table('persona')->insertGetId([
-                    'Cedula' => $request->Cedula,
-                    'Nombre' => $request->Nombre,
-                    'Apellidos' => strtoupper($request->Apellidos),
-                    'Score' => null,
-                    'CuentaAsociada' => $request->CuentaAsociada,
-                    'Agencia' => $agencia,
-                    'Estado' => $request->Estado,
-                    'Reporte' => null,
-                    'Tipo' => 'Persona',
-                    'Enviado' => 1,
-                    'TipoAsociado' => 'Asociacion',
-                    'FechaCorreo' => $fechaHoraActual,
-                    'Inspektor' => $request->Inspektor
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $idPersona = DB::table('persona')->insertGetId([
+                'Cedula' => $request->Cedula,
+                'Nombre' => $request->Nombre,
+                'Apellidos' => strtoupper($request->Apellidos),
+                'Score' => null,
+                'CuentaAsociada' => $request->CuentaAsociada,
+                'Agencia' => $agencia,
+                'Estado' => $request->Estado,
+                'Reporte' => null,
+                'Tipo' => 'Persona',
+                'Enviado' => 1,
+                'TipoAsociado' => 'Asociacion',
+                'FechaCorreo' => $fechaHoraActual,
+                'Inspektor' => $request->Inspektor
+            ]);
+            $idPersona = DB::getPdo()->lastInsertId();
+            if ($request->hasFile('NombreT') != null) {
+                $file3 = $request->file('NombreT');
+                $filename3 = $file3->getClientOriginalName();
+                $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE NombreT = ?", [$filename3]);
+            }
+            if (!empty($archivo3)) {
+                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                return back()->withErrors([
+                    'message' => 'El archivo con Formato ' . $request->Tipof . ' - "' . $filename3 . '" ya existe!'
                 ]);
-                $idPersona = DB::getPdo()->lastInsertId();
-                if ($request->hasFile('NombreT') != null) {
-                    $file3 = $request->file('NombreT');
-                    $filename3 =  $file3->getClientOriginalName();
-                    $archivo3 = DB::select("SELECT NombreT FROM documentot WHERE NombreT = ?", [$filename3]);
-                }
-                    if (!empty($archivo3)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo con Formato '.$request->Tipof.' - "' . $filename3 . '" ya existe!'
-                        ]);
 
-                }
+            }
 
-                if ($request->hasFile('NombreA') != null) {
-                    $file4 = $request->file('NombreA');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
+            if ($request->hasFile('NombreA') != null) {
+                $file4 = $request->file('NombreA');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
 
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
-                        ]);
-                    }
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
+                    ]);
                 }
+            }
 
 
 
             if ($request->hasFile('NombreS')) {
                 $file = $request->file('NombreS');
                 $dir = 'Storage/files/sintesis/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -683,7 +681,7 @@ public function imprimir($id)
                 $file = $request->file('NombreA');
                 if ($file != null) {
                     $dir = 'Storage/files/autorizacion/';
-                    $filename =  $file->getClientOriginalName();
+                    $filename = $file->getClientOriginalName();
                     $extension = $file->getClientOriginalExtension();
 
                     if ($file->getClientOriginalName() !== 'Autorizacion-' . $request->Cedula . '.pdf') {
@@ -718,7 +716,7 @@ public function imprimir($id)
             if ($request->hasFile('NombrePN')) {
                 $file = $request->file('NombrePN');
                 $dir = 'Storage/files/pn/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -744,7 +742,7 @@ public function imprimir($id)
 
             if ($request->hasFile('NombreT')) {
                 $file = $request->file('NombreT');
-                $filename2 =  $file->getClientOriginalName();
+                $filename2 = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $dir3 = "";
                 $ruta_carga3 = "";
@@ -848,7 +846,7 @@ public function imprimir($id)
             $nombre_archivo = $archivo[0]->NombreS;
             if ($request->hasFile('archivo22')) {
                 $file = $request->file('archivo22');
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
             }
 
 
@@ -882,7 +880,7 @@ public function imprimir($id)
             $nombre_archivo2 = $archivo2[0]->NombrePN;
             if ($request->hasFile('archivo11')) {
                 $file2 = $request->file('archivo11');
-                $filename2 =  $file2->getClientOriginalName();
+                $filename2 = $file2->getClientOriginalName();
             }
 
 
@@ -912,7 +910,7 @@ public function imprimir($id)
             $nombre_archivo3 = $archivo3[0]->NombreA;
             if ($request->hasFile('archivo3')) {
                 $file3 = $request->file('archivo3');
-                $filename3 =  $file3->getClientOriginalName();
+                $filename3 = $file3->getClientOriginalName();
             }
 
 
@@ -933,56 +931,52 @@ public function imprimir($id)
                 'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
             ]);
 
-        }
-
-
-        else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
 
 
 
 
-                date_default_timezone_set('America/Bogota');
-                $fechaHoraActual = date('Y-m-d H:i:s');
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
 
-                if($request->Consulta == true){
-                    $sql7 = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, FechaCorreo = ?, Inspektor = ?, Enviado = ?, Consulta =?  WHERE ID = $id", [
-                        $request->cedula2,
-                        $request->nombre3,
-                        $request->apellidos3,
-                        $request->score3,
-                        $request->agencia3,
-                        $request->estado3,
-                        $request->reporte3,
-                        $request->cuenta3,
-                        $fechaHoraActual,
-                        $request->Inspektor2,
-                        1,
-                        1
-                    ]);
-                }else{
-                    $sql6 = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, FechaCorreo = ?, Inspektor = ?, Enviado = ?, Consulta =?  WHERE ID = $id", [
-                        $request->cedula2,
-                        $request->nombre3,
-                        $request->apellidos3,
-                        $request->score3,
-                        $request->agencia3,
-                        $request->estado3,
-                        $request->reporte3,
-                        $request->cuenta3,
-                        $fechaHoraActual,
-                        $request->Inspektor2,
-                        0,
-                        0
-                    ]);
+            if ($request->Consulta == true) {
+                $sql7 = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, FechaCorreo = ?, Inspektor = ?, Enviado = ?, Consulta =?  WHERE ID = $id", [
+                    $request->cedula2,
+                    $request->nombre3,
+                    $request->apellidos3,
+                    $request->score3,
+                    $request->agencia3,
+                    $request->estado3,
+                    $request->reporte3,
+                    $request->cuenta3,
+                    $fechaHoraActual,
+                    $request->Inspektor2,
+                    1,
+                    1
+                ]);
+            } else {
+                $sql6 = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, FechaCorreo = ?, Inspektor = ?, Enviado = ?, Consulta =?  WHERE ID = $id", [
+                    $request->cedula2,
+                    $request->nombre3,
+                    $request->apellidos3,
+                    $request->score3,
+                    $request->agencia3,
+                    $request->estado3,
+                    $request->reporte3,
+                    $request->cuenta3,
+                    $fechaHoraActual,
+                    $request->Inspektor2,
+                    0,
+                    0
+                ]);
 
-                }
+            }
 
 
 
@@ -1010,7 +1004,7 @@ public function imprimir($id)
 
             if ($request->hasFile('archivo33')) {
                 $file = $request->file('archivo33');
-                $filename2 =  $file->getClientOriginalName();
+                $filename2 = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $dir3 = "";
                 $ruta_carga3 = "";
@@ -1040,7 +1034,7 @@ public function imprimir($id)
                         $uploadSucces = $file->move($dir3, $ruta_carga3);
                     }
 
-                    $sql5 =DB::update('UPDATE documentot SET NombreT = ?, Consecutivof = ?, Tipof = ? WHERE ID_Persona = ?', [
+                    $sql5 = DB::update('UPDATE documentot SET NombreT = ?, Consecutivof = ?, Tipof = ? WHERE ID_Persona = ?', [
                         $filename2 ?? null,
                         $request->consecutivof33,
                         $request->tipof3,
@@ -1115,12 +1109,12 @@ public function imprimir($id)
 
 
 
-        if($request->Tipoasociado == true){
+            if ($request->Tipoasociado == true) {
 
-                    $sql7 = DB::update("UPDATE persona SET TipoAsociado = ?, Enviado = ?, FechaCorreo = ? WHERE ID = $id", [
-                        'Credito',
-                        1,
-                        $fechaHoraActual
+                $sql7 = DB::update("UPDATE persona SET TipoAsociado = ?, Enviado = ?, FechaCorreo = ? WHERE ID = $id", [
+                    'Credito',
+                    1,
+                    $fechaHoraActual
 
 
                 ]);
@@ -1136,38 +1130,39 @@ public function imprimir($id)
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2, será consultado por el dpto de cumplimiento para realizar un crédito, espere su respuesta!");
                 // puede realizar un crédito
-            }else{
-            if(isset($sql4) && $sql4 == true) {
-                $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
-                $nombreUsuario = $persona ? ucfirst(
-                    strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
-                $recibo = $request->recibo;
-                $cedulaRegistrada = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
-                $cedula = $cedulaRegistrada[0]->Cedula;
-                $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
-                foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
-                }
-                return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2, será consultado por el dpto de cumplimiento, espere su respuesta!");
-            }
-            else if ($sql2 = true || $sql5) {
-                $cedula = $request->cedula2;
-                $tipo = " Asociación";
-                $agencia = $request->agencia3;
-                $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
-                foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo15($cedula, $agencia, $tipo));
-                }
-                return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
             } else {
-                return back()->with("incorrecto", "Error al modificar el registro!");
+                if (isset($sql4) && $sql4 == true) {
+                    $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
+                    $nombreUsuario = $persona ? ucfirst(
+                        strtolower($persona->Nombre)
+                    ) . ' ' . $persona->Apellidos : '';
+                    $recibo = $request->recibo;
+                    $cedulaRegistrada = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
+                    $cedula = $cedulaRegistrada[0]->Cedula;
+                    $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
+                    foreach ($usuarios as $email) {
+                        Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
+                    }
+                    return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2, será consultado por el dpto de cumplimiento, espere su respuesta!");
+                } else if ($sql2 = true || $sql5) {
+                    $cedula = $request->cedula2;
+                    $tipo = " Asociación";
+                    $agencia = $request->agencia3;
+                    $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
+                    foreach ($usuarios as $email) {
+                        Mail::to($email)->send(new EnviarCorreo15($cedula, $agencia, $tipo));
+                    }
+                    return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
+                } else {
+                    return back()->with("incorrecto", "Error al modificar el registro!");
+                }
             }
-        }
         }
     }
 
 
-    public function data2(){
+    public function data2()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -1192,129 +1187,126 @@ public function imprimir($id)
 
         if ($existingPerson == true) {
             return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
-        }
-
-         else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
 
 
-                $idPersona = DB::getPdo()->lastInsertId();
-                if ($request->hasFile('NombreA') != null) {
-                    $file4 = $request->file('NombreA');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
+            $idPersona = DB::getPdo()->lastInsertId();
+            if ($request->hasFile('NombreA') != null) {
+                $file4 = $request->file('NombreA');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
 
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Autorizacion-"' . $filename4 . '" o Analisis-"' . $filename4 . '"  ya existe!'
-                        ]);
-                    }
-                }
-
-
-                if ($request->hasFile('NombreAnalisis') != null) {
-                    $file4 = $request->file('NombreAnalisis');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreAnalisis FROM persona WHERE NombreAnalisis = ?", [$filename4]);
-
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo RC-"' . $filename4 . '" ya existe!'
-                        ]);
-                    }
-                }
-
-
-                if ($request->hasFile('NombreAnalisis')) {
-                    $file5 = $request->file('NombreAnalisis');
-                    if ($file5 != null) {
-                        $dir5 = 'Storage/files/rccreditos/';
-                        $filename5 =  $file5->getClientOriginalName();
-                        $extension5 = $file5->getClientOriginalExtension();
-
-                        if ($file5->getClientOriginalName() !== 'RC-' . $request->Cedula . '.pdf') {
-                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                            return back()->withErrors([
-                                'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->Cedula . '.pdf'
-                            ]);
-                        }
-
-                        $usuarioActual = Auth::user();
-                        $agencia = $usuarioActual->agenciau;
-                        if ($extension5 === 'pdf') {
-                            date_default_timezone_set('America/Bogota');
-                            $fechaHoraActual = date('Y-m-d H:i:s');
-                            $uploadSucces5 = $request->file('NombreAnalisis')->move($dir5, $filename5);
-                            $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, Monto, DeudaEsp, Linea, FechaCorreo, ConsecutivoRC, ObRC, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)', [
-                                $request->Cedula,
-                                $request->Nombre,
-                                $request->Apellidos,
-                                null,
-                                $request->CuentaAsociada,
-                                $agencia,
-                                $request->Estado,
-                                null,
-                                'Persona',
-                                1,
-                                'Credito',
-                                $filename5 ?? null,
-                                $request->Monto,
-                                $request->Monto,
-                                $request->Linea,
-                                $fechaHoraActual,
-                                $request->ConsecutivoRC,
-                                $request->ObRC,
-                                $request->Inspektor
-
-                            ]);
-                        } else {
-                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                            return back()->withErrors([
-                                'message' => 'Solo se puede subir archivos PDF.'
-                            ]);
-                        }
-                    }
-                } else {
-                    $usuarioActual = Auth::user();
-                    $agenciaU = $usuarioActual->agenciau;
-                    date_default_timezone_set('America/Bogota');
-                    $fechaHoraActual = date('Y-m-d H:i:s');
-                    $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, Monto, DeudaEsp, Linea, FechaCorreo, ConsecutivoRC, ObRC) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?)', [
-                        $request->Cedula,
-                        $request->Nombre,
-                        $request->Apellidos,
-                        null,
-                        $request->CuentaAsociada,
-                        $agenciaU,
-                        $request->Estado,
-                        null,
-                        'Persona',
-                        1,
-                        'Credito',
-                        $filename5 ?? null,
-                        $request->Monto,
-                        $request->Monto,
-                        $request->Linea,
-                        $fechaHoraActual,
-                        $request->ConsecutivoRC,
-                        $request->ObRC
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Autorizacion-"' . $filename4 . '" o Analisis-"' . $filename4 . '"  ya existe!'
                     ]);
                 }
+            }
+
+
+            if ($request->hasFile('NombreAnalisis') != null) {
+                $file4 = $request->file('NombreAnalisis');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreAnalisis FROM persona WHERE NombreAnalisis = ?", [$filename4]);
+
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo RC-"' . $filename4 . '" ya existe!'
+                    ]);
+                }
+            }
+
+
+            if ($request->hasFile('NombreAnalisis')) {
+                $file5 = $request->file('NombreAnalisis');
+                if ($file5 != null) {
+                    $dir5 = 'Storage/files/rccreditos/';
+                    $filename5 = $file5->getClientOriginalName();
+                    $extension5 = $file5->getClientOriginalExtension();
+
+                    if ($file5->getClientOriginalName() !== 'RC-' . $request->Cedula . '.pdf') {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->Cedula . '.pdf'
+                        ]);
+                    }
+
+                    $usuarioActual = Auth::user();
+                    $agencia = $usuarioActual->agenciau;
+                    if ($extension5 === 'pdf') {
+                        date_default_timezone_set('America/Bogota');
+                        $fechaHoraActual = date('Y-m-d H:i:s');
+                        $uploadSucces5 = $request->file('NombreAnalisis')->move($dir5, $filename5);
+                        $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, Monto, DeudaEsp, Linea, FechaCorreo, ConsecutivoRC, ObRC, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)', [
+                            $request->Cedula,
+                            $request->Nombre,
+                            $request->Apellidos,
+                            null,
+                            $request->CuentaAsociada,
+                            $agencia,
+                            $request->Estado,
+                            null,
+                            'Persona',
+                            1,
+                            'Credito',
+                            $filename5 ?? null,
+                            $request->Monto,
+                            $request->Monto,
+                            $request->Linea,
+                            $fechaHoraActual,
+                            $request->ConsecutivoRC,
+                            $request->ObRC,
+                            $request->Inspektor
+
+                        ]);
+                    } else {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                }
+            } else {
+                $usuarioActual = Auth::user();
+                $agenciaU = $usuarioActual->agenciau;
+                date_default_timezone_set('America/Bogota');
+                $fechaHoraActual = date('Y-m-d H:i:s');
+                $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, Monto, DeudaEsp, Linea, FechaCorreo, ConsecutivoRC, ObRC) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?)', [
+                    $request->Cedula,
+                    $request->Nombre,
+                    $request->Apellidos,
+                    null,
+                    $request->CuentaAsociada,
+                    $agenciaU,
+                    $request->Estado,
+                    null,
+                    'Persona',
+                    1,
+                    'Credito',
+                    $filename5 ?? null,
+                    $request->Monto,
+                    $request->Monto,
+                    $request->Linea,
+                    $fechaHoraActual,
+                    $request->ConsecutivoRC,
+                    $request->ObRC
+                ]);
+            }
 
             $idPersona = DB::getPdo()->lastInsertId();
 
             if ($request->hasFile('NombreS')) {
                 $file = $request->file('NombreS');
                 $dir = 'Storage/files/sintesis/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -1343,7 +1335,7 @@ public function imprimir($id)
                 $file = $request->file('NombreA');
                 if ($file != null) {
                     $dir = 'Storage/files/autorizacion/';
-                    $filename =  $file->getClientOriginalName();
+                    $filename = $file->getClientOriginalName();
                     $extension = $file->getClientOriginalExtension();
 
                     if ($extension === 'pdf') {
@@ -1372,7 +1364,7 @@ public function imprimir($id)
             if ($request->hasFile('NombrePN')) {
                 $file = $request->file('NombrePN');
                 $dir = 'Storage/files/pn/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -1398,7 +1390,7 @@ public function imprimir($id)
 
             if ($request->hasFile('NombreT')) {
                 $file = $request->file('NombreT');
-                $filename2 =  $file->getClientOriginalName();
+                $filename2 = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $dir3 = "";
                 $ruta_carga3 = "";
@@ -1460,8 +1452,8 @@ public function imprimir($id)
             date_default_timezone_set('America/Bogota');
             $ip = $_SERVER['REMOTE_ADDR'];
             $fechaHoraActual = date('Y-m-d H:i:s');
-$agencia = $usuarioActual->agenciau;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoUsuario', ?, ?, ?, ?)", [
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoUsuario', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -1498,7 +1490,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 return back()->with("correcto", "Se envio correctamente al generador de consulta. La de deuda especial de solicitud de crédito supera $3'000.001!");
             }
 
-            if ($sql4 == true || $sql2 = true ) {
+            if ($sql4 == true || $sql2 = true) {
                 $cedula = $request->Cedula;
                 $talento = "";
                 $usuarioActual = Auth::user();
@@ -1517,7 +1509,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
     }
 
-    public function data3(){
+    public function data3()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -1535,7 +1528,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
     }
 
-    public function data4(){
+    public function data4()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -1558,7 +1552,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
-    public function data5(){
+    public function data5()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -1578,7 +1573,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
     }
 
-    public function data6(){
+    public function data6()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -1601,137 +1597,134 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
-     //registrar
-     public function create2(Request $request)
-     {
+    //registrar
+    public function create2(Request $request)
+    {
         $existingPerson = DB::select('SELECT * FROM persona WHERE Cedula = ?', [$request->Cedula]);
 
         if ($existingPerson == true) {
             return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
-        }
-
-         else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $usuarioActual = Auth::user();
+            $agenciaU = $usuarioActual->agenciau;
+            $sql = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, TipoAsociado, Enviado, FechaCorreo, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?,?, ?, ?)', [
+                $request->Cedula,
+                $request->Nombre,
+                $request->Apellidos,
+                null,
+                $request->CuentaAsociada,
+                $agenciaU,
+                $request->Estado,
+                null,
+                'NuevoEmpleado',
+                'NuevoEmpleado',
+                1,
+                $fechaHoraActual,
+                $request->Inspektor
+            ]);
+            $idPersona = DB::getPdo()->lastInsertId();
+
+            if ($request->hasFile('NombreA') != null) {
+                $file4 = $request->file('NombreA');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
+
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
+                    ]);
                 }
+            }
 
-                date_default_timezone_set('America/Bogota');
-                $fechaHoraActual = date('Y-m-d H:i:s');
-                $usuarioActual = Auth::user();
-                $agenciaU = $usuarioActual->agenciau;
-                $sql = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, TipoAsociado, Enviado, FechaCorreo, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?,?, ?, ?)', [
-                    $request->Cedula,
-                    $request->Nombre,
-                    $request->Apellidos,
-                    null,
-                    $request->CuentaAsociada,
-                    $agenciaU,
-                    $request->Estado,
-                    null,
-                    'NuevoEmpleado',
-                    'NuevoEmpleado',
-                    1,
-                    $fechaHoraActual,
-                    $request->Inspektor
-                ]);
-                $idPersona = DB::getPdo()->lastInsertId();
+            if ($request->hasFile('contrato') != null) {
+                $file2 = $request->file('contrato');
+                $filename2 = $file2->getClientOriginalName();
+                $archivo2 = DB::select("SELECT NombreContrato FROM documentoa WHERE NombreContrato = ?", [$filename2]);
 
-                if ($request->hasFile('NombreA') != null) {
-                    $file4 = $request->file('NombreA');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
-
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
-                        ]);
-                    }
+                if (!empty($archivo2)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Cédula - "' . $filename2 . '" ya existe!'
+                    ]);
                 }
-
-                if ($request->hasFile('contrato') != null) {
-                    $file2 = $request->file('contrato');
-                    $filename2 =  $file2->getClientOriginalName();
-                    $archivo2 = DB::select("SELECT NombreContrato FROM documentoa WHERE NombreContrato = ?", [$filename2]);
-
-                    if (!empty($archivo2)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Cédula - "' . $filename2 . '" ya existe!'
-                        ]);
-                    }
-                }
+            }
 
 
-                if ($request->hasFile('NombreT')) {
-                    $file = $request->file('NombreT');
-                    $filename2 =  $file->getClientOriginalName();
-                    $extension = $file->getClientOriginalExtension();
-                    $dir3 = "";
-                    $ruta_carga3 = "";
+            if ($request->hasFile('NombreT')) {
+                $file = $request->file('NombreT');
+                $filename2 = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $dir3 = "";
+                $ruta_carga3 = "";
 
-                    // Verificar si la extensión es PDF
-                    if ($extension === 'pdf') {
-                        if ($request->Tipof == "T1") {
-                            $dir3 = "Storage/files/t1/";
-                            $ruta_carga3 = $dir3 . $file->getClientOriginalName();
-                            if ($file->getClientOriginalName() !== 'T1-' . $request->Cedula . '.pdf') {
-                                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                                return back()->withErrors([
-                                    'message' => 'El nombre del archivo no cumple con el formato requerido ->T1-' . $request->Cedula . '.pdf'
-                                ]);
-                            }
-                        } elseif ($request->Tipof == "T2") {
-                            $dir3 = "Storage/files/t2/";
-                            $ruta_carga3 = $dir3 . $file->getClientOriginalName();
-                            if ($file->getClientOriginalName() !== 'T2-' . $request->Cedula . '.pdf') {
-                                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                                return back()->withErrors([
-                                    'message' => 'El nombre del archivo no cumple con el formato requerido ->T2-' . $request->Cedula . '.pdf'
-                                ]);
-                            }
+                // Verificar si la extensión es PDF
+                if ($extension === 'pdf') {
+                    if ($request->Tipof == "T1") {
+                        $dir3 = "Storage/files/t1/";
+                        $ruta_carga3 = $dir3 . $file->getClientOriginalName();
+                        if ($file->getClientOriginalName() !== 'T1-' . $request->Cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->T1-' . $request->Cedula . '.pdf'
+                            ]);
                         }
-
-                        if ($request->Tipof != "N/A") {
-                            $uploadSucces = $file->move($dir3, $ruta_carga3);
+                    } elseif ($request->Tipof == "T2") {
+                        $dir3 = "Storage/files/t2/";
+                        $ruta_carga3 = $dir3 . $file->getClientOriginalName();
+                        if ($file->getClientOriginalName() !== 'T2-' . $request->Cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->T2-' . $request->Cedula . '.pdf'
+                            ]);
                         }
-
-                        $sql4 = DB::insert('INSERT INTO documentot (NombreT, Consecutivof, Tipof, ID_Persona) VALUES (?, ?, ?, ?)', [
-                            $filename2 ?? null,
-                            $request->Consecutivof,
-                            $request->Tipof ?? 'N/A',
-                            $idPersona
-                        ]);
-                    } else {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'Solo se puede subir archivos PDF.'
-                        ]);
                     }
-                } else {
+
+                    if ($request->Tipof != "N/A") {
+                        $uploadSucces = $file->move($dir3, $ruta_carga3);
+                    }
+
                     $sql4 = DB::insert('INSERT INTO documentot (NombreT, Consecutivof, Tipof, ID_Persona) VALUES (?, ?, ?, ?)', [
-                        null,
+                        $filename2 ?? null,
                         $request->Consecutivof,
                         $request->Tipof ?? 'N/A',
                         $idPersona
                     ]);
+                } else {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
                 }
+            } else {
+                $sql4 = DB::insert('INSERT INTO documentot (NombreT, Consecutivof, Tipof, ID_Persona) VALUES (?, ?, ?, ?)', [
+                    null,
+                    $request->Consecutivof,
+                    $request->Tipof ?? 'N/A',
+                    $idPersona
+                ]);
+            }
 
 
             if ($request->hasFile('NombreS')) {
                 $file = $request->file('NombreS');
                 $dir = 'Storage/files/sintesis/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($file->getClientOriginalName() !== 'Sintesis-' . $request->Cedula . '.pdf') {
@@ -1769,12 +1762,12 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             if ($request->hasFile('contrato')) {
                 $file3 = $request->file('contrato');
                 $dir3 = 'Storage/files/cedula/';
-                $filename3 =  $file3->getClientOriginalName();
+                $filename3 = $file3->getClientOriginalName();
                 $extension3 = $file3->getClientOriginalExtension();
 
                 $file5 = $request->file('NombreA');
                 $dir5 = 'Storage/files/autorizacion/';
-                $filename5 =  $file5->getClientOriginalName();
+                $filename5 = $file5->getClientOriginalName();
                 $extension5 = $file5->getClientOriginalExtension();
 
                 if ($file5->getClientOriginalName() !== 'Autorizacion-' . $request->Cedula . '.pdf') {
@@ -1783,7 +1776,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->Cedula . '.pdf'
                     ]);
                 }
-                if ($file3->getClientOriginalName() !==  $request->Cedula . '.pdf') {
+                if ($file3->getClientOriginalName() !== $request->Cedula . '.pdf') {
                     $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                     return back()->withErrors([
                         'message' => 'El nombre del archivo no cumple con el formato requerido ->' . $request->Cedula . '.pdf'
@@ -1823,7 +1816,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             if ($request->hasFile('NombrePN')) {
                 $file = $request->file('NombrePN');
                 $dir = 'Storage/files/pn/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -1851,15 +1844,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
 
-             $usuarioActual = Auth::user();
-             $nombre = $usuarioActual->name;
-             $rol = $usuarioActual->rol;
-             $cedulaagregada = $request->Cedula;
-             date_default_timezone_set('America/Bogota');
-             $ip = $_SERVER['REMOTE_ADDR'];
-             $fechaHoraActual = date('Y-m-d H:i:s');
-$agencia = $usuarioActual->agenciau;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoEmpleado', ?, ?, ?, ?)", [
+            $usuarioActual = Auth::user();
+            $nombre = $usuarioActual->name;
+            $rol = $usuarioActual->rol;
+            $cedulaagregada = $request->Cedula;
+            date_default_timezone_set('America/Bogota');
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoEmpleado', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -1869,7 +1862,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 null,
                 $ip
             ]);
-             if ($sql && $sql2 && $sql3 && $sql4) {
+            if ($sql && $sql2 && $sql3 && $sql4) {
                 $cedula = $request->Cedula;
                 $usuarioActual = Auth::user();
                 $agencia = $usuarioActual->agenciau;
@@ -1878,14 +1871,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 foreach ($usuarios as $email) {
                     Mail::to($email)->send(new EnviarCorreo7($cedula, $talento, $agencia));
                 }
-                 return back()->with("correcto", "Persona Registrada correctamente!")->with("showLoadingAlert", true);
-             } else {
-                 return back()->with("incorrecto", "Error al insertar el registro!");
-             }
-         }
-     }
+                return back()->with("correcto", "Persona Registrada correctamente!")->with("showLoadingAlert", true);
+            } else {
+                return back()->with("incorrecto", "Error al insertar el registro!");
+            }
+        }
+    }
 
-        //Actualizar registro empleado
+    //Actualizar registro empleado
     public function update2(Request $request, $id)
     {
 
@@ -1897,7 +1890,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo = $archivo[0]->NombreS;
             if ($request->hasFile('archivo22')) {
                 $file = $request->file('archivo22');
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
             }
 
 
@@ -1931,7 +1924,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo2 = $archivo2[0]->NombrePN;
             if ($request->hasFile('archivo11')) {
                 $file2 = $request->file('archivo11');
-                $filename2 =  $file2->getClientOriginalName();
+                $filename2 = $file2->getClientOriginalName();
             }
 
 
@@ -1961,7 +1954,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo3 = $archivo3[0]->NombreA;
             if ($request->hasFile('archivo3')) {
                 $file3 = $request->file('archivo3');
-                $filename3 =  $file3->getClientOriginalName();
+                $filename3 = $file3->getClientOriginalName();
             }
 
 
@@ -1991,7 +1984,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo4 = $archivo4[0]->NombreContrato;
             if ($request->hasFile('contrato1')) {
                 $file4 = $request->file('contrato1');
-                $filename4 =  $file4->getClientOriginalName();
+                $filename4 = $file4->getClientOriginalName();
             }
 
 
@@ -2013,48 +2006,47 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             ]);
 
 
-        $archivo3 = DB::select("SELECT NombreA FROM documentoa WHERE ID_Persona = ?", [$id]);
-        $nombre_archivo3 = $archivo3[0]->NombreA;
-        $filename3 = $nombre_archivo3;
-        if ($archivo3) {
+            $archivo3 = DB::select("SELECT NombreA FROM documentoa WHERE ID_Persona = ?", [$id]);
             $nombre_archivo3 = $archivo3[0]->NombreA;
-            if ($request->hasFile('archivo3')) {
-                $file3 = $request->file('archivo3');
-                $filename3 =  $file3->getClientOriginalName();
-            }
-
-
-
-            $nuevo_archivo3 = $filename3;
+            $filename3 = $nombre_archivo3;
             if ($archivo3) {
-                $pdfactual3 = $nombre_archivo3;
-            } else {
-                $pdfactual3 = null;
-            }
-        }
-        if (!empty($archivo3) && $archivo3 != $pdfactual3) {
-            $nuevo_nombre3 = $nuevo_archivo3;
-        }
-
-        if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
-            return back()->withErrors([
-                'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
-            ]);
-
-        }
-
-
-        }else {
-            if($request->Score == 'S/E'){
-                $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
+                $nombre_archivo3 = $archivo3[0]->NombreA;
+                if ($request->hasFile('archivo3')) {
+                    $file3 = $request->file('archivo3');
+                    $filename3 = $file3->getClientOriginalName();
                 }
 
 
-            if($request->Consulta == true){
+
+                $nuevo_archivo3 = $filename3;
+                if ($archivo3) {
+                    $pdfactual3 = $nombre_archivo3;
+                } else {
+                    $pdfactual3 = null;
+                }
+            }
+            if (!empty($archivo3) && $archivo3 != $pdfactual3) {
+                $nuevo_nombre3 = $nuevo_archivo3;
+            }
+
+            if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+                return back()->withErrors([
+                    'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
+                ]);
+
+            }
+
+
+        } else {
+            if ($request->Score == 'S/E') {
+                $request->Score = 'S/E';
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+
+
+            if ($request->Consulta == true) {
                 $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Agencia = ?, Inspektor = ?,Enviado = ?, Consulta =?  WHERE ID = $id", [
                     $request->cedula2,
                     $request->nombre3,
@@ -2064,7 +2056,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     1,
                     1
                 ]);
-            }else{
+            } else {
                 $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Agencia = ?, Inspektor = ?,Enviado = ?, Consulta =?  WHERE ID = $id", [
                     $request->cedula2,
                     $request->nombre3,
@@ -2176,7 +2168,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $cedulaRegistrada = $cedula[0]->Cedula;
             $fechaHoraActual = date('Y-m-d H:i:s');
             $ip = $_SERVER['REMOTE_ADDR'];
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoEmpleado', ?, ?, ?, ?)", [
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoEmpleado', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -2194,7 +2186,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 ]);
             }
 
-            if(isset($sql4) && $sql4 == true) {
+            if (isset($sql4) && $sql4 == true) {
                 $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
                 $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
                 $recibo = $request->recibo;
@@ -2206,8 +2198,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     Mail::to($email)->send(new EnviarCorreo13($cedula, $nombreUsuario, $agencia));
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 puede visualizarlo en Asociados!");
-            }
-            else if ($sql == true || $sql2 = true || $sql5) {
+            } else if ($sql == true || $sql2 = true || $sql5) {
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
             } else {
                 return back()->with("incorrecto", "Error al modificar el registro!");
@@ -2226,19 +2217,16 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
         $existingNIT = DB::select('SELECT * FROM proveedor WHERE NIT = ?', [$request->nit]);
         if ($existingNIT == true) {
             return back()->with("incorrecto", "Persona con NIT. $request->nit ya existe! Error al Registrar!");
-        }
-
-        else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
-                date_default_timezone_set('America/Bogota');
-                $fechaHoraActual = date('Y-m-d H:i:s');
-                if ($request->tipo_persona == "PN") {
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            if ($request->tipo_persona == "PN") {
                 $usuarioActual = Auth::user();
                 $agenciaU = $usuarioActual->agenciau;
                 $sql = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoProveedor, FechaCorreo, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?,?, ?)', [
@@ -2252,15 +2240,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     null,
                     'Proveedor',
                     1,
-                     $request->tipo_persona,
-                     $fechaHoraActual,
-                     $request->Inspektor
+                    $request->tipo_persona,
+                    $fechaHoraActual,
+                    $request->Inspektor
 
                 ]);
                 $idPersona = DB::getPdo()->lastInsertId();
                 if ($request->hasFile('NombreA') != null) {
                     $file4 = $request->file('NombreA');
-                    $filename4 =  $file4->getClientOriginalName();
+                    $filename4 = $file4->getClientOriginalName();
                     $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
 
                     if (!empty($archivo4)) {
@@ -2276,123 +2264,79 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 }
 
                 if ($request->hasFile('NombreRC') != null) {
-                $file = $request->file('NombreRC');
-                $filename =  $file->getClientOriginalName();
-                $archivo = DB::select("SELECT NombreRC FROM proveedor WHERE NombreRC = ?", [$filename]);
+                    $file = $request->file('NombreRC');
+                    $filename = $file->getClientOriginalName();
+                    $archivo = DB::select("SELECT NombreRC FROM proveedor WHERE NombreRC = ?", [$filename]);
 
-                if (!empty($archivo)) {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    return back()->withErrors([
-                        'message' => 'El archivo RECIBO DE CAJA - "' . $filename . '" ya existe!'
-                    ]);
-                }
-            }
-
-
-
-            if ($request->hasFile('NombreS')) {
-                $file = $request->file('NombreS');
-                $dir = 'Storage/files/sintesis/';
-                $filename =  $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-
-                if ($extension === 'pdf') {
-                    $uploadSucces = $request->file('NombreS')->move($dir, $filename);
-
-                    $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
-                        $request->FechaInsercion,
-                        $filename ?? null,
-                        $idPersona
-                    ]);
-                } else {
-                    return back()->withErrors([
-                        'message' => 'Solo se puede subir archivos PDF.'
-                    ]);
-                }
-            } else {
-                $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
-                    $request->FechaInsercion ?? null,
-                    null,
-                    $idPersona
-                ]);
-            }
-                         if ($request->hasFile('NombreRC')) {
-                 $file = $request->file('NombreRC');
-                 $dir = 'Storage/files/rc/';
-                 $filename =  $file->getClientOriginalName();
-                 $extension = $file->getClientOriginalExtension();
-
-
-                 if ($extension === 'pdf') {
-                     $uploadSucces = $request->file('NombreRC')->move($dir, $filename);
-
-                     $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?)', [
-                        $filename ?? null,
-                        $request->valorcompra,
-                        $request->valorcompra,
-                         $idPersona
-                     ]);
-                     if ($file->getClientOriginalName() !== 'RC-' . $request->cedula . '.pdf') {
-                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        if (file_exists($dir . $filename)) {
-                            unlink($dir . $filename);
-                        }
-                        return back()->withErrors([
-                            'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->cedula . '.pdf'
-                        ]);
-                    }
-                 } else {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                     return back()->withErrors([
-                         'message' => 'Solo se puede subir archivos PDF.'
-                     ]);
-                 }
-             } else {
-                 $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, ValorAcumulado, ValorCompra, ID_Persona) VALUES (?, ?, ?, ?)', [
-                    null,
-                    $request->valorcompra,
-                    $request->valorcompra,
-                     $idPersona
-                 ]);
-             }
-
-            if ($request->hasFile('NombreA')) {
-                $file2 = $request->file('NombreA');
-                if ($file2 != null) {
-                    $dir2 = 'Storage/files/autorizacion/';
-                    $filename2 =  $file2->getClientOriginalName();
-                    $extension2 = $file2->getClientOriginalExtension();
-
-                    if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->cedula . '.pdf') {
+                    if (!empty($archivo)) {
                         $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                         return back()->withErrors([
-                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula . '.pdf'
+                            'message' => 'El archivo RECIBO DE CAJA - "' . $filename . '" ya existe!'
                         ]);
                     }
-                    if ($extension2 === 'pdf') {
-                        $uploadSucces2 = $request->file('NombreA')->move($dir2, $filename2);
-                        $sql4 = DB::insert('INSERT INTO documentoa (NombreA, ConsecutivoA, NombreContrato, ID_Persona) VALUES (?, ?, ?, ?)', [
-                            $filename2 ?? null,
-                            $request->consecutivoa,
-                            null,
+                }
+
+
+
+                if ($request->hasFile('NombreS')) {
+                    $file = $request->file('NombreS');
+                    $dir = 'Storage/files/sintesis/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombreS')->move($dir, $filename);
+
+                        $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
+                            $request->FechaInsercion,
+                            $filename ?? null,
                             $idPersona
                         ]);
+                    } else {
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                } else {
+                    $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
+                        $request->FechaInsercion ?? null,
+                        null,
+                        $idPersona
+                    ]);
+                }
+                if ($request->hasFile('NombreRC')) {
+                    $file = $request->file('NombreRC');
+                    $dir = 'Storage/files/rc/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+
+
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombreRC')->move($dir, $filename);
+
+                        $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?)', [
+                            $filename ?? null,
+                            $request->valorcompra,
+                            $request->valorcompra,
+                            $idPersona
+                        ]);
+                        if ($file->getClientOriginalName() !== 'RC-' . $request->cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            if (file_exists($dir . $filename)) {
+                                unlink($dir . $filename);
+                            }
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->cedula . '.pdf'
+                            ]);
+                        }
                     } else {
                         $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
@@ -2403,245 +2347,289 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                             'message' => 'Solo se puede subir archivos PDF.'
                         ]);
                     }
-                }
-            } else {
-                $sql4 = DB::insert('INSERT INTO documentoa (NombreA, NombreContrato, ConsecutivoA, ID_Persona) VALUES (?, ?, ?, ?)', [
-                    null,
-                    null,
-                    $request->consecutivoa,
-                    $idPersona
-                ]);
-            }
-            if ($request->hasFile('NombrePN')) {
-                $file = $request->file('NombrePN');
-                $dir = 'Storage/files/pn/';
-                $filename =  $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-
-                if ($extension === 'pdf') {
-                    $uploadSucces = $request->file('NombrePN')->move($dir, $filename);
-
-                    $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                        $filename ?? null,
+                } else {
+                    $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, ValorAcumulado, ValorCompra, ID_Persona) VALUES (?, ?, ?, ?)', [
+                        null,
+                        $request->valorcompra,
+                        $request->valorcompra,
                         $idPersona
                     ]);
-                } else {
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    return back()->withErrors([
-                        'message' => 'Solo se puede subir archivos PDF.'
-                    ]);
                 }
-            } else {
-                $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                    null,
-                    $idPersona
-                ]);
-            }//
-        }else if($request->tipo_persona == "PJ"){
-            date_default_timezone_set('America/Bogota');
-            $fechaHoraActual = date('Y-m-d H:i:s');
-            $usuarioActual = Auth::user();
-            $agenciaU = $usuarioActual->agenciau;
-            $sql = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoProveedor, FechaCorreo) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                null,
-                null,
-                null,
-                null,
-                null,
-                $agenciaU,
-                null,
-                null,
-                'Proveedor',
-                1,
-                 $request->tipo_persona,
-                 $fechaHoraActual
-            ]);
-            $idPersona = DB::getPdo()->lastInsertId();
-            if ($request->hasFile('NombreA') != null) {
-                $file4 = $request->file('NombreA');
-                $filename4 =  $file4->getClientOriginalName();
-                $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
 
-                if (!empty($archivo4)) {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    return back()->withErrors([
-                        'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
-                    ]);
-                }
-            }
+                if ($request->hasFile('NombreA')) {
+                    $file2 = $request->file('NombreA');
+                    if ($file2 != null) {
+                        $dir2 = 'Storage/files/autorizacion/';
+                        $filename2 = $file2->getClientOriginalName();
+                        $extension2 = $file2->getClientOriginalExtension();
 
-            if ($request->hasFile('NombreRC') != null) {
-            $file = $request->file('NombreRC');
-            $filename =  $file->getClientOriginalName();
-            $archivo = DB::select("SELECT NombreRC FROM proveedor WHERE NombreRC = ?", [$filename]);
-
-            if (!empty($archivo)) {
-                $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                return back()->withErrors([
-                    'message' => 'El archivo RECIBO DE CAJA - "' . $filename . '" ya existe!'
-                ]);
-            }
-        }
-
-
-
-        if ($request->hasFile('NombreS')) {
-            $file = $request->file('NombreS');
-            $dir = 'Storage/files/sintesis/';
-            $filename =  $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-
-            if ($extension === 'pdf') {
-                $uploadSucces = $request->file('NombreS')->move($dir, $filename);
-
-                $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
-                    $request->FechaInsercion,
-                    $filename ?? null,
-                    $idPersona
-                ]);
-            } else {
-                return back()->withErrors([
-                    'message' => 'Solo se puede subir archivos PDF.'
-                ]);
-            }
-        } else {
-            $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
-                $request->FechaInsercion ?? null,
-                null,
-                $idPersona
-            ]);
-        }
-                     if ($request->hasFile('NombreRC')) {
-             $file = $request->file('NombreRC');
-             $dir = 'Storage/files/rc/';
-             $filename =  $file->getClientOriginalName();
-             $extension = $file->getClientOriginalExtension();
-
-
-             if ($extension === 'pdf') {
-                 $uploadSucces = $request->file('NombreRC')->move($dir, $filename);
-
-                 $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, NIT, RazonSocial, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?, ?, ?)', [
-
-                    $filename ?? null,
-                    $request->nit,
-                    $request->razonSocial,
-                    $request->valorcompra,
-                    $request->valorcompra,
-                     $idPersona
-                 ]);
-                 if ($file->getClientOriginalName() !== 'RC-' . $request->nit . '.pdf') {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    if (file_exists($dir . $filename)) {
-                        unlink($dir . $filename);
+                        if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula . '.pdf'
+                            ]);
+                        }
+                        if ($extension2 === 'pdf') {
+                            $uploadSucces2 = $request->file('NombreA')->move($dir2, $filename2);
+                            $sql4 = DB::insert('INSERT INTO documentoa (NombreA, ConsecutivoA, NombreContrato, ID_Persona) VALUES (?, ?, ?, ?)', [
+                                $filename2 ?? null,
+                                $request->consecutivoa,
+                                null,
+                                $idPersona
+                            ]);
+                        } else {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'Solo se puede subir archivos PDF.'
+                            ]);
+                        }
                     }
-                    return back()->withErrors([
-                        'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->nit . '.pdf'
-                    ]);
-                }
-             } else {
-                $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                 return back()->withErrors([
-                     'message' => 'Solo se puede subir archivos PDF.'
-                 ]);
-             }
-         } else {
-             $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, NIT, RazonSocial, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?, ? ,?)', [
-                null,
-                $request->nit,
-                $request->razonSocial,
-                $request->valorcompra,
-                $request->valorcompra,
-                 $idPersona
-             ]);
-         }
-
-        if ($request->hasFile('NombreA')) {
-            $file2 = $request->file('NombreA');
-            if ($file2 != null) {
-                $dir2 = 'Storage/files/autorizacion/';
-                $filename2 =  $file2->getClientOriginalName();
-                $extension2 = $file2->getClientOriginalExtension();
-
-                if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->nit . '.pdf') {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    return back()->withErrors([
-                        'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula . '.pdf'
-                    ]);
-                }
-                if ($extension2 === 'pdf') {
-                    $uploadSucces2 = $request->file('NombreA')->move($dir2, $filename2);
-                    $sql4 = DB::insert('INSERT INTO documentoa (NombreA, ConsecutivoA, NombreContrato, ID_Persona) VALUES (?, ?, ?, ?)', [
-                        $filename2 ?? null,
+                } else {
+                    $sql4 = DB::insert('INSERT INTO documentoa (NombreA, NombreContrato, ConsecutivoA, ID_Persona) VALUES (?, ?, ?, ?)', [
+                        null,
+                        null,
                         $request->consecutivoa,
+                        $idPersona
+                    ]);
+                }
+                if ($request->hasFile('NombrePN')) {
+                    $file = $request->file('NombrePN');
+                    $dir = 'Storage/files/pn/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombrePN')->move($dir, $filename);
+
+                        $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
+                            $filename ?? null,
+                            $idPersona
+                        ]);
+                    } else {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                } else {
+                    $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
                         null,
                         $idPersona
                     ]);
+                }//
+            } else if ($request->tipo_persona == "PJ") {
+                date_default_timezone_set('America/Bogota');
+                $fechaHoraActual = date('Y-m-d H:i:s');
+                $usuarioActual = Auth::user();
+                $agenciaU = $usuarioActual->agenciau;
+                $sql = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoProveedor, FechaCorreo) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    $agenciaU,
+                    null,
+                    null,
+                    'Proveedor',
+                    1,
+                    $request->tipo_persona,
+                    $fechaHoraActual
+                ]);
+                $idPersona = DB::getPdo()->lastInsertId();
+                if ($request->hasFile('NombreA') != null) {
+                    $file4 = $request->file('NombreA');
+                    $filename4 = $file4->getClientOriginalName();
+                    $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
+
+                    if (!empty($archivo4)) {
+                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
+                        ]);
+                    }
+                }
+
+                if ($request->hasFile('NombreRC') != null) {
+                    $file = $request->file('NombreRC');
+                    $filename = $file->getClientOriginalName();
+                    $archivo = DB::select("SELECT NombreRC FROM proveedor WHERE NombreRC = ?", [$filename]);
+
+                    if (!empty($archivo)) {
+                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'El archivo RECIBO DE CAJA - "' . $filename . '" ya existe!'
+                        ]);
+                    }
+                }
+
+
+
+                if ($request->hasFile('NombreS')) {
+                    $file = $request->file('NombreS');
+                    $dir = 'Storage/files/sintesis/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombreS')->move($dir, $filename);
+
+                        $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
+                            $request->FechaInsercion,
+                            $filename ?? null,
+                            $idPersona
+                        ]);
+                    } else {
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
                 } else {
-                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
-                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                    return back()->withErrors([
-                        'message' => 'Solo se puede subir archivos PDF.'
+                    $sql2 = DB::insert('INSERT INTO documentosintesis (FechaInsercion, NombreS, ID_Persona) VALUES (?, ?, ?)', [
+                        $request->FechaInsercion ?? null,
+                        null,
+                        $idPersona
                     ]);
                 }
-            }
-        } else {
-            $sql4 = DB::insert('INSERT INTO documentoa (NombreA, NombreContrato, ConsecutivoA, ID_Persona) VALUES (?, ?, ?, ?)', [
-                null,
-                null,
-                $request->consecutivoa,
-                $idPersona
-            ]);
-        }
-        if ($request->hasFile('NombrePN')) {
-            $file = $request->file('NombrePN');
-            $dir = 'Storage/files/pn/';
-            $filename =  $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
+                if ($request->hasFile('NombreRC')) {
+                    $file = $request->file('NombreRC');
+                    $dir = 'Storage/files/rc/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
 
-            if ($extension === 'pdf') {
-                $uploadSucces = $request->file('NombrePN')->move($dir, $filename);
 
-                $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                    $filename ?? null,
-                    $idPersona
-                ]);
-            } else {
-                $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                return back()->withErrors([
-                    'message' => 'Solo se puede subir archivos PDF.'
-                ]);
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombreRC')->move($dir, $filename);
+
+                        $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, NIT, RazonSocial, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?, ?, ?)', [
+
+                            $filename ?? null,
+                            $request->nit,
+                            $request->razonSocial,
+                            $request->valorcompra,
+                            $request->valorcompra,
+                            $idPersona
+                        ]);
+                        if ($file->getClientOriginalName() !== 'RC-' . $request->nit . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            if (file_exists($dir . $filename)) {
+                                unlink($dir . $filename);
+                            }
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->nit . '.pdf'
+                            ]);
+                        }
+                    } else {
+                        $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                } else {
+                    $sql2 = DB::insert('INSERT INTO proveedor (NombreRC, NIT, RazonSocial, ValorCompra, ValorAcumulado, ID_Persona) VALUES (?, ?, ?, ?, ? ,?)', [
+                        null,
+                        $request->nit,
+                        $request->razonSocial,
+                        $request->valorcompra,
+                        $request->valorcompra,
+                        $idPersona
+                    ]);
+                }
+
+                if ($request->hasFile('NombreA')) {
+                    $file2 = $request->file('NombreA');
+                    if ($file2 != null) {
+                        $dir2 = 'Storage/files/autorizacion/';
+                        $filename2 = $file2->getClientOriginalName();
+                        $extension2 = $file2->getClientOriginalExtension();
+
+                        if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->nit . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula . '.pdf'
+                            ]);
+                        }
+                        if ($extension2 === 'pdf') {
+                            $uploadSucces2 = $request->file('NombreA')->move($dir2, $filename2);
+                            $sql4 = DB::insert('INSERT INTO documentoa (NombreA, ConsecutivoA, NombreContrato, ID_Persona) VALUES (?, ?, ?, ?)', [
+                                $filename2 ?? null,
+                                $request->consecutivoa,
+                                null,
+                                $idPersona
+                            ]);
+                        } else {
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM proveedor WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                            return back()->withErrors([
+                                'message' => 'Solo se puede subir archivos PDF.'
+                            ]);
+                        }
+                    }
+                } else {
+                    $sql4 = DB::insert('INSERT INTO documentoa (NombreA, NombreContrato, ConsecutivoA, ID_Persona) VALUES (?, ?, ?, ?)', [
+                        null,
+                        null,
+                        $request->consecutivoa,
+                        $idPersona
+                    ]);
+                }
+                if ($request->hasFile('NombrePN')) {
+                    $file = $request->file('NombrePN');
+                    $dir = 'Storage/files/pn/';
+                    $filename = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+
+                    if ($extension === 'pdf') {
+                        $uploadSucces = $request->file('NombrePN')->move($dir, $filename);
+
+                        $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
+                            $filename ?? null,
+                            $idPersona
+                        ]);
+                    } else {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                } else {
+                    $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
+                        null,
+                        $idPersona
+                    ]);
+                }//
             }
-        } else {
-            $sql3 = DB::insert('INSERT INTO documentopn (NombrePN, ID_Persona) VALUES (?, ?)', [
-                null,
-                $idPersona
-            ]);
-        }//
-        }
 
 
 
@@ -2653,8 +2641,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             date_default_timezone_set('America/Bogota');
             $ip = $_SERVER['REMOTE_ADDR'];
             $fechaHoraActual = date('Y-m-d H:i:s');
-$agencia = $usuarioActual->agenciau;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoProveedor', ?, ?, ?, ?)", [
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoProveedor', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -2665,26 +2653,26 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 $ip
             ]);
             if ($sql && $sql4) {
-                if($request->tipo_persona == 'PN'){
-                $cedula = $request->cedula;
-                $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
-                $usuarioActual = Auth::user();
-                $agencia = $usuarioActual->agenciau;
-                $talento = " de Talento Humano";
-                foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo6($cedula, $talento, $agencia));
+                if ($request->tipo_persona == 'PN') {
+                    $cedula = $request->cedula;
+                    $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
+                    $usuarioActual = Auth::user();
+                    $agencia = $usuarioActual->agenciau;
+                    $talento = " de Talento Humano";
+                    foreach ($usuarios as $email) {
+                        Mail::to($email)->send(new EnviarCorreo6($cedula, $talento, $agencia));
+                    }
+                } else {
+                    $nit = $request->nit;
+                    $razon = $request->razonSocial;
+                    $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
+                    $usuarioActual = Auth::user();
+                    $agencia = $usuarioActual->agenciau;
+                    $talento = " de Talento Humano";
+                    foreach ($usuarios as $email) {
+                        Mail::to($email)->send(new EnviarCorreo5($nit, $talento, $razon, $agencia));
+                    }
                 }
-            }else{
-                $nit = $request->nit;
-                $razon = $request->razonSocial;
-                $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
-                $usuarioActual = Auth::user();
-                $agencia = $usuarioActual->agenciau;
-                $talento = " de Talento Humano";
-                foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo5($nit, $talento, $razon, $agencia));
-                }
-            }
                 return back()->with("correcto2", "Persona Registrada correctamente!")->with("showLoadingAlert", true);
             } else {
                 return back()->with("incorrecto", "Error al insertar el registro!");
@@ -2694,161 +2682,157 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
-       //Actualizar registro
-   public function update3(Request $request, $id)
-   {
+    //Actualizar registro
+    public function update3(Request $request, $id)
+    {
 
-    $archivo4 = DB::select("SELECT NombreRC FROM proveedor WHERE ID_Persona = ?", [$id]);
-    $nombre_archivo4 = $archivo4[0]->NombreRC;
-    $filename4 = $nombre_archivo4;
-    if ($archivo4) {
+        $archivo4 = DB::select("SELECT NombreRC FROM proveedor WHERE ID_Persona = ?", [$id]);
         $nombre_archivo4 = $archivo4[0]->NombreRC;
-        if ($request->hasFile('archivo4')) {
-            $file4 = $request->file('archivo4');
-            $filename4 =  $file4->getClientOriginalName();
-        }
-
-
-
-        $nuevo_archivo4 = $filename4;
+        $filename4 = $nombre_archivo4;
         if ($archivo4) {
-            $pdfactual4 = $nombre_archivo4;
-        } else {
-            $pdfactual4 = null;
-        }
-    }
-    if (!empty($archivo4) && $archivo4 != $pdfactual4) {
-        $nuevo_nombre4 = $nuevo_archivo4;
-    }
-
-    if (isset($nombre_archivo4) && isset($nuevo_nombre4) && $nombre_archivo4 !== $nuevo_nombre4) {
-        return back()->withErrors([
-            'message' => 'El archivo subido contiene un nombre diferente al archivo RECIBO DE CAJA -> ' . $nombre_archivo4 . ' actual (' . $nombre_archivo4 . ').\n'
-        ]);
-
-
-    }
-
-    $archivo3 = DB::select("SELECT NombreA FROM documentoa WHERE ID_Persona = ?", [$id]);
-    $nombre_archivo3 = $archivo3[0]->NombreA;
-    $filename3 = $nombre_archivo3;
-    if ($archivo3) {
-        $nombre_archivo3 = $archivo3[0]->NombreA;
-        if ($request->hasFile('archivo3')) {
-            $file3 = $request->file('archivo3');
-            $filename3 =  $file3->getClientOriginalName();
-        }
-
-
-
-        $nuevo_archivo3 = $filename3;
-        if ($archivo3) {
-            $pdfactual3 = $nombre_archivo3;
-        } else {
-            $pdfactual3 = null;
-        }
-    }
-    if (!empty($archivo3) && $archivo3 != $pdfactual3) {
-        $nuevo_nombre3 = $nuevo_archivo3;
-    }
-
-    if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
-        return back()->withErrors([
-            'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN -> ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
-        ]);
-    }
-
-
-    else {
-        if($request->Score == 'S/E'){
-            $request->Score = 'S/E';
-         }
-             elseif
-             ($request->Score > 950) {
-                $request->Score = 950;
+            $nombre_archivo4 = $archivo4[0]->NombreRC;
+            if ($request->hasFile('archivo4')) {
+                $file4 = $request->file('archivo4');
+                $filename4 = $file4->getClientOriginalName();
             }
 
-        $tipo = DB::select("SELECT TipoProveedor FROM persona WHERE ID = ?",[$id]);
-        $tipoproveedor = $tipo[0]->TipoProveedor;
 
-        if($tipoproveedor == "PN"){
 
-            $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Agencia = ?, Inspektor = ?  WHERE ID = $id", [
-                $request->cedula2,
-                $request->nombre3,
-                $request->apellidos3,
-                $request->agencia3,
-                $request->Inspektor3,
+            $nuevo_archivo4 = $filename4;
+            if ($archivo4) {
+                $pdfactual4 = $nombre_archivo4;
+            } else {
+                $pdfactual4 = null;
+            }
+        }
+        if (!empty($archivo4) && $archivo4 != $pdfactual4) {
+            $nuevo_nombre4 = $nuevo_archivo4;
+        }
+
+        if (isset($nombre_archivo4) && isset($nuevo_nombre4) && $nombre_archivo4 !== $nuevo_nombre4) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo RECIBO DE CAJA -> ' . $nombre_archivo4 . ' actual (' . $nombre_archivo4 . ').\n'
             ]);
 
 
-            $proveedor = DB::select("SELECT ValorAcumulado FROM proveedor WHERE ID_Persona = ?", [$id]);
-            $valorAcumuladoActual = $proveedor[0]->ValorAcumulado;
+        }
 
-            $nuevoValorCompra = $request->valorcompra1;
-
-            $nuevoValorAcumulado = $valorAcumuladoActual + $nuevoValorCompra;
-
-            $dir4 = 'Storage/files/rc/';
-            if ($request->hasFile('archivo4') && !empty($filename4)) {
-                $file4 = $request->file('archivo4');
-                if ($file4->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2 . '.pdf') {
-                    return back()->withErrors([
-                        'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula2 . '.pdf'
-                    ]);
-                }
-                if ($file4->getClientOriginalExtension() === 'pdf') {
-                    $uploadSuccess = $file4->move($dir4, $filename4);
-                } else {
-                    return back()->withErrors([
-                        'message' => 'Solo se puede subir archivos PDF.'
-                    ]);
-                }
-            }
-            if ($request->hasFile('archivo4')) {
-                $sql5 = DB::update("UPDATE proveedor SET ValorCompra = ?, ValorAcumulado = ?, NombreRC = ? WHERE ID_Persona = $id", [
-                    $request->valorcompra1,
-                    $nuevoValorAcumulado,
-                    $nuevo_archivo4
-                ]);
-            } else {
-                $sql5 = DB::update("UPDATE proveedor SET ValorCompra = ?, ValorAcumulado = ?, NombreRC = ? WHERE ID_Persona = $id", [
-                    $request->valorcompra1,
-                    $nuevoValorAcumulado,
-                    null
-                ]);
-            }
-
-
-
-            $dir3 = 'Storage/files/autorizacion/';
-            if ($request->hasFile('archivo3') && !empty($filename3)) {
+        $archivo3 = DB::select("SELECT NombreA FROM documentoa WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo3 = $archivo3[0]->NombreA;
+        $filename3 = $nombre_archivo3;
+        if ($archivo3) {
+            $nombre_archivo3 = $archivo3[0]->NombreA;
+            if ($request->hasFile('archivo3')) {
                 $file3 = $request->file('archivo3');
-                if ($file3->getClientOriginalName() !== 'Autorizacion-' . $request->nit2 . '.pdf') {
-                    return back()->withErrors([
-                        'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->nit2 . '.pdf'
+                $filename3 = $file3->getClientOriginalName();
+            }
+
+
+
+            $nuevo_archivo3 = $filename3;
+            if ($archivo3) {
+                $pdfactual3 = $nombre_archivo3;
+            } else {
+                $pdfactual3 = null;
+            }
+        }
+        if (!empty($archivo3) && $archivo3 != $pdfactual3) {
+            $nuevo_nombre3 = $nuevo_archivo3;
+        }
+
+        if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN -> ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
+            ]);
+        } else {
+            if ($request->Score == 'S/E') {
+                $request->Score = 'S/E';
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+
+            $tipo = DB::select("SELECT TipoProveedor FROM persona WHERE ID = ?", [$id]);
+            $tipoproveedor = $tipo[0]->TipoProveedor;
+
+            if ($tipoproveedor == "PN") {
+
+                $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Agencia = ?, Inspektor = ?  WHERE ID = $id", [
+                    $request->cedula2,
+                    $request->nombre3,
+                    $request->apellidos3,
+                    $request->agencia3,
+                    $request->Inspektor3,
+                ]);
+
+
+                $proveedor = DB::select("SELECT ValorAcumulado FROM proveedor WHERE ID_Persona = ?", [$id]);
+                $valorAcumuladoActual = $proveedor[0]->ValorAcumulado;
+
+                $nuevoValorCompra = $request->valorcompra1;
+
+                $nuevoValorAcumulado = $valorAcumuladoActual + $nuevoValorCompra;
+
+                $dir4 = 'Storage/files/rc/';
+                if ($request->hasFile('archivo4') && !empty($filename4)) {
+                    $file4 = $request->file('archivo4');
+                    if ($file4->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2 . '.pdf') {
+                        return back()->withErrors([
+                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula2 . '.pdf'
+                        ]);
+                    }
+                    if ($file4->getClientOriginalExtension() === 'pdf') {
+                        $uploadSuccess = $file4->move($dir4, $filename4);
+                    } else {
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                }
+                if ($request->hasFile('archivo4')) {
+                    $sql5 = DB::update("UPDATE proveedor SET ValorCompra = ?, ValorAcumulado = ?, NombreRC = ? WHERE ID_Persona = $id", [
+                        $request->valorcompra1,
+                        $nuevoValorAcumulado,
+                        $nuevo_archivo4
+                    ]);
+                } else {
+                    $sql5 = DB::update("UPDATE proveedor SET ValorCompra = ?, ValorAcumulado = ?, NombreRC = ? WHERE ID_Persona = $id", [
+                        $request->valorcompra1,
+                        $nuevoValorAcumulado,
+                        null
                     ]);
                 }
 
-                if ($file3->getClientOriginalExtension() === 'pdf') {
-                    $uploadSuccess3 = $file3->move($dir3, $filename3);
+
+
+                $dir3 = 'Storage/files/autorizacion/';
+                if ($request->hasFile('archivo3') && !empty($filename3)) {
+                    $file3 = $request->file('archivo3');
+                    if ($file3->getClientOriginalName() !== 'Autorizacion-' . $request->nit2 . '.pdf') {
+                        return back()->withErrors([
+                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->nit2 . '.pdf'
+                        ]);
+                    }
+
+                    if ($file3->getClientOriginalExtension() === 'pdf') {
+                        $uploadSuccess3 = $file3->move($dir3, $filename3);
+                    } else {
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                }
+                if ($request->hasFile('archivo3')) {
+                    $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
+                        $request->consecutivoa44,
+                        $nuevo_archivo3
+                    ]);
                 } else {
-                    return back()->withErrors([
-                        'message' => 'Solo se puede subir archivos PDF.'
+                    $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
+                        $request->consecutivoa44
                     ]);
                 }
-            }
-               if ($request->hasFile('archivo3')) {
-                   $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
-                       $request->consecutivoa44,
-                       $nuevo_archivo3
-                   ]);
-               } else {
-                   $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
-                       $request->consecutivoa44
-                   ]);
-               }
-}else{
+            } else {
                 $sql = DB::update("UPDATE persona SET Agencia = ?, Inspektor = ?  WHERE ID = $id", [
                     $request->agencia4,
                     $request->Inspektor2,
@@ -2916,30 +2900,30 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         ]);
                     }
                 }
-                   if ($request->hasFile('archivo3')) {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33,
-                           $nuevo_archivo3
-                       ]);
-                   } else {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33
-                       ]);
-                   }
+                if ($request->hasFile('archivo3')) {
+                    $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
+                        $request->consecutivoa33,
+                        $nuevo_archivo3
+                    ]);
+                } else {
+                    $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
+                        $request->consecutivoa33
+                    ]);
+                }
             }
 
 
-           $usuarioActual = Auth::user();
-           $nombre = $usuarioActual->name;
-           $rol = $usuarioActual->rol;
-           $cedulaagregada = $request->Cedula;
-           date_default_timezone_set('America/Bogota');
-           $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
-           $cedulaRegistrada = $cedula[0]->Cedula;
-           $fechaHoraActual = date('Y-m-d H:i:s');
-           $ip = $_SERVER['REMOTE_ADDR'];
-$agencia = $usuarioActual->agenciau;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoProveedor', ?, ?, ?, ?)", [
+            $usuarioActual = Auth::user();
+            $nombre = $usuarioActual->name;
+            $rol = $usuarioActual->rol;
+            $cedulaagregada = $request->Cedula;
+            date_default_timezone_set('America/Bogota');
+            $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
+            $cedulaRegistrada = $cedula[0]->Cedula;
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoProveedor', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -2949,43 +2933,41 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 null,
                 $ip
             ]);
-           if ($request->Consulta == true) {
-               $sql4 = DB::update("UPDATE persona SET Consulta = ? WHERE ID = $id", [
-                   1
-               ]);
-           }
-           if(isset($sql4) && $sql4 == true) {
-               $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
-               $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
-               $recibo = $request->recibo;
-               $cedulaRegistrada = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
-               $cedula = $cedulaRegistrada[0]->Cedula;
-               $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
-               foreach ($usuarios as $email) {
-                   Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
-               }
-               if($tipoproveedor == 'PN'){
-               return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 puede ser consultado!");
-               }else{
-                return back()->with("correcto", "El usuario con razón social " . ucwords($request->razonsocial2) . " con NIT # $request->nit2 puede ser consultado!");
-               }
-           }
-           else if ($sql == true || $sql2 = true || $sql5 = true) {
-            if($tipoproveedor == 'PN'){
+            if ($request->Consulta == true) {
+                $sql4 = DB::update("UPDATE persona SET Consulta = ? WHERE ID = $id", [
+                    1
+                ]);
+            }
+            if (isset($sql4) && $sql4 == true) {
+                $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
+                $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
+                $recibo = $request->recibo;
+                $cedulaRegistrada = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
+                $cedula = $cedulaRegistrada[0]->Cedula;
+                $usuarios = DB::table('users')->where('rol', 'Thumano')->pluck('email');
+                foreach ($usuarios as $email) {
+                    Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
+                }
+                if ($tipoproveedor == 'PN') {
+                    return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 puede ser consultado!");
+                } else {
+                    return back()->with("correcto", "El usuario con razón social " . ucwords($request->razonsocial2) . " con NIT # $request->nit2 puede ser consultado!");
+                }
+            } else if ($sql == true || $sql2 = true || $sql5 = true) {
+                if ($tipoproveedor == 'PN') {
 
-                return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
-               }
-               else{
-                   return back()->with("correcto", "La persona con razón social " . ucwords($request->razonsocial2) . " con NIT # $request->nit2 fue actualizado correctamente!");
-               }
-           } else {
-               return back()->with("incorrecto", "Error al modificar el registro!");
-           }
+                    return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
+                } else {
+                    return back()->with("correcto", "La persona con razón social " . ucwords($request->razonsocial2) . " con NIT # $request->nit2 fue actualizado correctamente!");
+                }
+            } else {
+                return back()->with("incorrecto", "Error al modificar el registro!");
+            }
 
-       }
-   }
+        }
+    }
 
-   public function update4(Request $request, $id)
+    public function update4(Request $request, $id)
     {
 
         $archivo3 = DB::select("SELECT NombreA FROM documentoa WHERE ID_Persona = ?", [$id]);
@@ -2995,7 +2977,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo3 = $archivo3[0]->NombreA;
             if ($request->hasFile('archivo3')) {
                 $file3 = $request->file('archivo3');
-                $filename3 =  $file3->getClientOriginalName();
+                $filename3 = $file3->getClientOriginalName();
             }
 
 
@@ -3007,12 +2989,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 $pdfactual3 = null;
             }
         }
+
         if (!empty($archivo3) && $archivo3 != $pdfactual3) {
             $nuevo_nombre3 = $nuevo_archivo3;
         }
-        if (!empty($file3)){
-            $resultado = $file3->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2.'.pdf';
-            $resultado2 = $file3->getClientOriginalName() !== 'Analisis-' . $request->cedula2.'.pdf';
+        if (!empty($file3)) {
+            $resultado = $file3->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2 . '.pdf';
+            $resultado2 = $file3->getClientOriginalName() !== 'Analisis-' . $request->cedula2 . '.pdf';
             if ($resultado == true && $resultado2 == true) {
                 return back()->withErrors([
                     'message' => 'El archivo subido contiene un nombre diferente a Autorizacion o Analisis.\nExistente ->' . $nombre_archivo3 . '\n Actual->' . $filename3 . '.\n'
@@ -3029,7 +3012,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo5 = $archivo5[0]->NombreAnalisis;
             if ($request->hasFile('archivo33')) {
                 $file5 = $request->file('archivo33');
-                $filename5 =  $file5->getClientOriginalName();
+                $filename5 = $file5->getClientOriginalName();
             }
 
 
@@ -3045,39 +3028,40 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nuevo_nombre5 = $nuevo_archivo5;
         }
 
+        $resultado = false;
+        if (!empty($file5)) {
+            $resultado = $file5->getClientOriginalName() !== 'RC-' . $request->cedula2 . '.pdf';
 
-        if (!empty($file5)){
-            $resultado = $file5->getClientOriginalName() !== 'RC-' . $request->cedula2.'.pdf';
-            if ($resultado == true) {
-                return back()->withErrors([
-                    'message' => 'El archivo subido contiene un nombre diferente a RC-'.$request->cedula2.'\n'
-                ]);
-
-            }
         }
+
+        if ($resultado == true) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente a RC-' . $request->cedula2 . '\n'
+            ]);
+
+        }
+
         // if (isset($nombre_archivo5) && isset($nuevo_nombre5) && $nombre_archivo5 !== $nuevo_nombre5) {
         //     return back()->withErrors([
         //         'message' => 'El archivo subido contiene un nombre diferente al archivo RC ' . $nombre_archivo5 . ' actual (' . $nombre_archivo5 . ').\n'
         //     ]);
 
         // }
-
         else {
-            if($request->Score == 'S/E'){
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
 
 
 
 
-                $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
-                $totalDeuda = $sql[0]->DeudaEsp;
-                $nuevoTotalDeuda = $totalDeuda + $request->monto;
-                $recibo = $request->recibo;
+            $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
+            $totalDeuda = $sql[0]->DeudaEsp;
+            $nuevoTotalDeuda = $totalDeuda + $request->monto;
+            $recibo = $request->recibo;
 
             $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Monto = ?, DeudaEsp = ?, Linea = ?, ConsecutivoRC = ? , ObRC =?, Inspektor =? WHERE ID = $id", [
                 $request->cedula2,
@@ -3103,57 +3087,57 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
             $dir2 = 'Storage/files/autorizacion/';
-                if ($request->hasFile('archivo3') && !empty($filename3)) {
-                    $file2 = $request->file('archivo3');
+            if ($request->hasFile('archivo3') && !empty($filename3)) {
+                $file2 = $request->file('archivo3');
 
-                    if ($file2->getClientOriginalExtension() === 'pdf') {
-                        $uploadSuccess2 = $file2->move($dir2, $filename3);
-                    } else {
-                        return back()->withErrors([
-                            'message' => 'Solo se puede subir archivos PDF.'
-                        ]);
-                    }
+                if ($file2->getClientOriginalExtension() === 'pdf') {
+                    $uploadSuccess2 = $file2->move($dir2, $filename3);
+                } else {
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
                 }
-                   if ($request->hasFile('archivo3')) {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33,
-                           $nuevo_archivo3
-                       ]);
-                   } else {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33
-                       ]);
-                   }
+            }
+            if ($request->hasFile('archivo3')) {
+                $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
+                    $request->consecutivoa33,
+                    $nuevo_archivo3
+                ]);
+            } else {
+                $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
+                    $request->consecutivoa33
+                ]);
+            }
 
 
 
-                   $archivo5 = DB::select("SELECT NombreAnalisis FROM persona WHERE ID = ?", [$id]);
-                   $nombre_archivo5 = $archivo5[0]->NombreAnalisis;
-                   $dir5 = 'Storage/files/rccreditos/';
-                   $filename5 = $nombre_archivo5;
+            $archivo5 = DB::select("SELECT NombreAnalisis FROM persona WHERE ID = ?", [$id]);
+            $nombre_archivo5 = $archivo5[0]->NombreAnalisis;
+            $dir5 = 'Storage/files/rccreditos/';
+            $filename5 = $nombre_archivo5;
 
-                   if ($request->hasFile('archivo33') && !empty($filename5)) {
-                       $file5 = $request->file('archivo33');
-                       $nombre = $file5->getClientOriginalName();
-                       if ($file5->getClientOriginalName() !== 'RC-' . $request->cedula2 . '.pdf') {
-                           return back()->withErrors([
-                               'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->cedula2 . '.pdf'
-                           ]);
-                       }
-
-                       if ($file5->getClientOriginalExtension() === 'pdf') {
-                           $uploadSuccess5 = $file5->move($dir5, $filename5);
-                       } else {
-                           return back()->withErrors([
-                               'message' => 'Solo se puede subir archivos PDF.'
-                           ]);
-                       }
-                   }
-                   if ($request->hasFile('archivo33')) {
-                    $file5 = $request->file('archivo33');
-                    $nombre = $file5->getClientOriginalName();
-                    $sql2 = DB::update("UPDATE persona SET NombreAnalisis = ? WHERE ID = ?", [$nombre, $id]);
+            if ($request->hasFile('archivo33') && !empty($filename5)) {
+                $file5 = $request->file('archivo33');
+                $nombre = $file5->getClientOriginalName();
+                if ($file5->getClientOriginalName() !== 'RC-' . $request->cedula2 . '.pdf') {
+                    return back()->withErrors([
+                        'message' => 'El nombre del archivo no cumple con el formato requerido ->RC-' . $request->cedula2 . '.pdf'
+                    ]);
                 }
+
+                if ($file5->getClientOriginalExtension() === 'pdf') {
+                    $uploadSuccess5 = $file5->move($dir5, $filename5);
+                } else {
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
+                }
+            }
+            if ($request->hasFile('archivo33')) {
+                $file5 = $request->file('archivo33');
+                $nombre = $file5->getClientOriginalName();
+                $sql2 = DB::update("UPDATE persona SET NombreAnalisis = ? WHERE ID = ?", [$nombre, $id]);
+            }
 
 
             if ($request->Consulta == true) {
@@ -3177,7 +3161,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $agencia = $usuarioActual->agenciau;
             $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
             $cedulaRegistrada = $cedula[0]->Cedula;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoAsociado', ?, ?, ?, ?)", [
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoAsociado', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -3187,7 +3171,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 null,
                 $ip
             ]);
-            if(isset($sql4) && $sql4 == true) {
+            if (isset($sql4) && $sql4 == true) {
                 $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
                 $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
                 $recibo = $request->recibo;
@@ -3195,17 +3179,16 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 $cedula = $cedulaRegistrada[0]->Cedula;
                 $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
                 foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
+                    Mail::to($email)->send(new EnviarCorreo15($cedula, $agencia, $tipo));
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 puede ser consultado!");
-            }
-            else if ($sql == true || $sql2 = true || $sql5) {
+            } else if ($sql == true || $sql2 = true || $sql5) {
                 $cedula = $request->cedula2;
                 $tipo = " Crédito";
                 $agencia = $request->agencia3;
                 $usuarios = DB::table('users')->where('rol', 'Asociacion')->pluck('email');
                 foreach ($usuarios as $email) {
-                    Mail::to($email)->send(new EnviarCorreo15($cedula, $agencia,$tipo));
+                    Mail::to($email)->send(new EnviarCorreo15($cedula, $agencia, $tipo));
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
             } else {
@@ -3214,7 +3197,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
         }
     }
 
-    public function data7(){
+    public function data7()
+    {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
@@ -3239,118 +3223,115 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
         if ($existingPerson == true) {
             return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
-        }
-
-         else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
-                $idPersona = DB::getPdo()->lastInsertId();
-                if ($request->hasFile('NombreA') != null) {
-                    $file4 = $request->file('NombreA');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
+            $idPersona = DB::getPdo()->lastInsertId();
+            if ($request->hasFile('NombreA') != null) {
+                $file4 = $request->file('NombreA');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreA FROM documentoa WHERE NombreA = ?", [$filename4]);
 
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
-                        ]);
-                    }
-                }
-
-
-                if ($request->hasFile('NombreAnalisis') != null) {
-                    $file4 = $request->file('NombreAnalisis');
-                    $filename4 =  $file4->getClientOriginalName();
-                    $archivo4 = DB::select("SELECT NombreAnalisis FROM persona WHERE NombreAnalisis = ?", [$filename4]);
-
-                    if (!empty($archivo4)) {
-                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                        return back()->withErrors([
-                            'message' => 'El archivo Analisis - "' . $filename4 . '" ya existe!'
-                        ]);
-                    }
-                }
-
-
-                if ($request->hasFile('NombreAnalisis')) {
-                    $file5 = $request->file('NombreAnalisis');
-                    if ($file5 != null) {
-                        $dir5 = 'Storage/files/analisis/';
-                        $filename5 =  $file5->getClientOriginalName();
-                        $extension5 = $file5->getClientOriginalExtension();
-
-                        if ($file5->getClientOriginalName() !== 'Analisis-' . $request->Cedula . '.pdf') {
-                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                            return back()->withErrors([
-                                'message' => 'El nombre del archivo no cumple con el formato requerido ->Analisis-' . $request->Cedula . '.pdf'
-                            ]);
-                        }
-                        if ($extension5 === 'pdf') {
-                            $usuarioActual = Auth::user();
-                            $agenciaU = $usuarioActual->agenciau;
-                            $uploadSucces5 = $request->file('NombreAnalisis')->move($dir5, $filename5);
-                            $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, ConsecutivoAnalisis , Monto, DeudaEsp, Linea, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                $request->Cedula,
-                                $request->Nombre,
-                                $request->Apellidos,
-                                null,
-                                $request->CuentaAsociada,
-                                $agenciau,
-                                null,
-                                null,
-                                'Empleado',
-                                1,
-                                'Credito',
-                                $filename5 ?? null,
-                                $request->ConsecutivoAnalisis,
-                                $request->Monto,
-                                $request->Monto,
-                                $request->Linea,
-                                $request->Inspektor
-                            ]);
-                        } else {
-                            $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
-                            return back()->withErrors([
-                                'message' => 'Solo se puede subir archivos PDF.'
-                            ]);
-                        }
-                    }
-                } else {
-                    $usuarioActual = Auth::user();
-                    $agenciaU = $usuarioActual->agenciau;
-                    $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, ConsecutivoAnalisis, Monto, DeudaEsp, Linea, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                        $request->Cedula,
-                        $request->Nombre,
-                        $request->Apellidos,
-                        null,
-                        $request->CuentaAsociada,
-                        $agenciaU,
-                        $request->Estado,
-                        null,
-                        'Empleado',
-                        1,
-                        'Credito',
-                        $filename5 ?? null,
-                        $request->ConsecutivoAnalisis,
-                        $request->Monto,
-                        $request->Monto,
-                        $request->Linea,
-                        $request->Inspektor
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Autorización - "' . $filename4 . '" ya existe!'
                     ]);
                 }
+            }
+
+
+            if ($request->hasFile('NombreAnalisis') != null) {
+                $file4 = $request->file('NombreAnalisis');
+                $filename4 = $file4->getClientOriginalName();
+                $archivo4 = DB::select("SELECT NombreAnalisis FROM persona WHERE NombreAnalisis = ?", [$filename4]);
+
+                if (!empty($archivo4)) {
+                    $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                    return back()->withErrors([
+                        'message' => 'El archivo Analisis - "' . $filename4 . '" ya existe!'
+                    ]);
+                }
+            }
+
+
+            if ($request->hasFile('NombreAnalisis')) {
+                $file5 = $request->file('NombreAnalisis');
+                if ($file5 != null) {
+                    $dir5 = 'Storage/files/analisis/';
+                    $filename5 = $file5->getClientOriginalName();
+                    $extension5 = $file5->getClientOriginalExtension();
+
+                    if ($file5->getClientOriginalName() !== 'Analisis-' . $request->Cedula . '.pdf') {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Analisis-' . $request->Cedula . '.pdf'
+                        ]);
+                    }
+                    if ($extension5 === 'pdf') {
+                        $usuarioActual = Auth::user();
+                        $agenciaU = $usuarioActual->agenciau;
+                        $uploadSucces5 = $request->file('NombreAnalisis')->move($dir5, $filename5);
+                        $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, ConsecutivoAnalisis , Monto, DeudaEsp, Linea, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                            $request->Cedula,
+                            $request->Nombre,
+                            $request->Apellidos,
+                            null,
+                            $request->CuentaAsociada,
+                            $agenciau,
+                            null,
+                            null,
+                            'Empleado',
+                            1,
+                            'Credito',
+                            $filename5 ?? null,
+                            $request->ConsecutivoAnalisis,
+                            $request->Monto,
+                            $request->Monto,
+                            $request->Linea,
+                            $request->Inspektor
+                        ]);
+                    } else {
+                        $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
+                        return back()->withErrors([
+                            'message' => 'Solo se puede subir archivos PDF.'
+                        ]);
+                    }
+                }
+            } else {
+                $usuarioActual = Auth::user();
+                $agenciaU = $usuarioActual->agenciau;
+                $sql4 = DB::insert('INSERT INTO persona (Cedula, Nombre, Apellidos, Score, CuentaAsociada, Agencia, Estado, Reporte, Tipo, Enviado, TipoAsociado, NombreAnalisis, ConsecutivoAnalisis, Monto, DeudaEsp, Linea, Inspektor) VALUES (?, ?, UPPER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                    $request->Cedula,
+                    $request->Nombre,
+                    $request->Apellidos,
+                    null,
+                    $request->CuentaAsociada,
+                    $agenciaU,
+                    $request->Estado,
+                    null,
+                    'Empleado',
+                    1,
+                    'Credito',
+                    $filename5 ?? null,
+                    $request->ConsecutivoAnalisis,
+                    $request->Monto,
+                    $request->Monto,
+                    $request->Linea,
+                    $request->Inspektor
+                ]);
+            }
 
             $idPersona = DB::getPdo()->lastInsertId();
 
             if ($request->hasFile('NombreS')) {
                 $file = $request->file('NombreS');
                 $dir = 'Storage/files/sintesis/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -3379,7 +3360,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 $file = $request->file('NombreA');
                 if ($file != null) {
                     $dir = 'Storage/files/autorizacion/';
-                    $filename =  $file->getClientOriginalName();
+                    $filename = $file->getClientOriginalName();
                     $extension = $file->getClientOriginalExtension();
 
                     if ($file->getClientOriginalName() !== 'Autorizacion-' . $request->Cedula . '.pdf') {
@@ -3414,7 +3395,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             if ($request->hasFile('NombrePN')) {
                 $file = $request->file('NombrePN');
                 $dir = 'Storage/files/pn/';
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
 
                 if ($extension === 'pdf') {
@@ -3440,7 +3421,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
             if ($request->hasFile('NombreT')) {
                 $file = $request->file('NombreT');
-                $filename2 =  $file->getClientOriginalName();
+                $filename2 = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $dir3 = "";
                 $ruta_carga3 = "";
@@ -3502,8 +3483,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             date_default_timezone_set('America/Bogota');
             $ip = $_SERVER['REMOTE_ADDR'];
             $fechaHoraActual = date('Y-m-d H:i:s');
-$agencia = $usuarioActual->agenciau;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoCreditoEmpleado', ?, ?, ?, ?)", [
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoCreditoEmpleado', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -3542,7 +3523,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo = $archivo[0]->NombreS;
             if ($request->hasFile('archivo22')) {
                 $file = $request->file('archivo22');
-                $filename =  $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
             }
 
 
@@ -3576,7 +3557,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo2 = $archivo2[0]->NombrePN;
             if ($request->hasFile('archivo11')) {
                 $file2 = $request->file('archivo11');
-                $filename2 =  $file2->getClientOriginalName();
+                $filename2 = $file2->getClientOriginalName();
             }
 
 
@@ -3606,7 +3587,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nombre_archivo3 = $archivo3[0]->NombreA;
             if ($request->hasFile('archivo3')) {
                 $file3 = $request->file('archivo3');
-                $filename3 =  $file3->getClientOriginalName();
+                $filename3 = $file3->getClientOriginalName();
             }
 
 
@@ -3627,26 +3608,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
             ]);
 
-        }
-
-
-        else {
-            if($request->Score == 'S/E'){
+        } else {
+            if ($request->Score == 'S/E') {
                 $request->Score = 'S/E';
-             }
-                 elseif
-                 ($request->Score > 950) {
-                    $request->Score = 950;
-                }
+            } elseif
+            ($request->Score > 950) {
+                $request->Score = 950;
+            }
 
 
 
 
-                $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
-                $totalDeuda = $sql[0]->DeudaEsp;
+            $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
+            $totalDeuda = $sql[0]->DeudaEsp;
 
 
-                $nuevoTotalDeuda = $totalDeuda + $request->monto;
+            $nuevoTotalDeuda = $totalDeuda + $request->monto;
             $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = ?, Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Monto = ?, DeudaEsp = ?, Linea = ? WHERE ID = $id", [
                 $request->cedula2,
                 $request->nombre3,
@@ -3683,32 +3660,32 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             }
 
             $dir2 = 'Storage/files/autorizacion/';
-                if ($request->hasFile('archivo3') && !empty($filename)) {
-                    $file2 = $request->file('archivo3');
-                    if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2 . '.pdf') {
-                        return back()->withErrors([
-                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula2 . '.pdf'
-                        ]);
-                    }
-
-                    if ($file->getClientOriginalExtension() === 'pdf') {
-                        $uploadSuccess2 = $file2->move($dir, $filename);
-                    } else {
-                        return back()->withErrors([
-                            'message' => 'Solo se puede subir archivos PDF.'
-                        ]);
-                    }
+            if ($request->hasFile('archivo3') && !empty($filename)) {
+                $file2 = $request->file('archivo3');
+                if ($file2->getClientOriginalName() !== 'Autorizacion-' . $request->cedula2 . '.pdf') {
+                    return back()->withErrors([
+                        'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->cedula2 . '.pdf'
+                    ]);
                 }
-                   if ($request->hasFile('archivo3')) {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33,
-                           $nuevo_archivo3
-                       ]);
-                   } else {
-                       $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
-                           $request->consecutivoa33
-                       ]);
-                   }
+
+                if ($file->getClientOriginalExtension() === 'pdf') {
+                    $uploadSuccess2 = $file2->move($dir, $filename);
+                } else {
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
+                }
+            }
+            if ($request->hasFile('archivo3')) {
+                $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ?, NombreA = ? WHERE ID_Persona = $id", [
+                    $request->consecutivoa33,
+                    $nuevo_archivo3
+                ]);
+            } else {
+                $sql5 = DB::update("UPDATE documentoa SET ConsecutivoA = ? WHERE ID_Persona = $id", [
+                    $request->consecutivoa33
+                ]);
+            }
 
 
             $archivo3 = DB::select("SELECT NombreAnalisis FROM persona WHERE ID = ?", [$id]);
@@ -3752,7 +3729,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $agencia = $usuarioActual->agenciau;
             $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
             $cedulaRegistrada = $cedula[0]->Cedula;
-$login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizarCreditoEmpleado', ?, ?, ?, ?)", [
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizarCreditoEmpleado', ?, ?, ?, ?)", [
                 null,
                 $nombre,
                 $rol,
@@ -3762,7 +3739,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 null,
                 $ip
             ]);
-            if(isset($sql4) && $sql4 == true) {
+            if (isset($sql4) && $sql4 == true) {
                 $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
                 $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
                 $recibo = $request->recibo;
@@ -3773,8 +3750,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     Mail::to($email)->send(new EnviarCorreo3($cedula, $nombreUsuario, $recibo));
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 puede ser consultado!");
-            }
-            else if ($sql == true || $sql2 = true || $sql5) {
+            } else if ($sql == true || $sql2 = true || $sql5) {
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
             } else {
                 return back()->with("incorrecto", "Error al modificar el registro!");
@@ -3782,7 +3758,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
         }
     }
 
-    public function data8($id){
+    public function data8($id)
+    {
         $user = DB::select("
         SELECT A.ID, A.Observaciones, A.FechaCorreo, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Consulta,
         A.Reporte,  B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT, E.NombreA, E.ConsecutivoA
@@ -3801,7 +3778,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
-    public function data9($id){
+    public function data9($id)
+    {
         $user = DB::select("
         SELECT A.ID, A.FechaCorreo, A.Linea, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Tipo, A.Consulta,
         A.Reporte, A.NombreAnalisis, A.ConsecutivoAnalisis, A.Monto, A.DeudaEsp, B.FechaInsercion, B.NombreS, C.NombrePN,E.NombreA, E.ConsecutivoA, E.NombreContrato
@@ -3819,7 +3797,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
     }
 
-    public function data10($id){
+    public function data10($id)
+    {
         $user = DB::select("
         SELECT A.ID, A.FechaCorreo, A.Linea, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Tipo, A.Consulta,A.TipoProveedor,
         A.Reporte, A.NombreAnalisis, A.TipoAsociado, A.ConsecutivoAnalisis, A.Monto, A.DeudaEsp, B.FechaInsercion, B.NombreS, C.NombrePN,E.NombreA, E.ConsecutivoA, E.NombreContrato, P.NIT
@@ -3848,7 +3827,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
     ");
-    return datatables()->of($user)->toJson();
+        return datatables()->of($user)->toJson();
     }
 
 
@@ -3883,8 +3862,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             if ($firstPagare->ID_Pagare == $request->ID_Pagare && $firstPagare->CuentaCoop == $request->CuentaCoop) {
                 return back()->with("incorrecto2", "El pagaré con consecutivo " . htmlspecialchars($request->ID_Pagare) . " YA existe! Error al Registrar!");
             }
-        }
-        else {
+        } else {
 
             $existingPerson3 = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$request->Cedula_Persona]);
             if (!empty($existingPerson3)) {
@@ -3918,17 +3896,25 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         $dia3 = substr($fechaCredito, 5, 2);
 
 
-                        $anioReal = 2000 + (int)$anio;
+                        $anioReal = 2000 + (int) $anio;
 
-                        $anioReal2 = 2000 + (int)$anio2;
+                        $anioReal2 = 2000 + (int) $anio2;
 
-                        $anioReal3 = 2000 + (int)$anio3;
+                        $anioReal3 = 2000 + (int) $anio3;
 
                         $meses = [
-                            '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                            '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                            '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                            '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
+                            '01' => 'Enero',
+                            '02' => 'Febrero',
+                            '03' => 'Marzo',
+                            '04' => 'Abril',
+                            '05' => 'Mayo',
+                            '06' => 'Junio',
+                            '07' => 'Julio',
+                            '08' => 'Agosto',
+                            '09' => 'Septiembre',
+                            '10' => 'Octubre',
+                            '11' => 'Noviembre',
+                            '12' => 'Diciembre'
                         ];
                         $nombreMes = $meses[$mes];
 
@@ -3936,11 +3922,11 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                         $nombreMes3 = $meses[$mes3];
 
-                        $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+                        $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-                        $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+                        $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
-                        $fechaFormateada3 = $nombreMes3 . " " . (int)$dia3 . " del " . $anioReal3;
+                        $fechaFormateada3 = $nombreMes3 . " " . (int) $dia3 . " del " . $anioReal3;
 
                         $credito = DB::select('SELECT NoLCredito, Credito FROM lineas_credito WHERE NoLCredito = ?', [$request->Linea_Credito]);
                         $lineacredito = $credito[0]->Credito;
@@ -4035,8 +4021,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 // FECHA REPORTE POR MES ACTUAL
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
 
-                                    $anioCompleto = 2000 + (int)$anio3;
-                                    if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                    $anioCompleto = 2000 + (int) $anio3;
+                                    if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                         return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                     }
 
@@ -4122,7 +4108,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                         // Resultado basado en las condiciones
-                                        $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                        $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                         // Calcular el último día del mes de B14
@@ -4137,7 +4123,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                         // Evaluar si todas las condiciones son verdaderas
-                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                         // Primer nivel de comprobación
@@ -4151,7 +4137,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                             $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                            $resultado5 = $condicionA && $condicionB ? true : false ;
+                                            $resultado5 = $condicionA && $condicionB ? true : false;
                                         }
 
 
@@ -4160,7 +4146,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     }
 
 
-                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
 
                                         //INTERES PROPORCIONAL
                                         $fechaHoraActual = Carbon::now('America/Bogota');
@@ -4450,7 +4436,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     } else {
 
                                         $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$CODIGONOMINA, $NODEPENDENCIA, $ENTIDAD]);
-                                        $anioCompleto = 2000 + (int)$anio3;
+                                        $anioCompleto = 2000 + (int) $anio3;
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -4758,8 +4744,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 }
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                    $anioCompleto = 2000 + (int)$anio3;
-                                    if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                    $anioCompleto = 2000 + (int) $anio3;
+                                    if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                         return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                     }
                                     $fechadelCredito = Carbon::now('America/Bogota');
@@ -4806,7 +4792,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                             $fechaReporte->gte($fechadelCredito) &&
                                             $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                        ) ?  true : false ;
+                                        ) ? true : false;
 
                                         // Fórmula 3
                                         $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -5107,7 +5093,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     } else {
 
                                         $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$CODIGONOMINA, $NODEPENDENCIA, $ENTIDAD]);
-                                        $anioCompleto = 2000 + (int)$anio3;
+                                        $anioCompleto = 2000 + (int) $anio3;
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -5415,8 +5401,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 }
 
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                    $anioCompleto = 2000 + (int)$anio3;
-                                    if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                    $anioCompleto = 2000 + (int) $anio3;
+                                    if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                         return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                     }
                                     $fechadelCredito = Carbon::now('America/Bogota');
@@ -5461,7 +5447,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                        $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                        $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                         //CUARTO CONDICIONAL
                                         $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -5479,7 +5465,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                                     //dd($result, $result1, $result2, $resultado3, $resultado4, $resultado5, $fecha1eraCuota, $fechadelCredito, $fechaReporte);
 
-                                    if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                    if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                         //INTERES PROPORCIONAL
                                         $fechaHoraActual = Carbon::now('America/Bogota');
                                         $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
@@ -5770,7 +5756,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     } else {
 
                                         $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$CODIGONOMINA, $NODEPENDENCIA, $ENTIDAD]);
-                                        $anioCompleto = 2000 + (int)$anio3;
+                                        $anioCompleto = 2000 + (int) $anio3;
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -6103,7 +6089,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
                                     $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$CODIGONOMINA, $NODEPENDENCIA, $ENTIDAD]);
-                                    $anioCompleto = 2000 + (int)$anio3;
+                                    $anioCompleto = 2000 + (int) $anio3;
                                     $fechadelCredito = Carbon::now('America/Bogota');
                                     Carbon::setLocale('es');
                                     $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -7090,17 +7076,25 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         $dia3 = substr($fechaCredito, 5, 2);
 
 
-                        $anioReal = 2000 + (int)$anio;
+                        $anioReal = 2000 + (int) $anio;
 
-                        $anioReal2 = 2000 + (int)$anio2;
+                        $anioReal2 = 2000 + (int) $anio2;
 
-                        $anioReal3 = 2000 + (int)$anio3;
+                        $anioReal3 = 2000 + (int) $anio3;
 
                         $meses = [
-                            '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                            '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                            '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                            '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
+                            '01' => 'Enero',
+                            '02' => 'Febrero',
+                            '03' => 'Marzo',
+                            '04' => 'Abril',
+                            '05' => 'Mayo',
+                            '06' => 'Junio',
+                            '07' => 'Julio',
+                            '08' => 'Agosto',
+                            '09' => 'Septiembre',
+                            '10' => 'Octubre',
+                            '11' => 'Noviembre',
+                            '12' => 'Diciembre'
                         ];
                         $nombreMes = $meses[$mes];
 
@@ -7108,11 +7102,11 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                         $nombreMes3 = $meses[$mes3];
 
-                        $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+                        $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-                        $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+                        $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
-                        $fechaFormateada3 = $nombreMes3 . " " . (int)$dia3 . " del " . $anioReal3;
+                        $fechaFormateada3 = $nombreMes3 . " " . (int) $dia3 . " del " . $anioReal3;
 
                         $credito = DB::select('SELECT NoLCredito, Credito FROM lineas_credito WHERE NoLCredito = ?', [$request->Linea_Credito]);
                         $lineacredito = $credito[0]->Credito;
@@ -8188,7 +8182,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                             // Resultado basado en las condiciones
-                                            $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                             // Calcular el último día del mes de B14
@@ -8203,7 +8197,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                             // Evaluar si todas las condiciones son verdaderas
-                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                             // Primer nivel de comprobación
@@ -8217,7 +8211,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                                 $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                                $resultado5 = $condicionA && $condicionB ? true : false ;
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
                                             }
                                         }
 
@@ -8241,311 +8235,311 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
                                         //dd($resultado, $resultado1, $resultado2,$resultado3,$resultado4,$resultado5);
-                                        if ((($resultado == false && $resultado1 == false && $resultado2 == false) && ($resultado3 == false && $resultado4 == false && $resultado5 == true))){
+                                        if ((($resultado == false && $resultado1 == false && $resultado2 == false) && ($resultado3 == false && $resultado4 == false && $resultado5 == true))) {
 
-                                        $fechaHoraActual = Carbon::now('America/Bogota');
-                                        $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
+                                            $fechaHoraActual = Carbon::now('America/Bogota');
+                                            $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
 
 
-                                        $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
-                                        $tasa = $request->Tasa;
-                                        $capital = $request->Capital;
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($request->Capital);
-
-                                        $interval = $fechaHoraActual->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                        $NoAgencia = $request->NoAgencia;
-                                        $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
-                                        //COORDINACION 1
-                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-
+                                            $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
+                                            $tasa = $request->Tasa;
                                             $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($request->Capital);
+
+                                            $interval = $fechaHoraActual->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $NoAgencia = $request->NoAgencia;
+                                            $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
+                                            //COORDINACION 1
+                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 1',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 2
+                                            else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 2',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 3
+                                            else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
+
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 3',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 4
+                                            else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 4',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 5
+                                            else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 5',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            $usuarioActual = Auth::user();
+                                            $nombre = $usuarioActual->name;
+                                            $rol = $usuarioActual->rol;
+                                            $cedulaagregada = $request->Cedula_Persona;
                                             date_default_timezone_set('America/Bogota');
+                                            $ip = $_SERVER['REMOTE_ADDR'];
                                             $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 1',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
+                                            $agencia = $usuarioActual->agenciau;
+                                            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
+                                                null,
+                                                $nombre,
+                                                $rol,
                                                 $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
+                                                $fechaHoraActual,
+                                                $cedulaagregada,
+                                                null,
+                                                $ip
                                             ]);
-                                        }
-                                        //COORDINACION 2
-                                        else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
 
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 2',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 3
-                                        else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
-
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 3',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 4
-                                        else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 4',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 5
-                                        else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 5',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        $usuarioActual = Auth::user();
-                                        $nombre = $usuarioActual->name;
-                                        $rol = $usuarioActual->rol;
-                                        $cedulaagregada = $request->Cedula_Persona;
-                                        date_default_timezone_set('America/Bogota');
-                                        $ip = $_SERVER['REMOTE_ADDR'];
-                                        $fechaHoraActual = date('Y-m-d H:i:s');
-                                        $agencia = $usuarioActual->agenciau;
-                                        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
-                                            null,
-                                            $nombre,
-                                            $rol,
-                                            $agencia,
-                                            $fechaHoraActual,
-                                            $cedulaagregada,
-                                            null,
-                                            $ip
-                                        ]);
-
-                                        return back()->with("incorrecto", $message);
-                                        }else{
+                                            return back()->with("incorrecto", $message);
+                                        } else {
 
                                             //INTERES PROPORCIONAL
                                             $fechaHoraActual = Carbon::now('America/Bogota');
@@ -8857,7 +8851,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     }
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                        $anioCompleto = 2000 + (int)$anio3;
+                                        $anioCompleto = 2000 + (int) $anio3;
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -8902,7 +8896,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                             $fechaReporte->gte($fechadelCredito) &&
                                             $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                        ) ?  true : false ;
+                                        ) ? true : false;
 
                                         // Fórmula 3
                                         $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -8925,308 +8919,308 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         }
                                         if ($resultado1 == false && $resultado2 == false && $resultado3 == false) {
 
-                                        $fechaHoraActual = Carbon::now('America/Bogota');
-                                        $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
+                                            $fechaHoraActual = Carbon::now('America/Bogota');
+                                            $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
 
 
-                                        $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
-                                        $tasa = $request->Tasa;
-                                        $capital = $request->Capital;
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($request->Capital);
-
-                                        $interval = $fechaHoraActual->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                        $NoAgencia = $request->NoAgencia;
-                                        $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
-                                        //COORDINACION 1
-                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-
+                                            $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
+                                            $tasa = $request->Tasa;
                                             $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($request->Capital);
+
+                                            $interval = $fechaHoraActual->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $NoAgencia = $request->NoAgencia;
+                                            $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
+                                            //COORDINACION 1
+                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 1',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 2
+                                            else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 2',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 3
+                                            else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
+
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 3',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 4
+                                            else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 4',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 5
+                                            else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 5',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            $usuarioActual = Auth::user();
+                                            $nombre = $usuarioActual->name;
+                                            $rol = $usuarioActual->rol;
+                                            $cedulaagregada = $request->Cedula_Persona;
                                             date_default_timezone_set('America/Bogota');
+                                            $ip = $_SERVER['REMOTE_ADDR'];
                                             $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 1',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
+                                            $agencia = $usuarioActual->agenciau;
+                                            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
+                                                null,
+                                                $nombre,
+                                                $rol,
                                                 $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
+                                                $fechaHoraActual,
+                                                $cedulaagregada,
+                                                null,
+                                                $ip
                                             ]);
-                                        }
-                                        //COORDINACION 2
-                                        else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 2',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 3
-                                        else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
-
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 3',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 4
-                                        else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 4',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 5
-                                        else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 5',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        $usuarioActual = Auth::user();
-                                        $nombre = $usuarioActual->name;
-                                        $rol = $usuarioActual->rol;
-                                        $cedulaagregada = $request->Cedula_Persona;
-                                        date_default_timezone_set('America/Bogota');
-                                        $ip = $_SERVER['REMOTE_ADDR'];
-                                        $fechaHoraActual = date('Y-m-d H:i:s');
-                                        $agencia = $usuarioActual->agenciau;
-                                        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
-                                            null,
-                                            $nombre,
-                                            $rol,
-                                            $agencia,
-                                            $fechaHoraActual,
-                                            $cedulaagregada,
-                                            null,
-                                            $ip
-                                        ]);
-                                        return back()->with("incorrecto", $message);
-                                        }else{
+                                            return back()->with("incorrecto", $message);
+                                        } else {
                                             $fechaHoraActual = Carbon::now('America/Bogota');
                                             $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
 
@@ -9546,31 +9540,31 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $parts = explode(' ', $fechaStringCredito);
                                         $parts[0] = ucfirst(mb_strtolower($parts[0]));
                                         $fechaStringCredito = implode(' ', $parts);
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                        $diaReporte = max(1, $existeDia[0]->DIAS);
+                                        $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
 
-                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                                $fechaReporteActual->addMonth();
-                                            }
+                                        if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                            $fechaReporteActual->addMonth();
+                                        }
 
-                                            $fechaReporte = $fechaReporteActual;
+                                        $fechaReporte = $fechaReporteActual;
 
 
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporte2 = $fechaReporte->translatedFormat('F d Y');
-                                            // Extracción y manejo de la fecha de la primera cuota
-                                            $codigoAnio = substr($Cuota1, 0, 1);
-                                            $anio = substr($Cuota1, 1, 2);
-                                            $mes = substr($Cuota1, 3, 2);
-                                            $dia = substr($Cuota1, 5, 2);
+                                        Carbon::setLocale('es');
+                                        $fechaReporte2 = $fechaReporte->translatedFormat('F d Y');
+                                        // Extracción y manejo de la fecha de la primera cuota
+                                        $codigoAnio = substr($Cuota1, 0, 1);
+                                        $anio = substr($Cuota1, 1, 2);
+                                        $mes = substr($Cuota1, 3, 2);
+                                        $dia = substr($Cuota1, 5, 2);
 
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                        $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
 
-                                            Carbon::setLocale('es');
-                                            $fechaString22 = $fecha1eraCuota->translatedFormat('F d Y');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                        Carbon::setLocale('es');
+                                        $fechaString22 = $fecha1eraCuota->translatedFormat('F d Y');
+                                        $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                        $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
 
 
                                         $result = $fechadelCredito > $fechaReporte;
@@ -9620,308 +9614,308 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
                                         if (($result == false && $result1 == false && $result2 == false) || ($resultado3 == false && $resultado4 == false && $resultado5 == false)) {
-                                        $fechaHoraActual = Carbon::now('America/Bogota');
-                                        $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
+                                            $fechaHoraActual = Carbon::now('America/Bogota');
+                                            $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
 
 
-                                        $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
-                                        $tasa = $request->Tasa;
-                                        $capital = $request->Capital;
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($request->Capital);
-
-                                        $interval = $fechaHoraActual->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                        $NoAgencia = $request->NoAgencia;
-                                        $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
-                                        //COORDINACION 1
-                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-
+                                            $fechaHoraActualStr = $fechaHoraActual->format('Y-m-d H:i:s');
+                                            $tasa = $request->Tasa;
                                             $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($request->Capital);
+
+                                            $interval = $fechaHoraActual->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $NoAgencia = $request->NoAgencia;
+                                            $message = "<span style='font-size: 20px'>Como la fecha de crédito fue <strong>" . $fechaStringCredito . "</strong> la primera cuota debe ser <strong> " . $fechadeStringCuotaEsperada . " </strong> para el asociado <strong>" . e($request->NombreCompleto) . "</strong> con cuenta <strong>" . e($request->CuentaCoop) . "</strong>.</span>";
+                                            //COORDINACION 1
+                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 1',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 2
+                                            else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 2',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 3
+                                            else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
+
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 3',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 4
+                                            else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 4',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            //COORDINACION 5
+                                            else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                $cedula = $request->Cedula_Persona;
+                                                $nombrepagare = $request->NombreCompleto;
+                                                $capital = $request->Capital;
+                                                $idpagare = $request->ID_Pagare;
+                                                $correo = $request->Correo;
+                                                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $agencia = $existingAgencia[0]->Agencia;
+                                                $idpersona = $existingAgencia[0]->ID;
+                                                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                                                $score = $existingScore[0]->Score;
+                                                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                                                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                                                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
+
+                                                date_default_timezone_set('America/Bogota');
+                                                $fechaHoraActual = date('Y-m-d H:i:s');
+
+
+                                                $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                                                    0,
+                                                    'Coordinacion 5',
+                                                    1,
+                                                    $interesProporcional,
+                                                    $fechaStringCredito,
+                                                    $ValorGarantia,
+                                                    $request->NoAgencia,
+                                                    $agencia,
+                                                    $request->CuentaCoop,
+                                                    $request->Cedula_Persona,
+                                                    $request->NombreCompleto,
+                                                    $request->ID_Pagare,
+                                                    $request->Linea_Credito,
+                                                    $lineacredito,
+                                                    $request->Capital,
+                                                    $request->NoCuotas,
+                                                    $request->ValorCuota,
+                                                    $request->Tasa,
+                                                    $fechaFormateada3,
+                                                    $CODIGONOMINA . '-' . $NOMBRENOMINA,
+                                                    $request->Direccion,
+                                                    $request->TelFijo,
+                                                    $fechaFormateada,
+                                                    $fechaFormateada2,
+                                                    $request->Celular,
+                                                    $request->Correo,
+                                                    $request->GeneradorPagare,
+                                                    $persona2->ID
+                                                ]);
+                                            }
+                                            $usuarioActual = Auth::user();
+                                            $nombre = $usuarioActual->name;
+                                            $rol = $usuarioActual->rol;
+                                            $cedulaagregada = $request->Cedula_Persona;
                                             date_default_timezone_set('America/Bogota');
+                                            $ip = $_SERVER['REMOTE_ADDR'];
                                             $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 1',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
+                                            $agencia = $usuarioActual->agenciau;
+                                            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
+                                                null,
+                                                $nombre,
+                                                $rol,
                                                 $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
+                                                $fechaHoraActual,
+                                                $cedulaagregada,
+                                                null,
+                                                $ip
                                             ]);
-                                        }
-                                        //COORDINACION 2
-                                        else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 2',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 3
-                                        else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
-
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 3',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 4
-                                        else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 4',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        //COORDINACION 5
-                                        else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                            $cedula = $request->Cedula_Persona;
-                                            $nombrepagare = $request->NombreCompleto;
-                                            $capital = $request->Capital;
-                                            $idpagare = $request->ID_Pagare;
-                                            $correo = $request->Correo;
-                                            $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $agencia = $existingAgencia[0]->Agencia;
-                                            $idpersona = $existingAgencia[0]->ID;
-                                            $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                                            $score = $existingScore[0]->Score;
-                                            $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                                            $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                                            $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
-
-                                            date_default_timezone_set('America/Bogota');
-                                            $fechaHoraActual = date('Y-m-d H:i:s');
-
-
-                                            $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada,AutorizacionGerente,InteresProporcional,FechaAccion, Garantia, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, NoLC, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Nomina, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona) VALUES (?,?,?,?,?,?,?, ?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-                                                0,
-                                                'Coordinacion 5',
-                                                1,
-                                                $interesProporcional,
-                                                $fechaStringCredito,
-                                                $ValorGarantia,
-                                                $request->NoAgencia,
-                                                $agencia,
-                                                $request->CuentaCoop,
-                                                $request->Cedula_Persona,
-                                                $request->NombreCompleto,
-                                                $request->ID_Pagare,
-                                                $request->Linea_Credito,
-                                                $lineacredito,
-                                                $request->Capital,
-                                                $request->NoCuotas,
-                                                $request->ValorCuota,
-                                                $request->Tasa,
-                                                $fechaFormateada3,
-                                                $CODIGONOMINA . '-' . $NOMBRENOMINA,
-                                                $request->Direccion,
-                                                $request->TelFijo,
-                                                $fechaFormateada,
-                                                $fechaFormateada2,
-                                                $request->Celular,
-                                                $request->Correo,
-                                                $request->GeneradorPagare,
-                                                $persona2->ID
-                                            ]);
-                                        }
-                                        $usuarioActual = Auth::user();
-                                        $nombre = $usuarioActual->name;
-                                        $rol = $usuarioActual->rol;
-                                        $cedulaagregada = $request->Cedula_Persona;
-                                        date_default_timezone_set('America/Bogota');
-                                        $ip = $_SERVER['REMOTE_ADDR'];
-                                        $fechaHoraActual = date('Y-m-d H:i:s');
-                                        $agencia = $usuarioActual->agenciau;
-                                        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'CreoPagareRechazadoporFecha', ?, ?, ?, ?)", [
-                                            null,
-                                            $nombre,
-                                            $rol,
-                                            $agencia,
-                                            $fechaHoraActual,
-                                            $cedulaagregada,
-                                            null,
-                                            $ip
-                                        ]);
-                                        return back()->with("incorrecto", $message);
-                                        }else {
+                                            return back()->with("incorrecto", $message);
+                                        } else {
                                             //INTERES PROPORCIONAL
                                             $fechaHoraActual = Carbon::now('America/Bogota');
                                             $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
@@ -10262,17 +10256,25 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     $dia3 = substr($fechaCredito, 5, 2);
 
 
-                    $anioReal = 2000 + (int)$anio;
+                    $anioReal = 2000 + (int) $anio;
 
-                    $anioReal2 = 2000 + (int)$anio2;
+                    $anioReal2 = 2000 + (int) $anio2;
 
-                    $anioReal3 = 2000 + (int)$anio3;
+                    $anioReal3 = 2000 + (int) $anio3;
 
                     $meses = [
-                        '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                        '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                        '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                        '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
+                        '01' => 'Enero',
+                        '02' => 'Febrero',
+                        '03' => 'Marzo',
+                        '04' => 'Abril',
+                        '05' => 'Mayo',
+                        '06' => 'Junio',
+                        '07' => 'Julio',
+                        '08' => 'Agosto',
+                        '09' => 'Septiembre',
+                        '10' => 'Octubre',
+                        '11' => 'Noviembre',
+                        '12' => 'Diciembre'
                     ];
                     $nombreMes = $meses[$mes];
 
@@ -10280,11 +10282,11 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                     $nombreMes3 = $meses[$mes3];
 
-                    $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+                    $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-                    $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+                    $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
-                    $fechaFormateada3 = $nombreMes3 . " " . (int)$dia3 . " del " . $anioReal3;
+                    $fechaFormateada3 = $nombreMes3 . " " . (int) $dia3 . " del " . $anioReal3;
 
                     $credito = DB::select('SELECT NoLCredito, Credito FROM lineas_credito WHERE NoLCredito = ?', [$request->Linea_Credito]);
                     $lineacredito = $credito[0]->Credito;
@@ -10376,8 +10378,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                             $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$CODIGONOMINA, $NODEPENDENCIA, $ENTIDAD]);
                             // FECHA REPORTE POR MES ACTUAL
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                $anioCompleto = 2000 + (int)$anio3;
-                                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                $anioCompleto = 2000 + (int) $anio3;
+                                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                 }
                                 $fechadelCredito = Carbon::now('America/Bogota');
@@ -10462,7 +10464,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                     // Resultado basado en las condiciones
-                                    $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                    $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                     // Calcular el último día del mes de B14
@@ -10477,7 +10479,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                     // Evaluar si todas las condiciones son verdaderas
-                                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                     // Primer nivel de comprobación
@@ -10491,14 +10493,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                         $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                        $resultado5 = $condicionA && $condicionB ? true : false ;
+                                        $resultado5 = $condicionA && $condicionB ? true : false;
                                     }
 
                                     $formateada = $fechaReporte->format('d/m/Y');
 
 
 
-                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                         //INTERES PROPORCIONAL
                                         $fechaHoraActual = Carbon::now('America/Bogota');
                                         $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
@@ -10747,8 +10749,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     }
                                 }
                             } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                $anioCompleto = 2000 + (int)$anio3;
-                                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                $anioCompleto = 2000 + (int) $anio3;
+                                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                 }
 
@@ -10794,7 +10796,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                         $fechaReporte->gte($fechadelCredito) &&
                                         $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                    ) ?  true : false ;
+                                    ) ? true : false;
 
                                     // Fórmula 3
                                     $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -11081,8 +11083,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 return back()->with("correcto", $message);
                             } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
 
-                                $anioCompleto = 2000 + (int)$anio3;
-                                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                                $anioCompleto = 2000 + (int) $anio3;
+                                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                 }
                                 $fechadelCredito = Carbon::now('America/Bogota');
@@ -11153,7 +11155,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
 
-                                if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
 
                                     //INTERES PROPORCIONAL
                                     $fechaHoraActual = Carbon::now('America/Bogota');
@@ -11448,7 +11450,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 ]);
 
 
-                                $anioCompleto = 2000 + (int)$anio3;
+                                $anioCompleto = 2000 + (int) $anio3;
                                 $fechadelCredito = Carbon::now('America/Bogota');
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -12329,8 +12331,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             // FECHA REPORTE POR MES ACTUAL
 
             if ($existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-                $anioCompleto = 2000 + (int)$anio3;
-                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                $anioCompleto = 2000 + (int) $anio3;
+                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                 }
                 $fechadelCredito = Carbon::now('America/Bogota');
@@ -12415,7 +12417,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                     // Resultado basado en las condiciones
-                    $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                    $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                     // Calcular el último día del mes de B14
@@ -12430,7 +12432,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                     // Evaluar si todas las condiciones son verdaderas
-                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                     // Primer nivel de comprobación
@@ -12444,19 +12446,19 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                         $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                        $resultado5 = $condicionA && $condicionB ? true : false ;
+                        $resultado5 = $condicionA && $condicionB ? true : false;
                     }
 
                     $formateada = $fechaReporte->format('d/m/Y');
                 }
-                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                     $fechaValidar = 'verdadero';
                 } else {
                     $fechaValidar = 'falso';
                 }
             } else if ($existeDia[0]->ENTREMES == 1) {
-                $anioCompleto = 2000 + (int)$anio3;
-                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                $anioCompleto = 2000 + (int) $anio3;
+                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                 }
                 $fechadelCredito = Carbon::now('America/Bogota');
@@ -12524,14 +12526,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     $formateada = $fechaReporte->format('d/m/Y');
                 }
 
-                if (($resultado == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                if (($resultado == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                     $fechaValidar = 'verdadero';
                 } else {
                     $fechaValidar = 'falso';
                 }
             } else if ($existeDia[0]->MESANTERIOR == 1 && $existeDia[0]->ENTREMES == 0) {
-                $anioCompleto = 2000 + (int)$anio3;
-                if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                $anioCompleto = 2000 + (int) $anio3;
+                if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                 }
 
@@ -12580,7 +12582,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                         $fechaReporte->gte($fechadelCredito) &&
                         $fechaReporte->diffInDays($fechadelCredito) <= 30
-                    ) ?  true : false ;
+                    ) ? true : false;
 
                     // Fórmula 3
                     $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -12951,113 +12953,116 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
         // Actualizar base de datos
         $sql5 = DB::update("UPDATE pagare SET DocuAutorizacion = ?, AutorizacionGerente = ?, Aprobado = ? WHERE ID = ?", [
-            $newFilename, 3, 1, $id
+            $newFilename,
+            3,
+            1,
+            $id
         ]);
 
         if ($sql5) {
-                $existingNoAgencia = DB::select('SELECT NoAgencia, Aprobado FROM pagare WHERE ID = ?', [$id]);
-                $NoAgencia = $existingNoAgencia[0]->NoAgencia;
-                $aprobado = $existingNoAgencia[0]->Aprobado;
+            $existingNoAgencia = DB::select('SELECT NoAgencia, Aprobado FROM pagare WHERE ID = ?', [$id]);
+            $NoAgencia = $existingNoAgencia[0]->NoAgencia;
+            $aprobado = $existingNoAgencia[0]->Aprobado;
 
-                //COORDINACION 1
-                if($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96){
-                    $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
-                    $cedula = $existingPerson[0]->Cedula_Persona;
-                    $nombrepagare = $existingPerson[0]->NombreCompleto;
-                    $capital = $existingPerson[0]->Capital;
-                    $idpagare = $existingPerson[0]->ID_Pagare;
-                    $correo = $existingPerson[0]->Correo;
-                    $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $agencia = $existingAgencia[0]->Agencia;
-                    $idpersona = $existingAgencia[0]->ID;
-                    $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $score = $existingScore[0]->Score;
-                    $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                    $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                    $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
-                    date_default_timezone_set('America/Bogota');
-                    $fechaHoraActual = date('Y-m-d H:i:s');
-                    $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ?  WHERE ID = $id", [
-                        1,
-                        'Coordinacion 1',
-                        3
+            //COORDINACION 1
+            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
+                $cedula = $existingPerson[0]->Cedula_Persona;
+                $nombrepagare = $existingPerson[0]->NombreCompleto;
+                $capital = $existingPerson[0]->Capital;
+                $idpagare = $existingPerson[0]->ID_Pagare;
+                $correo = $existingPerson[0]->Correo;
+                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $agencia = $existingAgencia[0]->Agencia;
+                $idpersona = $existingAgencia[0]->ID;
+                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $score = $existingScore[0]->Score;
+                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 1')->pluck('email');
+                date_default_timezone_set('America/Bogota');
+                $fechaHoraActual = date('Y-m-d H:i:s');
+                $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ?  WHERE ID = $id", [
+                    1,
+                    'Coordinacion 1',
+                    3
 
-                    ]);
-                    $idposicionpagare = $existingPerson[0]->ID;
-                    foreach ($usuarios as $email) {
-                        Mail::to($email)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
-                    }
-
-                    $usuarios2 = DB::table('users')->where('agenciau', $agencia)->pluck('email');
-                    foreach ($usuarios2 as $email2) {
-                        Mail::to($email2)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
-                    }
-
-                    Mail::to($correo)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
-
+                ]);
+                $idposicionpagare = $existingPerson[0]->ID;
+                foreach ($usuarios as $email) {
+                    Mail::to($email)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
                 }
+
+                $usuarios2 = DB::table('users')->where('agenciau', $agencia)->pluck('email');
+                foreach ($usuarios2 as $email2) {
+                    Mail::to($email2)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
+                }
+
+                Mail::to($correo)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
+
+            }
             //COORDINACION 2
-            else if($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98){
-                    $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
-                    $cedula = $existingPerson[0]->Cedula_Persona;
-                    $nombrepagare = $existingPerson[0]->NombreCompleto;
-                    $capital = $existingPerson[0]->Capital;
-                    $idpagare = $existingPerson[0]->ID_Pagare;
-                    $correo = $existingPerson[0]->Correo;
-                    $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $agencia = $existingAgencia[0]->Agencia;
-                    $idpersona = $existingAgencia[0]->ID;
-                    $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $score = $existingScore[0]->Score;
-                    $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                    $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                    $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
-                    date_default_timezone_set('America/Bogota');
-                    $fechaHoraActual = date('Y-m-d H:i:s');
-                    $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ?  WHERE ID = $id", [
-                        1,
-                        'Coordinacion 2',
-                        3
-                    ]);
+            else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
+                $cedula = $existingPerson[0]->Cedula_Persona;
+                $nombrepagare = $existingPerson[0]->NombreCompleto;
+                $capital = $existingPerson[0]->Capital;
+                $idpagare = $existingPerson[0]->ID_Pagare;
+                $correo = $existingPerson[0]->Correo;
+                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $agencia = $existingAgencia[0]->Agencia;
+                $idpersona = $existingAgencia[0]->ID;
+                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $score = $existingScore[0]->Score;
+                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 2')->pluck('email');
+                date_default_timezone_set('America/Bogota');
+                $fechaHoraActual = date('Y-m-d H:i:s');
+                $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ?  WHERE ID = $id", [
+                    1,
+                    'Coordinacion 2',
+                    3
+                ]);
 
-                    $idposicionpagare = $existingPerson[0]->ID;
-                    foreach ($usuarios as $email) {
-                        Mail::to($email)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
-                    }
+                $idposicionpagare = $existingPerson[0]->ID;
+                foreach ($usuarios as $email) {
+                    Mail::to($email)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
+                }
 
-                    $usuarios2 = DB::table('users')->where('agenciau', $agencia)->pluck('email');
-                    foreach ($usuarios2 as $email2) {
-                        Mail::to($email2)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
-                    }
+                $usuarios2 = DB::table('users')->where('agenciau', $agencia)->pluck('email');
+                foreach ($usuarios2 as $email2) {
+                    Mail::to($email2)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
+                }
 
-                    Mail::to($correo)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
+                Mail::to($correo)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
 
 
 
             }
             //COORDINACION 3
-            else if($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94){
-                    $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
-                    $cedula = $existingPerson[0]->Cedula_Persona;
-                    $nombrepagare = $existingPerson[0]->NombreCompleto;
-                    $capital = $existingPerson[0]->Capital;
-                    $idpagare = $existingPerson[0]->ID_Pagare;
-                    $correo = $existingPerson[0]->Correo;
-                    $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $agencia = $existingAgencia[0]->Agencia;
-                    $idpersona = $existingAgencia[0]->ID;
-                    $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $score = $existingScore[0]->Score;
-                    $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                    $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                    $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
+            else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
+                $cedula = $existingPerson[0]->Cedula_Persona;
+                $nombrepagare = $existingPerson[0]->NombreCompleto;
+                $capital = $existingPerson[0]->Capital;
+                $idpagare = $existingPerson[0]->ID_Pagare;
+                $correo = $existingPerson[0]->Correo;
+                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $agencia = $existingAgencia[0]->Agencia;
+                $idpersona = $existingAgencia[0]->ID;
+                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $score = $existingScore[0]->Score;
+                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 3')->pluck('email');
 
                 date_default_timezone_set('America/Bogota');
                 $fechaHoraActual = date('Y-m-d H:i:s');
                 $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ? WHERE ID = $id", [
                     1,
                     'Coordinacion 3',
-                     3
+                    3
                 ]);
                 $idposicionpagare = $existingPerson[0]->ID;
                 foreach ($usuarios as $email) {
@@ -13075,28 +13080,28 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
             }
             //COORDINACION 4
-            else if($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97){
-                    $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
-                    $cedula = $existingPerson[0]->Cedula_Persona;
-                    $nombrepagare = $existingPerson[0]->NombreCompleto;
-                    $capital = $existingPerson[0]->Capital;
-                    $idpagare = $existingPerson[0]->ID_Pagare;
-                    $correo = $existingPerson[0]->Correo;
-                    $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $agencia = $existingAgencia[0]->Agencia;
-                    $idpersona = $existingAgencia[0]->ID;
-                    $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $score = $existingScore[0]->Score;
-                    $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                    $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                    $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
+            else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
+                $cedula = $existingPerson[0]->Cedula_Persona;
+                $nombrepagare = $existingPerson[0]->NombreCompleto;
+                $capital = $existingPerson[0]->Capital;
+                $idpagare = $existingPerson[0]->ID_Pagare;
+                $correo = $existingPerson[0]->Correo;
+                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $agencia = $existingAgencia[0]->Agencia;
+                $idpersona = $existingAgencia[0]->ID;
+                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $score = $existingScore[0]->Score;
+                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 4')->pluck('email');
 
                 date_default_timezone_set('America/Bogota');
                 $fechaHoraActual = date('Y-m-d H:i:s');
                 $sql = DB::update("UPDATE pagare SET Aprobado = ?, CoorAsignada = ?, AutorizacionGerente = ? WHERE ID = $id", [
                     1,
                     'Coordinacion 4',
-                     3
+                    3
                 ]);
 
                 $idposicionpagare = $existingPerson[0]->ID;
@@ -13112,22 +13117,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 Mail::to($correo)->send(new EnviarCorreo16($cedula, $idpagare, $capital, $idposicionpagare, $nombrepagare, $agencia, $score, $fechaconsulta));
 
             }
-                //COORDINACION 5
-            else if($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86){
-                    $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
-                    $cedula = $existingPerson[0]->Cedula_Persona;
-                    $nombrepagare = $existingPerson[0]->NombreCompleto;
-                    $capital = $existingPerson[0]->Capital;
-                    $idpagare = $existingPerson[0]->ID_Pagare;
-                    $correo = $existingPerson[0]->Correo;
-                    $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $agencia = $existingAgencia[0]->Agencia;
-                    $idpersona = $existingAgencia[0]->ID;
-                    $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
-                    $score = $existingScore[0]->Score;
-                    $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
-                    $fechaconsulta = $existingfecha[0]->FechaInsercion;
-                    $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
+            //COORDINACION 5
+            else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                $existingPerson = DB::select('SELECT Correo, NombreCompleto, Cedula_Persona, ID, Aprobado, Capital, ID_Pagare FROM pagare WHERE ID = ?', [$id]);
+                $cedula = $existingPerson[0]->Cedula_Persona;
+                $nombrepagare = $existingPerson[0]->NombreCompleto;
+                $capital = $existingPerson[0]->Capital;
+                $idpagare = $existingPerson[0]->ID_Pagare;
+                $correo = $existingPerson[0]->Correo;
+                $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $agencia = $existingAgencia[0]->Agencia;
+                $idpersona = $existingAgencia[0]->ID;
+                $existingScore = DB::select('SELECT Score FROM persona WHERE Cedula = ?', [$cedula]);
+                $score = $existingScore[0]->Score;
+                $existingfecha = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$idpersona]);
+                $fechaconsulta = $existingfecha[0]->FechaInsercion;
+                $usuarios = DB::table('users')->where('agenciau', 'Coordinacion 5')->pluck('email');
 
 
                 date_default_timezone_set('America/Bogota');
@@ -13203,25 +13208,33 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $dia2 = substr($CuotaFinal, 5, 2);
 
 
-            $anioReal = 2000 + (int)$anio;
+            $anioReal = 2000 + (int) $anio;
 
-            $anioReal2 = 2000 + (int)$anio2;
+            $anioReal2 = 2000 + (int) $anio2;
 
 
             $meses = [
-                '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
+                '01' => 'Enero',
+                '02' => 'Febrero',
+                '03' => 'Marzo',
+                '04' => 'Abril',
+                '05' => 'Mayo',
+                '06' => 'Junio',
+                '07' => 'Julio',
+                '08' => 'Agosto',
+                '09' => 'Septiembre',
+                '10' => 'Octubre',
+                '11' => 'Noviembre',
+                '12' => 'Diciembre'
             ];
             $nombreMes = $meses[$mes];
 
             $nombreMes2 = $meses[$mes2];
 
 
-            $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+            $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-            $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+            $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
 
             $credito = DB::select('SELECT NoLCredito, Credito FROM lineas_credito WHERE NoLCredito = ?', [$request->Linea_Credito]);
@@ -13305,8 +13318,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                             $mes3 = $fechadelCredito->month;
                             $dia3 = $fechadelCredito->day;
 
-                            $anioCompleto = 2000 + (int)$anio3;
-                            if (!checkdate((int)$mes3, (int)$dia3, $anioCompleto)) {
+                            $anioCompleto = 2000 + (int) $anio3;
+                            if (!checkdate((int) $mes3, (int) $dia3, $anioCompleto)) {
                                 return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                             }
 
@@ -13392,7 +13405,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                 // Resultado basado en las condiciones
-                                $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                 // Calcular el último día del mes de B14
@@ -13407,7 +13420,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                 // Evaluar si todas las condiciones son verdaderas
-                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                 // Primer nivel de comprobación
@@ -13421,14 +13434,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                     $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                    $resultado5 = $condicionA && $condicionB ? true : false ;
+                                    $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
                                 $formateada = $fechaReporte->format('d/m/Y');
                             }
 
                             //dd($resultado, $resultado1, $resultado2, $resultado3, $resultado4, $resultado5);
 
-                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3  == true && $resultado4  == true && $resultado5  == true)) {
+                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
 
 
 
@@ -13719,7 +13732,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 ]);
 
 
-                                $anioCompleto = 2000 + (int)$anio3;
+                                $anioCompleto = 2000 + (int) $anio3;
                                 $fechadelCredito = Carbon::now('America/Bogota');
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -14058,7 +14071,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                     $fechaReporte->gte($fechadelCredito) &&
                                     $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                ) ?  true : false ;
+                                ) ? true : false;
 
                                 // Fórmula 3
                                 $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -14652,7 +14665,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                 //CUARTO CONDICIONAL
                                 $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -14670,7 +14683,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
 
-                            if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                 //INTERES PROPORCIONAL
                                 $fechaHoraActual = Carbon::now('America/Bogota');
                                 $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
@@ -16058,7 +16071,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                         }
                     }
                 }
-            } else{
+            } else {
                 $message = "<span style='font-size: 20px'>¡El pagaré de " . e($request->NombreCompleto) . " <strong>NO FUE REGISTRADO</strong> porque ya fue <strong>DESEEMBOLSADO</strong> o <strong>ANULADO</strong> en la AS400!";
                 return back()->with("incorrecto4", $message);
 
@@ -16085,11 +16098,12 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
-    public function datosPagare() {
+    public function datosPagare()
+    {
 
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
-        $noagencia = DB::select("SELECT NumAgencia FROM agencias WHERE NameAgencia = ?",[$agenciaU]);
+        $noagencia = DB::select("SELECT NumAgencia FROM agencias WHERE NameAgencia = ?", [$agenciaU]);
         $noagencia = $noagencia[0]->NumAgencia;
         // $persona = Persona::find(3);
         // $score = $persona->Score;
@@ -16102,8 +16116,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
         $datapagare = null;
         do {
             try {
-                $response = Http::get('http://app.coopserp.com/conexion_s400/api/infopagare/'.$noagencia);
-                 //$response = Http::get('http://app.coopserp.com/conexion_s400/api/infopagare/');
+                $response = Http::get('http://app.coopserp.com/conexion_s400/api/infopagare/' . $noagencia);
+                //$response = Http::get('http://app.coopserp.com/conexion_s400/api/infopagare/');
                 $datapagare = $response->json()['pagares'];
                 break;
             } catch (\Exception $e) {
@@ -16111,10 +16125,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                 $attempts++;
                 usleep($retryDelay * 1000);
             }
-            } while ($attempts < $maxAttempts);
+        } while ($attempts < $maxAttempts);
 
 
-        if($datapagare === null) {
+        if ($datapagare === null) {
             $user = DB::select("
             SELECT *
             FROM persona A
@@ -16153,7 +16167,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                                 $checkboxes .= '<label for="enfermedad_' . $index . '">
                                                     <span class="fw-semibold">' . $enfermedad['id'] . '.</span>
-                                                    <input style="transform: scale(1.3);" type="checkbox" class="ms-1 mb-2" id="enfermedad_' . $index . '" name="enfermedades[]" value="'. $enfermedad['nombre'] .'">
+                                                    <input style="transform: scale(1.3);" type="checkbox" class="ms-1 mb-2" id="enfermedad_' . $index . '" name="enfermedades[]" value="' . $enfermedad['nombre'] . '">
                                                     ' . $enfermedad['nombre'] . '
                                                 </label><br>';
                             }
@@ -16208,15 +16222,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                 $existePersona = DB::select('SELECT Cedula, Score FROM persona WHERE Cedula = ?', [$cedula]);
                 foreach ($existingPagare as $pagare) {
-                    if($pagare->ExisteDatacredito == 1 && !empty($existePersona)){
-                        DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?",[$registro['CUENTA'], $registro['IDPAGARE']]);
+                    if ($pagare->ExisteDatacredito == 1 && !empty($existePersona)) {
+                        DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
                         DB::statement("ALTER TABLE pagareprueba AUTO_INCREMENT = 1");
                         $foundMatchingPagare = true;
                     }
 
 
-                    if($pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != null && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "NULL" && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "null"){
-                        DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?",[$registro['CUENTA'], $registro['IDPAGARE']]);
+                    if ($pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != null && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "NULL" && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "null") {
+                        DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
                         DB::statement("ALTER TABLE pagareprueba AUTO_INCREMENT = 1");
                         $foundMatchingPagare = true;
 
@@ -16229,108 +16243,115 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     }
                 }
 
-            }
-            else{
+            } else {
 
-            if (!$foundMatchingPagare) {
+                if (!$foundMatchingPagare) {
 
-                $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
+                    $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
 
-                //EXTRAIGO LA INFORMACION DE LA API
-                $cuota1 = $registro['PCUOTA'];
-                $cuotaFinal = $registro['UCUOTA'];
+                    //EXTRAIGO LA INFORMACION DE LA API
+                    $cuota1 = $registro['PCUOTA'];
+                    $cuotaFinal = $registro['UCUOTA'];
 
-                //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
-                $codigoAnio = substr($cuota1, 0, 1);
-                $anio = substr($cuota1, 1, 2);
-                $mes = substr($cuota1, 3, 2);
-                $dia = substr($cuota1, 5, 2);
+                    //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
+                    $codigoAnio = substr($cuota1, 0, 1);
+                    $anio = substr($cuota1, 1, 2);
+                    $mes = substr($cuota1, 3, 2);
+                    $dia = substr($cuota1, 5, 2);
 
-                $codigoAnio2 = substr($cuotaFinal, 0, 1);
-                $anio2 = substr($cuotaFinal, 1, 2);
-                $mes2 = substr($cuotaFinal, 3, 2);
-                $dia2 = substr($cuotaFinal, 5, 2);
+                    $codigoAnio2 = substr($cuotaFinal, 0, 1);
+                    $anio2 = substr($cuotaFinal, 1, 2);
+                    $mes2 = substr($cuotaFinal, 3, 2);
+                    $dia2 = substr($cuotaFinal, 5, 2);
 
-                $anioReal = 2000 + (int)$anio;
+                    $anioReal = 2000 + (int) $anio;
 
-                $anioReal2 = 2000 + (int)$anio2;
+                    $anioReal2 = 2000 + (int) $anio2;
 
-                $meses = [
-                    '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                    '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                    '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                    '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
-                ];
+                    $meses = [
+                        '01' => 'Enero',
+                        '02' => 'Febrero',
+                        '03' => 'Marzo',
+                        '04' => 'Abril',
+                        '05' => 'Mayo',
+                        '06' => 'Junio',
+                        '07' => 'Julio',
+                        '08' => 'Agosto',
+                        '09' => 'Septiembre',
+                        '10' => 'Octubre',
+                        '11' => 'Noviembre',
+                        '12' => 'Diciembre'
+                    ];
 
-                $nombreMes = $meses[$mes];
+                    $nombreMes = $meses[$mes];
 
-                $nombreMes2 = $meses[$mes2];
+                    $nombreMes2 = $meses[$mes2];
 
-                //FECHAS CON FORMATO TEXTO
-                $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+                    //FECHAS CON FORMATO TEXTO
+                    $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-                $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+                    $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
-                //VALIDO SI LA NOMINA EXISTE EN LA BASE DE DATOS LOCAL PARA ASIGNAR FECHA DE REPORTE POSTERIOR
-                $NOMINA = $registro['NOMINA'];
-                $DEPENDENCIA = $registro['DEPENDENCIA'];
-                $ENTIDAD = $registro['ENTIDAD'];
+                    //VALIDO SI LA NOMINA EXISTE EN LA BASE DE DATOS LOCAL PARA ASIGNAR FECHA DE REPORTE POSTERIOR
+                    $NOMINA = $registro['NOMINA'];
+                    $DEPENDENCIA = $registro['DEPENDENCIA'];
+                    $ENTIDAD = $registro['ENTIDAD'];
 
-                // API S400 PARA VALIDAR FECHANACIMIENTO Y DEUDATOTAL
-                $url = env('URL_SERVER_API');
-                $attempts = 0;
-                $maxAttempts = 3; // INTENTOS MÁXIMOS
-                $retryDelay = 500; // Milisegundos
+                    // API S400 PARA VALIDAR FECHANACIMIENTO Y DEUDATOTAL
+                    $url = env('URL_SERVER_API');
+                    $attempts = 0;
+                    $maxAttempts = 3; // INTENTOS MÁXIMOS
+                    $retryDelay = 500; // Milisegundos
 
-                $estadoEdad = null;
-                $deudatotalAPI = null;
+                    $estadoEdad = null;
+                    $deudatotalAPI = null;
 
-                do {
-                    try {
-                        $response = Http::get($url . 'fechan/' . $registro['CUENTA']);
-                        $data = $response->json();
+                    do {
+                        try {
+                            $response = Http::get($url . 'fechan/' . $registro['CUENTA']);
+                            $data = $response->json();
 
-                        $response2 = Http::get($url . 'deudatotal/' . $registro['CUENTA']);
-                        $data2 = $response2->json();
+                            $response2 = Http::get($url . 'deudatotal/' . $registro['CUENTA']);
+                            $data2 = $response2->json();
 
-                        $estadoEdad = $data['status'];
-                        $deudatotalAPI = $data2['deudatotal'];
+                            $estadoEdad = $data['status'];
+                            $deudatotalAPI = $data2['deudatotal'];
 
-                        // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                        break;
-                    } catch (\Exception $e) {
-                        $attempts++;
-                        usleep($retryDelay * 1000);
-                    }
-                } while ($attempts < $maxAttempts);
+                            // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                            break;
+                        } catch (\Exception $e) {
+                            $attempts++;
+                            usleep($retryDelay * 1000);
+                        }
+                    } while ($attempts < $maxAttempts);
 
                     //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA
                     $deudatotal = $deudatotalAPI + $registro['CAPITAL'];
-                    if($estadoEdad == 200 && $deudatotal >= 20000000){
+                    if ($estadoEdad == 200 && $deudatotal >= 20000000) {
                         $edad = 1;
                         $deuda = 1;
-                    }else if($estadoEdad == 200 && $deudatotal >= 50000000){
+                    } else if ($estadoEdad == 200 && $deudatotal >= 50000000) {
                         $edad = 1;
                         $deuda = 2;
-                    }else if ($estadoEdad == 200){
+                    } else if ($estadoEdad == 200) {
                         $edad = 1;
                         $deuda = null;
-                    }else if ($deudatotal >= 20000000){
+                    } else if ($deudatotal >= 20000000) {
                         $edad = null;
                         $deuda = 1;
-                    }else if ($deudatotal >= 50000000){
+                    } else if ($deudatotal >= 50000000) {
                         $edad = null;
                         $deuda = 2;
-                    }else{
+                    } else {
                         $edad = null;
                         $deuda = null;
                     }
 
-                //VALIDO SI EXISTE EN LA BD DE DATACREDITO
-                if (!empty($existingPerson)) {
+                    //VALIDO SI EXISTE EN LA BD DE DATACREDITO
+                    if (!empty($existingPerson)) {
 
-                    $persona = $existingPerson[0];
-                    if (($persona->Score !== null) && ($persona->Score !== "NULL") && ($persona->Score !== "null")) {
+                        $persona = $existingPerson[0];
+                        if (($persona->Score !== null) && ($persona->Score !== "NULL") && ($persona->Score !== "null")) {
 
                             //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
                             if ($persona->Score >= 650) {
@@ -16432,7 +16453,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                         // Resultado basado en las condiciones
-                                        $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                        $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                         // Calcular el último día del mes de B14
@@ -16447,7 +16468,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                         // Evaluar si todas las condiciones son verdaderas
-                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                         // Primer nivel de comprobación
@@ -16461,14 +16482,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                             $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                            $resultado5 = $condicionA && $condicionB ? true : false ;
+                                            $resultado5 = $condicionA && $condicionB ? true : false;
                                         }
 
                                         $NoAgencia = $registro['AGENCIA'];
                                         //dd($fechaReporteString, $fechaStringCredito, $fecha1eraCuota);
 
-                                        if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
-                                        //NUMERO DE AGENCIA
+                                        if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                            //NUMERO DE AGENCIA
 
                                             $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
@@ -16485,7 +16506,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16500,7 +16521,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16508,10 +16529,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16525,7 +16546,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16540,7 +16561,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16548,10 +16569,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16565,7 +16586,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16580,7 +16601,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16588,10 +16609,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16605,7 +16626,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16620,7 +16641,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16628,10 +16649,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16645,7 +16666,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16660,7 +16681,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16668,18 +16689,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
-                                        //llave que cierra la condicion de fecha actual
-                                        }else{
+                                            //llave que cierra la condicion de fecha actual
+                                        } else {
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
                                                 $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
                                                 Carbon::setLocale('es');
                                                 $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                             }
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
 
 
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
@@ -16694,7 +16715,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16709,7 +16730,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16717,10 +16738,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16732,7 +16753,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16747,7 +16768,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16755,10 +16776,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16770,7 +16791,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16785,7 +16806,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16793,10 +16814,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16808,7 +16829,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16823,7 +16844,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16831,10 +16852,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -16846,7 +16867,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16861,7 +16882,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16869,13 +16890,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
 
                                         }
-                                    //llave que cierra lo del mesanterior ==0
+                                        //llave que cierra lo del mesanterior ==0
                                     }
                                     //FECHA MES SIGUIENTE
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
@@ -16940,7 +16961,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                             $fechaReporte->gte($fechadelCredito) &&
                                             $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                        ) ?  true : false ;
+                                        ) ? true : false;
 
                                         // Fórmula 3
                                         $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -16967,7 +16988,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -16982,7 +17003,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -16990,10 +17011,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17007,7 +17028,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17022,7 +17043,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17030,10 +17051,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17047,7 +17068,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17062,7 +17083,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17070,10 +17091,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17087,7 +17108,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17102,7 +17123,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17110,10 +17131,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17127,7 +17148,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17142,7 +17163,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17150,18 +17171,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
-                                        }else{
+                                        } else {
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                                 $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                                 Carbon::setLocale('es');
                                                 $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                             }
 
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -17174,7 +17195,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17189,7 +17210,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17197,10 +17218,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17212,7 +17233,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17227,7 +17248,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17235,10 +17256,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17250,7 +17271,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17265,7 +17286,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17273,10 +17294,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17288,7 +17309,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17303,7 +17324,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17311,10 +17332,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17326,7 +17347,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17341,7 +17362,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17349,14 +17370,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
 
                                             //llave que cierra las condiciones de mesanterior == 1
                                         }
-                                    //llave que cierra mesanterior == 1
+                                        //llave que cierra mesanterior == 1
                                     }
                                     //FECHA ENTREMES
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -17417,7 +17438,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                        $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                        $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                         //CUARTO CONDICIONAL
                                         $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -17429,7 +17450,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         //SEXTO
                                         $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
-                                        if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                        if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
 
                                             $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
@@ -17447,7 +17468,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17462,7 +17483,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17470,15 +17491,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                    DB::table('pagareprueba')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -17487,7 +17508,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17502,7 +17523,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17510,10 +17531,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17527,7 +17548,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17542,7 +17563,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17550,10 +17571,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17567,7 +17588,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17582,7 +17603,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17590,10 +17611,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17607,7 +17628,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 0,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17622,7 +17643,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17630,17 +17651,17 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
-                                        }else{
+                                        } else {
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                                 $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                                 Carbon::setLocale('es');
                                                 $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                             }
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
 
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 if (empty($existingPagare)) {
@@ -17655,7 +17676,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17670,7 +17691,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17678,22 +17699,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                    DB::table('pagareprueba')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17708,7 +17729,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17716,10 +17737,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17731,7 +17752,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17746,7 +17767,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17754,10 +17775,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17769,7 +17790,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17784,7 +17805,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17792,10 +17813,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -17807,7 +17828,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -17822,7 +17843,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -17830,17 +17851,17 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
 
                                         }
-                                    //llave que cierra entremes
+                                        //llave que cierra entremes
                                     }
 
-                                //llave que cierra si existe la nomina en s400_plano
-                                }else{
+                                    //llave que cierra si existe la nomina en s400_plano
+                                } else {
                                     $usuarioActual = Auth::user();
                                     $nombre = $usuarioActual->name;
                                     $rol = $usuarioActual->rol;
@@ -17869,8 +17890,8 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     ]);
                                     $foundMatchingPagare = true;
                                 }
-                            //llave que cierra el score si es >=650
-                            }else if($persona->Score < 650){
+                                //llave que cierra el score si es >=650
+                            } else if ($persona->Score < 650) {
                                 ;
                                 //VALIDO QUE SEA IGUAL A LO QUE ESTA EN LA BD DE DATACREDITO EN LA TABLA S400_PLANO
                                 $existeNominaDepen = DB::select('SELECT CODNOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$NOMINA, $DEPENDENCIA, $ENTIDAD]);
@@ -17975,7 +17996,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                         // Resultado basado en las condiciones
-                                        $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                        $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                         // Calcular el último día del mes de B14
@@ -17990,7 +18011,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                         // Evaluar si todas las condiciones son verdaderas
-                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                         // Primer nivel de comprobación
@@ -18004,7 +18025,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                             $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                            $resultado5 = $condicionA && $condicionB ? true : false ;
+                                            $resultado5 = $condicionA && $condicionB ? true : false;
                                         }
 
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
@@ -18015,7 +18036,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         //dd($resultado,$resultado1, $resultado2, $resultado3, $resultado4, $resultado5);
                                         //NUMERO DE AGENCIA
                                         $NoAgencia = $registro['AGENCIA'];
-                                        if ((($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true))){
+                                        if ((($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true))) {
                                             //dd($nombres);
                                             $razon = "Rechazado por score bajo.";
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
@@ -18030,7 +18051,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18045,7 +18066,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18053,10 +18074,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18068,7 +18089,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18083,7 +18104,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18091,10 +18112,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18106,7 +18127,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18121,7 +18142,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18129,10 +18150,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18144,7 +18165,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18159,7 +18180,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18167,10 +18188,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18182,7 +18203,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18197,7 +18218,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18205,12 +18226,12 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
-                                        }else{
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                        } else {
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -18223,7 +18244,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18238,7 +18259,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18246,10 +18267,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18261,7 +18282,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18276,7 +18297,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18284,10 +18305,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18299,7 +18320,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18314,7 +18335,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18322,10 +18343,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18337,7 +18358,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18352,7 +18373,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18360,10 +18381,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18375,7 +18396,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18390,7 +18411,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18398,12 +18419,12 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
                                         }
-                                    //llave que cierra lo del mesanterior ==0
+                                        //llave que cierra lo del mesanterior ==0
                                     }
                                     //FECHA MES SIGUIENTE
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
@@ -18470,7 +18491,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                             Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                             $fechaReporte->gte($fechadelCredito) &&
                                             $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                        ) ?  true : false ;
+                                        ) ? true : false;
 
                                         // Fórmula 3
                                         $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -18486,9 +18507,9 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         if ($resultado1 == true && $resultado2 == true && $resultado3 == true) {
 
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                    Carbon::setLocale('es');
-                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                Carbon::setLocale('es');
+                                                $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
 
 
                                                 $razon = "Rechazado por score bajo.";
@@ -18504,7 +18525,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'CoorAsignada' => 'Coordinacion 1',
                                                             'AutorizacionGerente' => 1,
                                                             'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion'=> $fechaStringCredito,
+                                                            'FechaAccion' => $fechaStringCredito,
                                                             'Garantia' => $garantia,
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
@@ -18519,7 +18540,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'ValorCuota' => $vcuotas,
                                                             'Tasa' => $tasaAPI,
                                                             'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina .' - '.$nomNomina,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
                                                             'Direccion' => $direccion,
                                                             'TelFijo' => $fijo,
                                                             'Fecha1Cuota' => $fechaFormateada,
@@ -18527,10 +18548,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'Celular' => $celular,
                                                             'Correo' => $correo,
                                                             'GeneradorPagare' => $usuario,
-                                                            'ID_Persona'=> $persona->ID
+                                                            'ID_Persona' => $persona->ID
                                                         ]);
                                                     }
-                                                }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                     if (empty($existingPagare)) {
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18542,7 +18563,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'CoorAsignada' => 'Coordinacion 2',
                                                             'AutorizacionGerente' => 1,
                                                             'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion'=> $fechaStringCredito,
+                                                            'FechaAccion' => $fechaStringCredito,
                                                             'Garantia' => $garantia,
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
@@ -18557,7 +18578,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'ValorCuota' => $vcuotas,
                                                             'Tasa' => $tasaAPI,
                                                             'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina .' - '.$nomNomina,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
                                                             'Direccion' => $direccion,
                                                             'TelFijo' => $fijo,
                                                             'Fecha1Cuota' => $fechaFormateada,
@@ -18565,10 +18586,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'Celular' => $celular,
                                                             'Correo' => $correo,
                                                             'GeneradorPagare' => $usuario,
-                                                            'ID_Persona'=> $persona->ID
+                                                            'ID_Persona' => $persona->ID
                                                         ]);
                                                     }
-                                                }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                     if (empty($existingPagare)) {
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18580,7 +18601,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'CoorAsignada' => 'Coordinacion 3',
                                                             'AutorizacionGerente' => 1,
                                                             'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion'=> $fechaStringCredito,
+                                                            'FechaAccion' => $fechaStringCredito,
                                                             'Garantia' => $garantia,
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
@@ -18595,7 +18616,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'ValorCuota' => $vcuotas,
                                                             'Tasa' => $tasaAPI,
                                                             'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina .' - '.$nomNomina,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
                                                             'Direccion' => $direccion,
                                                             'TelFijo' => $fijo,
                                                             'Fecha1Cuota' => $fechaFormateada,
@@ -18603,10 +18624,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'Celular' => $celular,
                                                             'Correo' => $correo,
                                                             'GeneradorPagare' => $usuario,
-                                                            'ID_Persona'=> $persona->ID
+                                                            'ID_Persona' => $persona->ID
                                                         ]);
                                                     }
-                                                }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                     if (empty($existingPagare)) {
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18618,7 +18639,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'CoorAsignada' => 'Coordinacion 4',
                                                             'AutorizacionGerente' => 1,
                                                             'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion'=> $fechaStringCredito,
+                                                            'FechaAccion' => $fechaStringCredito,
                                                             'Garantia' => $garantia,
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
@@ -18633,7 +18654,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'ValorCuota' => $vcuotas,
                                                             'Tasa' => $tasaAPI,
                                                             'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina .' - '.$nomNomina,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
                                                             'Direccion' => $direccion,
                                                             'TelFijo' => $fijo,
                                                             'Fecha1Cuota' => $fechaFormateada,
@@ -18641,10 +18662,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'Celular' => $celular,
                                                             'Correo' => $correo,
                                                             'GeneradorPagare' => $usuario,
-                                                            'ID_Persona'=> $persona->ID
+                                                            'ID_Persona' => $persona->ID
                                                         ]);
                                                     }
-                                                }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                     if (empty($existingPagare)) {
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18656,7 +18677,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'CoorAsignada' => 'Coordinacion 5',
                                                             'AutorizacionGerente' => 1,
                                                             'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion'=> $fechaStringCredito,
+                                                            'FechaAccion' => $fechaStringCredito,
                                                             'Garantia' => $garantia,
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
@@ -18671,7 +18692,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'ValorCuota' => $vcuotas,
                                                             'Tasa' => $tasaAPI,
                                                             'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina .' - '.$nomNomina,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
                                                             'Direccion' => $direccion,
                                                             'TelFijo' => $fijo,
                                                             'Fecha1Cuota' => $fechaFormateada,
@@ -18679,18 +18700,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                             'Celular' => $celular,
                                                             'Correo' => $correo,
                                                             'GeneradorPagare' => $usuario,
-                                                            'ID_Persona'=> $persona->ID
+                                                            'ID_Persona' => $persona->ID
                                                         ]);
                                                     }
                                                 }
                                             }
-                                        }else{
+                                        } else {
                                             $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                             Carbon::setLocale('es');
                                             $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
 
 
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -18703,7 +18724,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18718,7 +18739,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18726,10 +18747,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18741,7 +18762,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18756,7 +18777,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18764,10 +18785,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18779,7 +18800,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18794,7 +18815,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18802,10 +18823,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18817,7 +18838,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18832,7 +18853,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18840,10 +18861,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -18855,7 +18876,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18870,7 +18891,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -18878,13 +18899,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
                                         }
 
-                                    //llave que cierra mesanterior == 1
+                                        //llave que cierra mesanterior == 1
                                     }
                                     //FECHA ENTREMES
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -18946,7 +18967,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                        $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                        $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                         //CUARTO CONDICIONAL
                                         $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -18981,7 +19002,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -18996,7 +19017,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19004,22 +19025,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                    DB::table('pagareprueba')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19034,7 +19055,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19042,10 +19063,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19057,7 +19078,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19072,7 +19093,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19080,10 +19101,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19095,7 +19116,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19110,7 +19131,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19118,10 +19139,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19133,7 +19154,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19148,7 +19169,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19156,13 +19177,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
-                                        //llave que cierra las condiciones
-                                        }else{
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                            //llave que cierra las condiciones
+                                        } else {
+                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -19175,7 +19196,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 1',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19190,7 +19211,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19198,22 +19219,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                    DB::table('pagareprueba')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
                                                         'CoorAsignada' => 'Coordinacion 2',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19228,7 +19249,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19236,10 +19257,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19251,7 +19272,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 3',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19266,7 +19287,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19274,10 +19295,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19289,7 +19310,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 4',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19304,7 +19325,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19312,10 +19333,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
-                                            }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                 if (empty($existingPagare)) {
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19327,7 +19348,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'CoorAsignada' => 'Coordinacion 5',
                                                         'AutorizacionGerente' => 1,
                                                         'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion'=> $fechaStringCredito,
+                                                        'FechaAccion' => $fechaStringCredito,
                                                         'Garantia' => $garantia,
                                                         'NoAgencia' => $agencia,
                                                         'NombreAgencia' => $nombreAgencia,
@@ -19342,7 +19363,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'ValorCuota' => $vcuotas,
                                                         'Tasa' => $tasaAPI,
                                                         'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina .' - '.$nomNomina,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
                                                         'Direccion' => $direccion,
                                                         'TelFijo' => $fijo,
                                                         'Fecha1Cuota' => $fechaFormateada,
@@ -19350,16 +19371,16 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                         'Celular' => $celular,
                                                         'Correo' => $correo,
                                                         'GeneradorPagare' => $usuario,
-                                                        'ID_Persona'=> $persona->ID
+                                                        'ID_Persona' => $persona->ID
                                                     ]);
                                                 }
                                             }
                                         }
-                                    //llave que cierra entremes
+                                        //llave que cierra entremes
                                     }
 
-                                //llave que cierra si existe la nomina en s400_plano
-                                }else{
+                                    //llave que cierra si existe la nomina en s400_plano
+                                } else {
                                     $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
                                         $CODIGONOMINA,
                                         $NOMBRENOMINA,
@@ -19369,7 +19390,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     ]);
                                 }
                             }
-                    }else{//SI EL SCORE ES NULL
+                        } else {//SI EL SCORE ES NULL
                             $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$NOMINA, $DEPENDENCIA, $ENTIDAD]);
                             //FECHA MES ACTUAL
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
@@ -19468,7 +19489,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                 // Resultado basado en las condiciones
-                                $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                 // Calcular el último día del mes de B14
@@ -19483,7 +19504,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                 // Evaluar si todas las condiciones son verdaderas
-                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                 // Primer nivel de comprobación
@@ -19497,13 +19518,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                     $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                    $resultado5 = $condicionA && $condicionB ? true : false ;
+                                    $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
 
-                                    $NoAgencia = $registro['AGENCIA'];
+                                $NoAgencia = $registro['AGENCIA'];
 
-                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
-                                //NUMERO DE AGENCIA
+                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                    //NUMERO DE AGENCIA
                                     $razon = 'Aprobado por cumplir las fechas pero faltaria el score.';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -19520,7 +19541,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19535,7 +19556,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19543,10 +19564,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19561,7 +19582,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19576,7 +19597,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19584,10 +19605,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19602,7 +19623,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19617,7 +19638,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19625,10 +19646,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19643,7 +19664,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19658,7 +19679,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19666,10 +19687,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19684,7 +19705,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19699,7 +19720,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19707,18 +19728,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                //llave que cierra la condicion de fecha actual
-                                }else{
+                                    //llave que cierra la condicion de fecha actual
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -19732,7 +19753,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19747,7 +19768,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19755,10 +19776,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19771,7 +19792,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19786,7 +19807,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19794,10 +19815,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19810,7 +19831,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19825,7 +19846,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19833,10 +19854,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19849,7 +19870,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19864,7 +19885,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19872,10 +19893,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -19888,7 +19909,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -19903,7 +19924,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -19911,13 +19932,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra lo del mesanterior ==0
+                                //llave que cierra lo del mesanterior ==0
                             }
                             //FECHA MES SIGUIENTE
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
@@ -19976,7 +19997,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                     $fechaReporte->gte($fechadelCredito) &&
                                     $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                ) ?  true : false ;
+                                ) ? true : false;
 
                                 // Fórmula 3
                                 $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -20004,7 +20025,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20019,7 +20040,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20027,10 +20048,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20045,7 +20066,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20060,7 +20081,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20068,10 +20089,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20086,7 +20107,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20101,7 +20122,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20109,10 +20130,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20127,7 +20148,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20142,7 +20163,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20150,10 +20171,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20168,7 +20189,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20183,7 +20204,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20191,18 +20212,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
 
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -20216,7 +20237,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20231,7 +20252,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20239,10 +20260,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20255,7 +20276,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20270,7 +20291,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20278,10 +20299,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20294,7 +20315,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20309,7 +20330,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20317,10 +20338,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20333,7 +20354,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20348,7 +20369,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20356,10 +20377,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20372,7 +20393,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20387,7 +20408,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20395,14 +20416,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                     //llave que cierra las condiciones de mesanterior == 1
                                 }
-                            //llave que cierra mesanterior == 1
+                                //llave que cierra mesanterior == 1
                             }
                             //FECHA ENTREMES
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -20463,7 +20484,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                 //CUARTO CONDICIONAL
                                 $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -20475,7 +20496,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 //SEXTO
                                 $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
-                                if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                     $razon = 'Aprobado por cumplir las fechas pero faltaria el score.';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -20493,7 +20514,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20508,7 +20529,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20516,15 +20537,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -20534,7 +20555,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20549,7 +20570,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20557,10 +20578,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20575,7 +20596,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20590,7 +20611,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20598,10 +20619,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20616,7 +20637,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20631,7 +20652,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20639,10 +20660,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20657,7 +20678,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20672,7 +20693,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20680,17 +20701,17 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -20705,7 +20726,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20720,7 +20741,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20728,15 +20749,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -20744,7 +20765,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20759,7 +20780,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20767,10 +20788,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20783,7 +20804,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20798,7 +20819,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20806,10 +20827,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20822,7 +20843,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20837,7 +20858,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20845,10 +20866,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -20861,7 +20882,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -20876,7 +20897,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -20884,124 +20905,132 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra entremes
+                                //llave que cierra entremes
                             }
 
-                    }
-                //cierre de llave para validar si existe en el datacredito
-                }else{
+                        }
+                        //cierre de llave para validar si existe en el datacredito
+                    } else {
 
-                $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
+                        $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
 
-                //EXTRAIGO LA INFORMACION DE LA API
-                $cuota1 = $registro['PCUOTA'];
-                $cuotaFinal = $registro['UCUOTA'];
+                        //EXTRAIGO LA INFORMACION DE LA API
+                        $cuota1 = $registro['PCUOTA'];
+                        $cuotaFinal = $registro['UCUOTA'];
 
-                //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
-                $codigoAnio = substr($cuota1, 0, 1);
-                $anio = substr($cuota1, 1, 2);
-                $mes = substr($cuota1, 3, 2);
-                $dia = substr($cuota1, 5, 2);
+                        //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
+                        $codigoAnio = substr($cuota1, 0, 1);
+                        $anio = substr($cuota1, 1, 2);
+                        $mes = substr($cuota1, 3, 2);
+                        $dia = substr($cuota1, 5, 2);
 
-                $codigoAnio2 = substr($cuotaFinal, 0, 1);
-                $anio2 = substr($cuotaFinal, 1, 2);
-                $mes2 = substr($cuotaFinal, 3, 2);
-                $dia2 = substr($cuotaFinal, 5, 2);
+                        $codigoAnio2 = substr($cuotaFinal, 0, 1);
+                        $anio2 = substr($cuotaFinal, 1, 2);
+                        $mes2 = substr($cuotaFinal, 3, 2);
+                        $dia2 = substr($cuotaFinal, 5, 2);
 
-                $anioReal = 2000 + (int)$anio;
+                        $anioReal = 2000 + (int) $anio;
 
-                $anioReal2 = 2000 + (int)$anio2;
+                        $anioReal2 = 2000 + (int) $anio2;
 
-                $meses = [
-                    '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo',
-                    '04' => 'Abril', '05' => 'Mayo', '06' => 'Junio',
-                    '07' => 'Julio', '08' => 'Agosto', '09' => 'Septiembre',
-                    '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre'
-                ];
+                        $meses = [
+                            '01' => 'Enero',
+                            '02' => 'Febrero',
+                            '03' => 'Marzo',
+                            '04' => 'Abril',
+                            '05' => 'Mayo',
+                            '06' => 'Junio',
+                            '07' => 'Julio',
+                            '08' => 'Agosto',
+                            '09' => 'Septiembre',
+                            '10' => 'Octubre',
+                            '11' => 'Noviembre',
+                            '12' => 'Diciembre'
+                        ];
 
-                $nombreMes = $meses[$mes];
+                        $nombreMes = $meses[$mes];
 
-                $nombreMes2 = $meses[$mes2];
+                        $nombreMes2 = $meses[$mes2];
 
-                //FECHAS CON FORMATO TEXTO
-                $fechaFormateada = $nombreMes . " " . (int)$dia . " del " . $anioReal;
+                        //FECHAS CON FORMATO TEXTO
+                        $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
-                $fechaFormateada2 = $nombreMes2 . " " . (int)$dia2 . " del " . $anioReal2;
+                        $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
 
-                //VALIDO SI LA NOMINA EXISTE EN LA BASE DE DATOS LOCAL PARA ASIGNAR FECHA DE REPORTE POSTERIOR
-                $NOMINA = $registro['NOMINA'];
-                $DEPENDENCIA = $registro['DEPENDENCIA'];
-                $ENTIDAD = $registro['ENTIDAD'];
+                        //VALIDO SI LA NOMINA EXISTE EN LA BASE DE DATOS LOCAL PARA ASIGNAR FECHA DE REPORTE POSTERIOR
+                        $NOMINA = $registro['NOMINA'];
+                        $DEPENDENCIA = $registro['DEPENDENCIA'];
+                        $ENTIDAD = $registro['ENTIDAD'];
 
-                // API S400 PARA VALIDAR FECHANACIMIENTO Y DEUDATOTAL
-                $url = env('URL_SERVER_API');
-                $attempts = 0;
-                $maxAttempts = 3; // INTENTOS MÁXIMOS
-                $retryDelay = 500; // Milisegundos
+                        // API S400 PARA VALIDAR FECHANACIMIENTO Y DEUDATOTAL
+                        $url = env('URL_SERVER_API');
+                        $attempts = 0;
+                        $maxAttempts = 3; // INTENTOS MÁXIMOS
+                        $retryDelay = 500; // Milisegundos
 
-                $estadoEdad = null;
-                $deudatotalAPI = null;
+                        $estadoEdad = null;
+                        $deudatotalAPI = null;
 
-                do {
-                    try {
-                        $response = Http::get($url . 'fechan/' . $registro['CUENTA']);
-                        $data = $response->json();
+                        do {
+                            try {
+                                $response = Http::get($url . 'fechan/' . $registro['CUENTA']);
+                                $data = $response->json();
 
-                        $response2 = Http::get($url . 'deudatotal/' . $registro['CUENTA']);
-                        $data2 = $response2->json();
+                                $response2 = Http::get($url . 'deudatotal/' . $registro['CUENTA']);
+                                $data2 = $response2->json();
 
-                        $response3 = Http::get($url . 'deudaespecial/' . $registro['CUENTA']);
-                        $data3 = $response3->json();
+                                $response3 = Http::get($url . 'deudaespecial/' . $registro['CUENTA']);
+                                $data3 = $response3->json();
 
-                        $estadoEdad = $data['status'];
-                        $deudatotalAPI = $data2['deudatotal'];
+                                $estadoEdad = $data['status'];
+                                $deudatotalAPI = $data2['deudatotal'];
 
-                        // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                        break;
-                    } catch (\Exception $e) {
-                        $attempts++;
-                        usleep($retryDelay * 1000);
-                    }
-                } while ($attempts < $maxAttempts);
+                                // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                                break;
+                            } catch (\Exception $e) {
+                                $attempts++;
+                                usleep($retryDelay * 1000);
+                            }
+                        } while ($attempts < $maxAttempts);
 
-                $especialapi = $data3['creditoespecial']['ESPECIAL'];
+                        $especialapi = $data3['creditoespecial']['ESPECIAL'];
 
-                $especial = $especialapi + $capital;
+                        $especial = $especialapi + $capital;
 
-                    //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA
-                    $deudatotal = $deudatotalAPI + $registro['CAPITAL'];
-                    if($estadoEdad == 200 && $deudatotal >= 20000000){
-                        $edad = 1;
-                        $deuda = 1;
-                    }else if($estadoEdad == 200 && $deudatotal >= 50000000){
-                        $edad = 1;
-                        $deuda = 2;
-                    }else if ($estadoEdad == 200){
-                        $edad = 1;
-                        $deuda = null;
-                    }else if ($deudatotal >= 20000000){
-                        $edad = null;
-                        $deuda = 1;
-                    }else if ($deudatotal >= 50000000){
-                        $edad = null;
-                        $deuda = 2;
-                    }else{
-                        $edad = null;
-                        $deuda = null;
-                    }
-
-
-                    $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$NOMINA, $DEPENDENCIA, $ENTIDAD]);
-                    //FECHA MES ACTUAL
+                        //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA
+                        $deudatotal = $deudatotalAPI + $registro['CAPITAL'];
+                        if ($estadoEdad == 200 && $deudatotal >= 20000000) {
+                            $edad = 1;
+                            $deuda = 1;
+                        } else if ($estadoEdad == 200 && $deudatotal >= 50000000) {
+                            $edad = 1;
+                            $deuda = 2;
+                        } else if ($estadoEdad == 200) {
+                            $edad = 1;
+                            $deuda = null;
+                        } else if ($deudatotal >= 20000000) {
+                            $edad = null;
+                            $deuda = 1;
+                        } else if ($deudatotal >= 50000000) {
+                            $edad = null;
+                            $deuda = 2;
+                        } else {
+                            $edad = null;
+                            $deuda = null;
+                        }
 
 
-                    if(3000000 <= $capital || $especial < 7000000){
+                        $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$NOMINA, $DEPENDENCIA, $ENTIDAD]);
+                        //FECHA MES ACTUAL
+
+
+                        if (3000000 <= $capital || $especial < 7000000) {
 
                             //FECHA MES ACTUAL
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
@@ -21100,7 +21129,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                 // Resultado basado en las condiciones
-                                $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                 // Calcular el último día del mes de B14
@@ -21115,7 +21144,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                 // Evaluar si todas las condiciones son verdaderas
-                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                 // Primer nivel de comprobación
@@ -21129,13 +21158,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                     $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                    $resultado5 = $condicionA && $condicionB ? true : false ;
+                                    $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
 
-                                    $NoAgencia = $registro['AGENCIA'];
+                                $NoAgencia = $registro['AGENCIA'];
 
-                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
-                                //NUMERO DE AGENCIA
+                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                    //NUMERO DE AGENCIA
                                     $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta entonces es aprobado.';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -21151,7 +21180,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21166,7 +21195,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21174,10 +21203,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21191,7 +21220,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21206,7 +21235,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21214,10 +21243,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21231,7 +21260,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21246,7 +21275,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21254,10 +21283,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21271,7 +21300,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21286,7 +21315,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21294,10 +21323,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21311,7 +21340,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21326,7 +21355,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21334,13 +21363,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                //llave que cierra la condicion de fecha actual
-                                }else{
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    //llave que cierra la condicion de fecha actual
+                                } else {
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
                                         Carbon::setLocale('es');
@@ -21358,7 +21387,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21373,7 +21402,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21381,10 +21410,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21396,7 +21425,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21411,7 +21440,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21419,10 +21448,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21434,7 +21463,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21449,7 +21478,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21457,10 +21486,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21472,7 +21501,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21487,7 +21516,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21495,10 +21524,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21510,7 +21539,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21525,7 +21554,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21533,13 +21562,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra lo del mesanterior ==0
+                                //llave que cierra lo del mesanterior ==0
                             }
                             //FECHA MES SIGUIENTE
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
@@ -21598,7 +21627,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                     $fechaReporte->gte($fechadelCredito) &&
                                     $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                ) ?  true : false ;
+                                ) ? true : false;
 
                                 // Fórmula 3
                                 $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -21625,7 +21654,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21640,7 +21669,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21648,10 +21677,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21665,7 +21694,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21680,7 +21709,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21688,10 +21717,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21705,7 +21734,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21720,7 +21749,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21728,10 +21757,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21745,7 +21774,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21760,7 +21789,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21768,10 +21797,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21785,7 +21814,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21800,7 +21829,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21808,18 +21837,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
 
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -21832,7 +21861,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21847,7 +21876,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21855,10 +21884,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21870,7 +21899,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21885,7 +21914,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21893,10 +21922,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21908,7 +21937,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21923,7 +21952,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21931,10 +21960,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21946,7 +21975,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21961,7 +21990,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -21969,10 +21998,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -21984,7 +22013,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -21999,7 +22028,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22007,14 +22036,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                     //llave que cierra las condiciones de mesanterior == 1
                                 }
-                            //llave que cierra mesanterior == 1
+                                //llave que cierra mesanterior == 1
                             }
                             //FECHA ENTREMES
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -22075,7 +22104,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                 //CUARTO CONDICIONAL
                                 $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -22087,7 +22116,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 //SEXTO
                                 $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
-                                if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                     $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta entonces es aprobado.';
                                     //$razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
 
@@ -22106,7 +22135,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22121,7 +22150,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22129,15 +22158,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22146,7 +22175,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22161,7 +22190,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22169,10 +22198,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22186,7 +22215,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22201,7 +22230,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22209,10 +22238,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22226,7 +22255,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22241,7 +22270,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22249,10 +22278,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22266,7 +22295,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22281,7 +22310,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22289,17 +22318,17 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
 
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -22314,7 +22343,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22329,7 +22358,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22337,22 +22366,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22367,7 +22396,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22375,10 +22404,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22390,7 +22419,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22405,7 +22434,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22413,10 +22442,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22428,7 +22457,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22443,7 +22472,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22451,10 +22480,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22466,7 +22495,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22481,7 +22510,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22489,19 +22518,19 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra entremes
+                                //llave que cierra entremes
                             }
 
 
 
-                    //cierre de condicion <= 3000000
-                    }else{
+                            //cierre de condicion <= 3000000
+                        } else {
 
                             //FECHA MES ACTUAL
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
@@ -22600,7 +22629,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
                                 // Resultado basado en las condiciones
-                                $resultado3 = ($condicion3 || $condicion4) ? true : false ;
+                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
 
                                 // Calcular el último día del mes de B14
@@ -22615,7 +22644,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
                                 // Evaluar si todas las condiciones son verdaderas
-                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false ;
+                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
 
                                 // Primer nivel de comprobación
@@ -22629,13 +22658,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
                                     $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                    $resultado5 = $condicionA && $condicionB ? true : false ;
+                                    $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
 
-                                    $NoAgencia = $registro['AGENCIA'];
+                                $NoAgencia = $registro['AGENCIA'];
 
-                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
-                                //NUMERO DE AGENCIA
+                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                    //NUMERO DE AGENCIA
                                     $razon = 'Aprobado por cumplir las fechas pero faltaria el score.';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -22652,7 +22681,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22667,7 +22696,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22675,10 +22704,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22693,7 +22722,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22708,7 +22737,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22716,10 +22745,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22734,7 +22763,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22749,7 +22778,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22757,10 +22786,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22775,7 +22804,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22790,7 +22819,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22798,10 +22827,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22816,7 +22845,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22831,7 +22860,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22839,18 +22868,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                //llave que cierra la condicion de fecha actual
-                                }else{
+                                    //llave que cierra la condicion de fecha actual
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -22864,7 +22893,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22879,7 +22908,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22887,10 +22916,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22903,7 +22932,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22918,7 +22947,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22926,10 +22955,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22942,7 +22971,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22957,7 +22986,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -22965,10 +22994,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -22981,7 +23010,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -22996,7 +23025,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23004,10 +23033,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23020,7 +23049,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23035,7 +23064,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23043,13 +23072,13 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra lo del mesanterior ==0
+                                //llave que cierra lo del mesanterior ==0
                             }
                             //FECHA MES SIGUIENTE
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
@@ -23108,7 +23137,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                     Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
                                     $fechaReporte->gte($fechadelCredito) &&
                                     $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                ) ?  true : false ;
+                                ) ? true : false;
 
                                 // Fórmula 3
                                 $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
@@ -23136,7 +23165,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23151,7 +23180,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23159,10 +23188,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23177,7 +23206,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23192,7 +23221,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23200,10 +23229,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23218,7 +23247,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23233,7 +23262,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23241,10 +23270,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23259,7 +23288,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23274,7 +23303,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23282,10 +23311,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23300,7 +23329,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23315,7 +23344,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23323,18 +23352,18 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
 
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
@@ -23348,7 +23377,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23363,7 +23392,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23371,10 +23400,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23387,7 +23416,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23402,7 +23431,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23410,10 +23439,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23426,7 +23455,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23441,7 +23470,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23449,10 +23478,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23465,7 +23494,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23480,7 +23509,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23488,10 +23517,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23504,7 +23533,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23519,7 +23548,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23527,14 +23556,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                     //llave que cierra las condiciones de mesanterior == 1
                                 }
-                            //llave que cierra mesanterior == 1
+                                //llave que cierra mesanterior == 1
                             }
                             //FECHA ENTREMES
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -23595,7 +23624,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                         $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                $result2 =  $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
                                 //CUARTO CONDICIONAL
                                 $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
@@ -23607,7 +23636,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                 //SEXTO
                                 $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
-                                if (($result == true && $result1 == true && $result2  == true) || ($resultado3 == true && $resultado4 == true &&  $resultado5  == true)) {
+                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                     $razon = 'Aprobado por cumplir las fechas pero faltaria el score.';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -23625,7 +23654,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23640,7 +23669,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23648,15 +23677,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23666,7 +23695,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23681,7 +23710,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23689,10 +23718,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23707,7 +23736,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23722,7 +23751,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23730,10 +23759,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23748,7 +23777,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23763,7 +23792,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23771,10 +23800,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23789,7 +23818,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 0,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23804,7 +23833,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23812,17 +23841,17 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
-                                }else{
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                         $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
                                         Carbon::setLocale('es');
                                         $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                     }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada .".";
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
 
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         if (empty($existingPagare)) {
@@ -23838,7 +23867,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 1',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23853,7 +23882,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23861,15 +23890,15 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                DB::table('pagareprueba')->insert([
+                                            DB::table('pagareprueba')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -23877,7 +23906,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 2',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23892,7 +23921,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23900,10 +23929,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23916,7 +23945,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 3',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23931,7 +23960,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23939,10 +23968,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23955,7 +23984,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 4',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -23970,7 +23999,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -23978,10 +24007,10 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
-                                    }else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                         if (empty($existingPagare)) {
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
@@ -23994,7 +24023,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'CoorAsignada' => 'Coordinacion 5',
                                                 'AutorizacionGerente' => 1,
                                                 'InteresProporcional' => $interesProporcionalCorrecto,
-                                                'FechaAccion'=> $fechaStringCredito,
+                                                'FechaAccion' => $fechaStringCredito,
                                                 'Garantia' => $garantia,
                                                 'NoAgencia' => $agencia,
                                                 'NombreAgencia' => $nombreAgencia,
@@ -24009,7 +24038,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'ValorCuota' => $vcuotas,
                                                 'Tasa' => $tasaAPI,
                                                 'FechaCredito' => $fechaStringCredito,
-                                                'Nomina' => $nomina .' - '.$nomNomina,
+                                                'Nomina' => $nomina . ' - ' . $nomNomina,
                                                 'Direccion' => $direccion,
                                                 'TelFijo' => $fijo,
                                                 'Fecha1Cuota' => $fechaFormateada,
@@ -24017,20 +24046,20 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                                                 'Celular' => $celular,
                                                 'Correo' => $correo,
                                                 'GeneradorPagare' => $usuario,
-                                                'ID_Persona'=> 7323
+                                                'ID_Persona' => 7323
                                             ]);
                                         }
                                     }
 
                                 }
-                            //llave que cierra entremes
+                                //llave que cierra entremes
                             }
+                        }
                     }
+                    //cierre validacion pagare
                 }
-                //cierre validacion pagare
             }
-        }
-        //CIERRE FOREACH
+            //CIERRE FOREACH
         }
 
 
@@ -24072,7 +24101,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                             $checkboxes .= '<label for="enfermedad_' . $index . '">
                                                 <span class="fw-semibold">' . $enfermedad['id'] . '.</span>
-                                                <input style="transform: scale(1.3);" type="checkbox" class="ms-1 mb-2" id="enfermedad_' . $index . '" name="enfermedades[]" value="'. $enfermedad['nombre'] .'">
+                                                <input style="transform: scale(1.3);" type="checkbox" class="ms-1 mb-2" id="enfermedad_' . $index . '" name="enfermedades[]" value="' . $enfermedad['nombre'] . '">
                                                 ' . $enfermedad['nombre'] . '
                                             </label><br>';
                         }
@@ -24091,6 +24120,6 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
 
 
-        }
+}
 
 
