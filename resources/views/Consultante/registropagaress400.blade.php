@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -78,7 +78,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -86,26 +86,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover">
@@ -115,7 +115,7 @@
             <!-- <th scope="col">ASEGURABILIDAD</th> -->
           <th scope="col">SCORE</th>
           <th scope="col">APROBADO</th>
-          <!-- <th scope="col">RAZON</th> -->
+          <th scope="col">RAZON</th>
           <th scope="col">AUTORIZACIÓN</th>
           <th scope="col">1 CUOTA</th>
           <th scope="col">FECHA ESCANEO</th>
@@ -140,15 +140,15 @@
           <th scope="col">CELULAR</th>
           <th scope="col">CORREO</th>
           <th scope="col">GENERADOR PAGARE</th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
 
 
@@ -221,11 +221,11 @@
 //         var url = "{{ route('crudcor.asegurabilidad', ':id') }}";
 //         var url2 = "{{ route('crudcor.adjuntarasegurabilidad', ':id') }}";
 //         var today = new Date().toISOString().split('T')[0];
-        
+
 //         url = url.replace(':id', id);
 //         url2 = url2.replace(':id', id);
- 
-        
+
+
 //         if(row.edad == 1 && row.deuda == 1){
 //           var motivo = 'cuenta con más de <strong>70 años</strong> y así mismo, su deuda total es igual o mayor a <strong>20 Millones</strong>';
 //         }else if(row.edad == 1 && row.deuda == 2){
@@ -246,8 +246,8 @@
 //                   <div class="modal fade" id="modalEditar_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 //                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 //                       <div class="modal-content">
-                        
-                        
+
+
 //                         <div class="">
 //                         <button type="button" class="btn-close p-3" aria-label="Close" data-bs-dismiss="modal"></button>
 //                         <h1 class="modal-title text-center" id="modificar"  style="margin-top: -40px">ADJUNTAR FORMATO ASEGURABILIDAD</h1>
@@ -256,7 +256,7 @@
 //                         <div class="modal-body">
 //                           <form action="`+url2+`" class="text-center" method="POST" enctype="multipart/form-data" id="formulario">
 //                             @csrf
-                       
+
 //                             <div class="mb-3 ms-2 me-2">
 //                               <label for="" id="" class="form-label text-start fs-5" style="margin-left: 0%;">Por favor, adjuntar el <strong>Formato de Asegurabilidad</strong> escaneado de <strong>${row.NombreCompleto}</strong>. Revisar que este diligenciado correctamente por el asociado.</label>
 //                               <input type="file" class="form-control" name="DocuAsegurabilidad" id="asd" accept="application/pdf" required>
@@ -598,18 +598,18 @@
 //                                                       </div>
 //                                                       <div class="col-md-4" style="display: none;" id="mano">
 //                                                           <label for="" id="" class="form-label text-start fs-5 fw-semibold" style="margin-left: 0%;">Mano Dominante: <span class="text-danger" style="font-size:20px;">*</span></label>
-                                                          
+
 //                                                           <!-- Botones de tipo radio -->
 //                                                           <div class="form-check text-start">
 //                                                               <input class="form-check-input" type="radio" name="mano_dominante" id="diestro" value="Diestro">
 //                                                               <label class="form-check-label" for="diestro">Diestro</label>
 //                                                           </div>
-                                                          
+
 //                                                           <div class="form-check text-start">
 //                                                               <input class="form-check-input" type="radio" name="mano_dominante" id="zurdo" value="Zurdo">
 //                                                               <label class="form-check-label" for="zurdo">Zurdo</label>
 //                                                           </div>
-                                                          
+
 //                                                           <div class="form-check text-start">
 //                                                               <input class="form-check-input" type="radio" name="mano_dominante" id="ambidiestro" value="Ambidiestro">
 //                                                               <label class="form-check-label" for="ambidiestro">Ambidiestro</label>
@@ -669,7 +669,7 @@
 //                                                       <div class="" style="display: none;" id="pregunta6">
 //                                                         <p class="text-start fs-5"><span class="text-danger" style="font-size:20px;">*</span><strong>6.</strong>  ¿Le ha sido declarado legalmente pérdida de capacidad laboral permanente en el 50% o más?             <label class="form-check-label fw-bold me-1">SI </label><input id="p6" class="form-check-input" type="radio" name="pregunta6" value="1"> <label class="form-check-label ms-3 fw-bold me-1">NO </label><input class="form-check-input" type="radio" name="pregunta6" value="0"></p>
 //                                                       </div>
-//                                                       <div class="" style="display: none;" id="pregunta7">  
+//                                                       <div class="" style="display: none;" id="pregunta7">
 //                                                         <p class="text-start fs-5"><span class="text-danger" style="font-size:20px;">*</span><strong>7.</strong>  ¿Le ha sido declarado legalmente pérdida de capacidad laboral permanente en menos del 50%?             <label class="form-check-label fw-bold me-1">SI </label><input id="p7" class="form-check-input" type="radio" readonly name="pregunta7" value="1"> <label class="form-check-label ms-3 fw-bold me-1">NO </label><input class="form-check-input" type="radio" name="pregunta7" value="0" readonly></p>
 //                                                       </div>
 //                                                       <div class="" style="display: none;" id="pregunta8">
@@ -685,7 +685,7 @@
 //                                                       </div>
 //                                                   </div>
 //                                               </div>
-                                              
+
 //                                               <div class="modal-footer d-flex justify-content-center">
 //                                               <button disabled type="submit" id="boton" name="editar" class="btn btn-primary fs-4 fw-bold" style="background-color: #005E56;" onclick="setTimeout(function(){ window.location.reload(); }, 3000)">GENERAR FORMATO ASEGURABILIDAD</button>
 
@@ -701,7 +701,7 @@
 //                               $("#inputCiudadLine2").change(function() {
 //                                 // Obtener el valor seleccionado
 //                                 var selectedExpedicion = $(this).val();
-                                
+
 //                                 // Verificar si se seleccionó una opción
 //                                 if (selectedExpedicion !== "") {
 //                                   // Mostrar el div de departamentos
@@ -720,7 +720,7 @@
 //                               $("#departamentos").change(function() {
 //                                 // Obtener el valor seleccionado
 //                                 var selectedExpedicion = $(this).val();
-                                
+
 //                                 // Verificar si se seleccionó una opción
 //                                 if (selectedExpedicion !== "") {
 //                                   // Mostrar el div de departamentos
@@ -738,7 +738,7 @@
 //                               $("#nacionalidad").change(function() {
 //                                 // Obtener el valor seleccionado
 //                                 var selectedExpedicion = $(this).val();
-                                
+
 //                                 // Verificar si se seleccionó una opción
 //                                 if (selectedExpedicion !== "") {
 //                                   // Mostrar el div de departamentos
@@ -771,7 +771,7 @@
 //                                 });
 //                             });
 
-                          
+
 //                           $(document).ready(function () {
 //                             // Cuando se cambia la opción de manodominante
 //                             $('input[name="mano_dominante"]').change(function () {
@@ -790,7 +790,7 @@
 //                             });
 //                           });
 
-       
+
 //                           $(document).ready(function() {
 //                               // Manejar el cambio en la selección de radio buttons
 //                               $('input[name="pregunta2"]').change(function() {
@@ -866,7 +866,7 @@
 //                                       $('#procedimientoDiv').hide(); // Oculta el div si el valor no es 1
 //                                       $('#pregunta5').show();
 //                                       $('#enfermedad1, #fechaa, #tratamiento1').prop('required', false);
-                                      
+
 //                                   }
 //                               });
 //                           });
@@ -937,10 +937,10 @@
 //                                   if ($(this).val() == '1') {
 //                                       $('#pregunta7').show();
 //                                       $('#pregunta8').show();
-                   
 
 
-                                        
+
+
 //                                       } else {
 //                                         $('#pregunta7').show();
 //                                         $('#pregunta8').show();
@@ -988,7 +988,7 @@
 //                                 $('#pregunta10').show();
 //                             } else {
 //                                 $('#pregunta10').show();
-                                
+
 //                             }
 //                         });
 //                     });
@@ -1027,13 +1027,13 @@
 //                         Swal.showLoading();
 
 //                         try {
-                          
+
 //                             // Simula una operación asíncrona, puedes reemplazar esto con tu lógica real
 //                             await new Promise(resolve => setTimeout(resolve, 1000));
 
 //                             // Insertar el formulario en el body
 //                             document.body.insertAdjacentHTML('beforeend', Formato);
-                            
+
 //                             // Inicializar el modal
 //                             var modal = new bootstrap.Modal(document.getElementById('staticBackdrop_' + id));
 //                             Swal.close();
@@ -1047,7 +1047,7 @@
 //                             });
 
 //                             // Cerrar el SweetAlert después de cargar el modal
-                          
+
 //                         } catch (error) {
 //                             // Manejar errores si es necesario
 //                             console.error(error);
@@ -1058,8 +1058,8 @@
 //         }else{
 //             var Formato = '<div class="text-center fw-bold fs-2">N/A</div>';
 //         }
-    
-                 
+
+
 //   return Formato;
 
 // }
@@ -1073,7 +1073,7 @@
             });
         }
     },
-    {   
+    {
     data: null,
       render: function(data, type, row) {
         if(row.ExisteDatacredito == 2){
@@ -1086,18 +1086,27 @@
             var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">NO</span>';
         }else{
             var AprobadoButton = '<span class="" style="font-weight: bold; font-size: 30px">PENDIENTE</span>';
-        }       
+        }
     return AprobadoButton;
 
       }
     },
+    {
+        data: 'Razon',
+        createdCell: function (td, cellData, rowData, row, col) {
+            $(td).css({
+                'font-weight': 'bold',
+                'font-size': '20px'
+            });
+        }
+    },
 {    data: null,
       render: function(data, type, row) {
-        var id = row.ID; 
+        var id = row.ID;
         var url = "{{ route('crudger.adjuntarautorizacion', ':id') }}";
         var today = new Date().toISOString().split('T')[0];
         url = url.replace(':id', id);
-        
+
         var html = '';
       if(row.AutorizacionGerente == 0){
 
@@ -1114,7 +1123,7 @@
 {
       data: null,
       render: function(data, type, row) {
-        var Fecha1Cuota = '<strong style="font-size:25px">'+row.Fecha1Cuota+'</strong>'; 
+        var Fecha1Cuota = '<strong style="font-size:25px">'+row.Fecha1Cuota+'</strong>';
         return Fecha1Cuota;
       }
     },
@@ -1123,21 +1132,21 @@
     {
       data: null,
       render: function(data, type, row) {
-        var FechaAccion = '<strong style="font-size:25px">'+row.FechaAccion+'</strong>'; 
+        var FechaAccion = '<strong style="font-size:25px">'+row.FechaAccion+'</strong>';
         return FechaAccion;
       }
     },
     {
       data: null,
       render: function(data, type, row) {
-        var FechaAccion = '<strong style="font-size:25px">'+row.FechaReporte+'</strong>'; 
+        var FechaAccion = '<strong style="font-size:25px">'+row.FechaReporte+'</strong>';
         return FechaAccion;
       }
     },
     {
       data: null,
       render: function(data, type, row) {
-        var Garantia = '<span style="font-size:25px">'+row.Garantia+'</span>'; 
+        var Garantia = '<span style="font-size:25px">'+row.Garantia+'</span>';
         return Garantia;
       }
     },
@@ -1147,7 +1156,7 @@
     {
       data: null,
       render: function(data, type, row) {
-        var Interes = '<span style="font-size:25px">'+row.InteresProporcional+'</span>'; 
+        var Interes = '<span style="font-size:25px">'+row.InteresProporcional+'</span>';
         return Interes;
       }
     },
@@ -1158,9 +1167,9 @@
     {
       data: null,
       render: function(data, type, row) {
-        var NoLC = '<strong>'+row.NoLC+'</strong>'; 
+        var NoLC = '<strong>'+row.NoLC+'</strong>';
         var Linea_Credito = row.Linea_Credito;
-        
+
 
         return NoLC+'-'+Linea_Credito;
       }
@@ -1204,7 +1213,7 @@
       "previous": "Anterior"
     }
   },
-  
+
   "initComplete": function(settings, json) {
     var buttonsHtml = '<div class="custom-buttons">' +
           '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
@@ -1217,8 +1226,8 @@
         });
       },
   responsive: "true",
-        dom: 'Bfrtilp',       
-        buttons:[ 
+        dom: 'Bfrtilp',
+        buttons:[
 			{
 				extend:    'excelHtml5',
 				text:      '<i class="fas fa-file-excel"></i> ',
@@ -1231,7 +1240,7 @@
 				titleAttr: 'Imprimir',
 				className: 'btn btn-info btn-lg'
 			},
-      ]	
+      ]
 });
 
 
@@ -1243,7 +1252,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 function fecha(){
@@ -1255,16 +1264,16 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
     <style>
 
@@ -1292,11 +1301,10 @@ function fecha(){
 
    </style>
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+
