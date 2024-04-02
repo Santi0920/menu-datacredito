@@ -338,6 +338,9 @@ Route::middleware('auth.consultante')->group(function () {
     Route::get('solicitud', function () {
         return view('Consultante/solicitarautorizacion');
     });
+
+    Route::get('solicitud', [ControllerConsultante::class, 'data16']);
+
 });
 
 

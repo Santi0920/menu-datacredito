@@ -52,19 +52,91 @@
             @csrf
             <h2 class="p-2 text-secondary text-center"><b>Solicitar Autorización</b></h2>
 
+            <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                <label for="input1" class="form-label col-form-label-lg fw-semibold">TIPO DE AUTORIZACIÓN <span
+                        class="text-danger" style="font-size:20px;">*</span></label>
+                <select class="form-select form-select-lg " id="tipo-autorizacion" aria-label=".form-select-lg example">
+                    <option selected disabled>Selecciona una opción</option>
+                    <option disabled class="fw-bold">---TALENTO HUMANO---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 10)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---COORDINACION---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 11)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---SISTEMAS---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 19)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 2150)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---JURIDICO ZONA NORTE---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 2250)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---JURIDICO ZONA SUR---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 2350)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                    <option disabled class="fw-bold">---TESORERIA---</option>
+                    @foreach ($user as $autorizacion)
+                        @if ($autorizacion->No == 1500)
+                            <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
+                                {{ $autorizacion->No . $autorizacion->Letra }} -
+                                {{ $autorizacion->Concepto }}
+                            </option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+
 
             <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                <label for="input1" class="form-label fw-semibold">ID <span class="text-danger"
+                <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
                         style="font-size:20px;">*</span></label>
-                <input type="text" class="form-control" id="input1" autocomplete="off" autofocus required>
+                <input type="text" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                    required>
 
             </div>
 
 
             <div class="mb-3 w-100" title="Este campo es obligatorio">
-                <label for="input2" class="form-label fw-semibold">NÚMERO DE AGENCIA <span class="text-danger"
-                        style="font-size:20px;">*</span></label>
-                <input type="number" class="form-control " name="NoAgencia" id="input2" autocomplete="off" required>
+                <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                        class="text-danger" style="font-size:20px;">*</span></label>
+                <textarea type="number" class="form-control form-control-lg" name="NoAgencia" autocomplete="off" required></textarea>
 
             </div>
 
@@ -73,7 +145,7 @@
             <div class="text-center">
                 <!-- onclick="return confirmar()" -->
                 <button id="agregar" type="submit" class="btn btn-primary fs-4 fw-bold" name="btnregistrar"
-                    style="background-color: #005E56;">Registrar</button>
+                    style="background-color: #005E56;">SOLICITAR</button>
                 <!-- <button onclick="limpiarCampos()" id="botonRegistrar" class="btn btn-primary" name="btnregistrar" style="background-color: #005E56;">Limpiar</button> -->
             </div>
 
@@ -177,8 +249,8 @@
 
 
                 "lengthMenu": [
-                    [10, 15],
-                    [10, 15]
+                    [5],
+                    [5]
                 ],
                 "drawCallback": function(settings) {
                     var api = this.api();
