@@ -12,7 +12,7 @@
           title: "{{session('correcto')}}",
           text: '',
           confirmButtonColor: '#005E56',
-      });  
+      });
   </script>
   </div>
 @endif
@@ -26,7 +26,7 @@
           title: "{{session('correcto')}}",
           text: '',
           confirmButtonColor: '#005E56',
-      });  
+      });
   </script>
   </div>
 @endif
@@ -41,8 +41,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -56,8 +56,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -90,7 +90,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -98,26 +98,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover">
@@ -127,6 +127,7 @@
           <th scope="col">SCORE</th>
           <th scope="col">ESTADO</th>
           <th scope="col">APROBADO</th>
+          <th scope="col">RAZON</th>
           <th scope="col">ACCIONES</th>
           <th scope="col">AUTORIZACIÓN</th>
           <th scope="col">1 CUOTA</th>
@@ -152,15 +153,15 @@
           <th scope="col">CELULAR</th>
           <th scope="col">CORREO</th>
           <th scope="col">GENERADOR PAGARE</th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
 
 
@@ -177,13 +178,13 @@
 
 <style>
   .disabled-link {
-    pointer-events: none; 
-    opacity: 0.5; 
+    pointer-events: none;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 </style>
 <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.coordipagarecorreos') }}",
@@ -227,7 +228,7 @@
             });
         }
     },
-    {   
+    {
     data: null,
       render: function(data, type, row) {
 
@@ -237,14 +238,23 @@
             var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">NO</span>';
         }else{
             var AprobadoButton = '<span class="" style="font-weight: bold; font-size: 30px">PENDIENTE</span>';
-        }       
+        }
     return AprobadoButton;
 
       }
     },
+    {
+        data: 'Razon',
+        createdCell: function (td, cellData, rowData, row, col) {
+            $(td).css({
+                'font-weight': 'bold',
+                'font-size': '20px'
+            });
+        }
+    },
     {    data: null,
       render: function(data, type, row) {
-        var id = row.ID; 
+        var id = row.ID;
         var url = "{{ route('crud.update2', ':id') }}";
         url = url.replace(':id', id);
 
@@ -274,11 +284,11 @@
 },
 {    data: null,
       render: function(data, type, row) {
-        var id = row.ID; 
+        var id = row.ID;
         var url = "{{ route('crudger.adjuntarautorizacion', ':id') }}";
         var today = new Date().toISOString().split('T')[0];
         url = url.replace(':id', id);
-        
+
         var html = '';
       if(row.AutorizacionGerente == 0){
 
@@ -288,8 +298,8 @@
                   <div class="modal fade" id="modalEditar_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                       <div class="modal-content">
-                        
-                        
+
+
                         <div class="">
                         <button type="button" class="btn-close p-3" aria-label="Close" data-bs-dismiss="modal"></button>
                         <h1 class="modal-title text-center" id="modificar"  style="margin-top: -40px">ADJUNTAR AUTORIZACIÓN</h1>
@@ -298,7 +308,7 @@
                         <div class="modal-body">
                           <form action="`+url+`" class="text-center" method="POST" enctype="multipart/form-data" id="formulario">
                             @csrf
-                       
+
                             <div class="mb-5 mt-3 ms-2 me-2">
                               <label for="" id="" class="form-label text-start fs-5" style="margin-left: 0%;">Por favor, adjuntar documento de <strong>Autorización</strong> de <strong>${row.NombreCompleto}</strong> con cuenta <strong>${row.CuentaCoop}</strong> firmado por <strong>Gerencia</strong>.</label>
                               <input type="file" class="form-control" name="DocuAutorizacion" id="asd" accept="application/pdf" required>
@@ -325,7 +335,7 @@
 {
       data: null,
       render: function(data, type, row) {
-        var Fecha1Cuota = '<strong style="font-size:25px">'+row.Fecha1Cuota+'</strong>'; 
+        var Fecha1Cuota = '<strong style="font-size:25px">'+row.Fecha1Cuota+'</strong>';
         return Fecha1Cuota;
       }
     },
@@ -334,21 +344,21 @@
     {
       data: null,
       render: function(data, type, row) {
-        var FechaAccion = '<strong style="font-size:25px">'+row.FechaAccion+'</strong>'; 
+        var FechaAccion = '<strong style="font-size:25px">'+row.FechaAccion+'</strong>';
         return FechaAccion;
       }
     },
     {
       data: null,
       render: function(data, type, row) {
-        var FechaAccion = '<strong style="font-size:25px">'+row.FechaReporte+'</strong>'; 
+        var FechaAccion = '<strong style="font-size:25px">'+row.FechaReporte+'</strong>';
         return FechaAccion;
       }
     },
     {
       data: null,
       render: function(data, type, row) {
-        var Garantia = '<span style="font-size:25px">'+row.Garantia+'</span>'; 
+        var Garantia = '<span style="font-size:25px">'+row.Garantia+'</span>';
         return Garantia;
       }
     },
@@ -358,7 +368,7 @@
     {
       data: null,
       render: function(data, type, row) {
-        var Interes = '<span style="font-size:25px">'+row.InteresProporcional+'</span>'; 
+        var Interes = '<span style="font-size:25px">'+row.InteresProporcional+'</span>';
         return Interes;
       }
     },
@@ -369,9 +379,9 @@
     {
       data: null,
       render: function(data, type, row) {
-        var NoLC = '<strong>'+row.NoLC+'</strong>'; 
+        var NoLC = '<strong>'+row.NoLC+'</strong>';
         var Linea_Credito = row.Linea_Credito;
-        
+
 
         return NoLC+'-'+Linea_Credito;
       }
@@ -392,7 +402,7 @@
     {data: 'Correo'},
     {data: 'GeneradorPagare'}
   ],
-  
+
 
 
   "lengthMenu": [[7], [7]],
@@ -407,10 +417,10 @@
       "next": "Siguiente",
       "previous": "Anterior"
     }
-  },  
+  },
         responsive: "true",
-        dom: 'Bfrtilp',       
-        buttons:[ 
+        dom: 'Bfrtilp',
+        buttons:[
 			{
 				extend:    'excelHtml5',
 				text:      '<i class="fas fa-file-excel"></i> ',
@@ -422,8 +432,8 @@
 				text:      '<i class="fa fa-print"></i> ',
 				titleAttr: 'Imprimir',
 				className: 'btn btn-info btn-lg'
-			},      
-      ]	
+			},
+      ]
 });
 
 
@@ -435,7 +445,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 function fecha(){
@@ -447,7 +457,7 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
@@ -458,18 +468,18 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro de cambiar el estado al crédito?")
             return respuesta
           }
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+
+

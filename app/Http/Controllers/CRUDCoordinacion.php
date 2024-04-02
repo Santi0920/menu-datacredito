@@ -12709,7 +12709,7 @@ class CRUDCoordinacion extends Controller
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $user = DB::select("
-        SELECT A.Score, A.Estado, B.ID, B.NoAgencia, B.CuentaCoop, B.Cedula_Persona, B.NombreCompleto, B.ID_Pagare, B.Linea_Credito, B.Capital, B.NoCuotas, B.ValorCuota, B.Tasa, B.FechaCredito, B.Nomina, B.Direccion, B.TelFijo, B.FechaReporte, B.Fecha1Cuota, B.FechaUltimaCuota, B.Celular, B.Correo, B.Garantia, B.GeneradorPagare, B.ID_Persona, B.Aprobado, B.NoLC, B.AutorizacionGerente, B.DocuAutorizacion, B.InteresProporcional, B.FechaAccion, B.CorreoEnviado
+        SELECT A.Score, A.Estado, B.ID, B.NoAgencia, B.CuentaCoop, B.Cedula_Persona, B.NombreCompleto, B.Razon, B.ID_Pagare, B.Linea_Credito, B.Capital, B.NoCuotas, B.ValorCuota, B.Tasa, B.FechaCredito, B.Nomina, B.Direccion, B.TelFijo, B.FechaReporte, B.Fecha1Cuota, B.FechaUltimaCuota, B.Celular, B.Correo, B.Garantia, B.GeneradorPagare, B.ID_Persona, B.Aprobado, B.NoLC, B.AutorizacionGerente, B.DocuAutorizacion, B.InteresProporcional, B.FechaAccion, B.CorreoEnviado
         FROM persona A
         JOIN pagare B ON A.ID = B.ID_Persona
     ");

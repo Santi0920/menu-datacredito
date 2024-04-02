@@ -203,8 +203,7 @@
                     <thead style="background-color: #005E56;">
                         <tr class="text-white">
                             <th scope="col">#</th>
-                            <!-- <th style="width: 77px">FUNCIONES</th> -->
-                            <th scope="col">SCORE</th>
+                            <th scope="col">CEDULA</th>
                         </tr>
                     </thead>
                     <tbody class="table-group-divider">
