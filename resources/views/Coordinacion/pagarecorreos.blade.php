@@ -17,6 +17,20 @@
   </div>
 @endif
 
+@if (session("correcto3"))
+  <div>
+  <script>
+    Swal.fire
+      ({
+          icon: 'success',
+          title: "{{session('correcto')}}",
+          text: '',
+          confirmButtonColor: '#005E56',
+      });  
+  </script>
+  </div>
+@endif
+
 @if (session("incorrecto"))
 <div>
   <script>
@@ -230,29 +244,29 @@
     },
     {    data: null,
       render: function(data, type, row) {
-        var id = row.IDPagare;
+        var id = row.ID; 
         var url = "{{ route('crud.update2', ':id') }}";
         url = url.replace(':id', id);
 
 
-        var aprobar =  '<div class="text-center mt-2 "><a onclick="return estado()" href="{{ route('crudcoor.aprobarcred', ':id') }}" type="submit" class="fw-bold btn btn-small btn-outline-success fs-5" name="eliminar" value="ok">APROBAR</a></div>'.replace(':id', row.IDPagare);
+        var aprobar =  '<div class="text-center mt-2 "><a onclick="return estado()" href="{{ route('crudcoor.aprobarcred', ':id') }}" type="submit" class="fw-bold btn btn-small btn-outline-success fs-5" name="eliminar" value="ok">APROBAR</a></div>'.replace(':id', row.ID);
 
-        var rechazar = '<div class="text-center mt-2 "><a onclick="return estado()" href="{{ route('crudcoor.rechazarcred', ':id') }}" type="submit" class="fw-bold btn btn-small btn-outline-danger fs-5" name="eliminar" value="ok">RECHAZAR</a></div>'.replace(':id', row.IDPagare);
+        var rechazar = '<div class="text-center mt-2 "><a onclick="return estado()" href="{{ route('crudcoor.rechazarcred', ':id') }}" type="submit" class="fw-bold btn btn-small btn-outline-danger fs-5" name="eliminar" value="ok">RECHAZAR</a></div>'.replace(':id', row.ID);
 
         if(row.CorreoEnviado == 0){
           if(row.Aprobado == 1){
-            var AprobadoButton = '<div class="text-center"><a onclick="return eliminar2()" href="{{ route('crud.pagarecorreo', ':id') }}" type="submit" class="btn btn-small btn-outline-primary fs-4" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.IDPagare);
+            var AprobadoButton = '<div class="text-center"><a onclick="return eliminar2()" href="{{ route('crud.pagarecorreo', ':id') }}" type="submit" class="btn btn-small btn-outline-primary fs-4" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return AprobadoButton + rechazar;
           }else if(row.Aprobado == 0){
-            var RechazadoButton = '<div class="text-center"><a onclick="return eliminar2()" href="{{ route('crud.pagarecorreorecha', ':id') }}" type="submit" class="btn btn-small btn-outline-danger fs-4" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.IDPagare);
+            var RechazadoButton = '<div class="text-center"><a onclick="return eliminar2()" href="{{ route('crud.pagarecorreorecha', ':id') }}" type="submit" class="btn btn-small btn-outline-danger fs-4" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return RechazadoButton + aprobar;
           }
         }else {
           if(row.Aprobado == 1){
-            var AprobadoButton = '<div class="text-center"><a onclick="return false;" title="CORREO YA FUE ENVIADO!" class="btn btn-small btn-outline-primary fs-4 disabled-link" name="eliminar" value="ok" disabled><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.IDPagare);
+            var AprobadoButton = '<div class="text-center"><a onclick="return false;" title="CORREO YA FUE ENVIADO!" class="btn btn-small btn-outline-primary fs-4 disabled-link" name="eliminar" value="ok" disabled><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return AprobadoButton ;
           }else if(row.Aprobado == 0){
-            var RechazadoButton = '<div class="text-center"><a onclick="" type="submit" class="btn btn-small btn-danger fs-4 disabled-link" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.IDPagare);
+            var RechazadoButton = '<div class="text-center"><a onclick="" type="submit" class="btn btn-small btn-danger fs-4 disabled-link" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return RechazadoButton+ rechazar;
           }
         }
