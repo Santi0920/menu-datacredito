@@ -18164,6 +18164,7 @@ class CRUDCoordinacion extends Controller
                                     //FECHA ENTREMES
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
                                         Carbon::setLocale('es');

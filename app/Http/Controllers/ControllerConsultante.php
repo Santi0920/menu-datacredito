@@ -16108,7 +16108,7 @@ class ControllerConsultante extends Controller
             $user = DB::select("
             SELECT *
             FROM persona A
-            JOIN pagareprueba B ON A.ID = B.ID_Persona
+            JOIN pagare B ON A.ID = B.ID_Persona
             WHERE B.Ordinario = 0 && B.NombreAgencia = '$agenciaU'
             ORDER BY A.ID ASC");
 
@@ -16192,15 +16192,15 @@ class ControllerConsultante extends Controller
             $foundMatchingPagare = false;
 
 
-            $existingPagare = DB::select('SELECT ExisteDatacredito, ID_Pagare, CuentaCoop FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?', [$registro['CUENTA'], $registro['IDPAGARE']]);
+            $existingPagare = DB::select('SELECT ExisteDatacredito, ID_Pagare, CuentaCoop FROM pagare WHERE CuentaCoop = ? AND ID_Pagare = ?', [$registro['CUENTA'], $registro['IDPAGARE']]);
 
             if (!empty($existingPagare)) {
 
                 $existePersona = DB::select('SELECT Cedula, Score FROM persona WHERE Cedula = ?', [$cedula]);
                 foreach ($existingPagare as $pagare) {
                     if ($pagare->ExisteDatacredito == 1 && !empty($existePersona)) {
-                        DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
-                        DB::statement("ALTER TABLE pagareprueba AUTO_INCREMENT = 1");
+                        DB::delete("DELETE FROM pagare WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
+                        DB::statement("ALTER TABLE pagare AUTO_INCREMENT = 1");
                         $foundMatchingPagare = true;
                     }
 
@@ -16311,6 +16311,7 @@ class ControllerConsultante extends Controller
                         $persona = $existingPerson[0];
                         //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
                         if ($persona->Score >= 650) {
+
                                 //VALIDO QUE SEA IGUAL A LO QUE ESTA EN LA BD DE DATACREDITO EN LA TABLA S400_PLANO
                                 $existeNominaDepen = DB::select('SELECT CODNOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$NOMINA, $DEPENDENCIA, $ENTIDAD]);
 
@@ -16320,6 +16321,7 @@ class ControllerConsultante extends Controller
 
                                     //FECHA MES ACTUAL
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
@@ -16453,7 +16455,7 @@ class ControllerConsultante extends Controller
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
 
-                                                    DB::table('pagareprueba')
+                                                    DB::table('pagare')
                                                     ->where('cedula', $cedula) // Filtro para identificar el registro a actualizar
                                                     ->update([
                                                         'edad' => $edad,
@@ -16494,7 +16496,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -16534,7 +16536,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -16574,7 +16576,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -16614,7 +16616,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -16665,7 +16667,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -16703,7 +16705,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -16741,7 +16743,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -16779,7 +16781,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -16817,7 +16819,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -16858,7 +16860,6 @@ class ControllerConsultante extends Controller
 
                                     //FECHA MES SIGUIENTE
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
                                         $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
@@ -16937,7 +16938,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -16977,7 +16978,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -17017,7 +17018,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -17057,7 +17058,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -17097,7 +17098,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -17146,7 +17147,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -17184,7 +17185,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -17222,7 +17223,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -17260,7 +17261,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -17298,7 +17299,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -17414,13 +17415,9 @@ class ControllerConsultante extends Controller
 
                                                 $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                                 if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                    if (empty($existingPagare)) {
-                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'edad' => $edad,
                                                             'deuda' => $deuda,
                                                             'FechaReporte' => $fechaReporteString,
@@ -17454,13 +17451,10 @@ class ControllerConsultante extends Controller
                                                             'GeneradorPagare' => $usuario,
                                                             'ID_Persona' => $persona->ID
                                                         ]);
-                                                    }
                                                 } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                    if (empty($existingPagare)) {
-                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'edad' => $edad,
                                                             'deuda' => $deuda,
                                                             'FechaReporte' => $fechaReporteString,
@@ -17494,53 +17488,48 @@ class ControllerConsultante extends Controller
                                                             'GeneradorPagare' => $usuario,
                                                             'ID_Persona' => $persona->ID
                                                         ]);
-                                                    }
                                                 } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                    if (empty($existingPagare)) {
-                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
-                                                            'edad' => $edad,
-                                                            'deuda' => $deuda,
-                                                            'FechaReporte' => $fechaReporteString,
-                                                            'Aprobado' => 1,
-                                                            'Razon' => $razon,
-                                                            'CoorAsignada' => 'Coordinacion 3',
-                                                            'AutorizacionGerente' => 0,
-                                                            'InteresProporcional' => $interesProporcionalCorrecto,
-                                                            'FechaAccion' => $fechaStringCredito,
-                                                            'Garantia' => $garantia,
-                                                            'NoAgencia' => $agencia,
-                                                            'NombreAgencia' => $nombreAgencia,
-                                                            'CuentaCoop' => $cuenta,
-                                                            'Cedula_Persona' => $cedula,
-                                                            'NombreCompleto' => $nombres,
-                                                            'ID_Pagare' => $idpagare,
-                                                            'NoLC' => $registro['LINEA'],
-                                                            'Linea_Credito' => $registro['LINEANOM'],
-                                                            'Capital' => $capital,
-                                                            'NoCuotas' => $ncuotas,
-                                                            'ValorCuota' => $vcuotas,
-                                                            'Tasa' => $tasaAPI,
-                                                            'FechaCredito' => $fechaStringCredito,
-                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                            'Direccion' => $direccion,
-                                                            'TelFijo' => $fijo,
-                                                            'Fecha1Cuota' => $fechaFormateada,
-                                                            'FechaUltimaCuota' => $fechaFormateada2,
-                                                            'Celular' => $celular,
-                                                            'Correo' => $correo,
-                                                            'GeneradorPagare' => $usuario,
-                                                            'ID_Persona' => $persona->ID
-                                                        ]);
-                                                    }
+                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                    DB::table('pagare')->insert([
+                                                        'edad' => $edad,
+                                                        'deuda' => $deuda,
+                                                        'FechaReporte' => $fechaReporteString,
+                                                        'Aprobado' => 1,
+                                                        'Razon' => $razon,
+                                                        'CoorAsignada' => 'Coordinacion 3',
+                                                        'AutorizacionGerente' => 0,
+                                                        'InteresProporcional' => $interesProporcionalCorrecto,
+                                                        'FechaAccion' => $fechaStringCredito,
+                                                        'Garantia' => $garantia,
+                                                        'NoAgencia' => $agencia,
+                                                        'NombreAgencia' => $nombreAgencia,
+                                                        'CuentaCoop' => $cuenta,
+                                                        'Cedula_Persona' => $cedula,
+                                                        'NombreCompleto' => $nombres,
+                                                        'ID_Pagare' => $idpagare,
+                                                        'NoLC' => $registro['LINEA'],
+                                                        'Linea_Credito' => $registro['LINEANOM'],
+                                                        'Capital' => $capital,
+                                                        'NoCuotas' => $ncuotas,
+                                                        'ValorCuota' => $vcuotas,
+                                                        'Tasa' => $tasaAPI,
+                                                        'FechaCredito' => $fechaStringCredito,
+                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                        'Direccion' => $direccion,
+                                                        'TelFijo' => $fijo,
+                                                        'Fecha1Cuota' => $fechaFormateada,
+                                                        'FechaUltimaCuota' => $fechaFormateada2,
+                                                        'Celular' => $celular,
+                                                        'Correo' => $correo,
+                                                        'GeneradorPagare' => $usuario,
+                                                        'ID_Persona' => $persona->ID
+                                                    ]);
                                                 } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                    if (empty($existingPagare)) {
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'edad' => $edad,
                                                             'deuda' => $deuda,
                                                             'FechaReporte' => $fechaReporteString,
@@ -17574,14 +17563,16 @@ class ControllerConsultante extends Controller
                                                             'GeneradorPagare' => $usuario,
                                                             'ID_Persona' => $persona->ID
                                                         ]);
-                                                    }
                                                 } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                    if (empty($existingPagare)) {
-                                                        dd('asd');
+
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')
+                                                        ->where('CuentaCoop', $cuenta) // Filtro para identificar el registro a actualizar
+                                                        ->where('ExisteCredito', 2) // Filtro para identificar el registro a actualizar
+                                                        ->update([
+                                                            'ExisteCredito' => null,
                                                             'edad' => $edad,
                                                             'deuda' => $deuda,
                                                             'FechaReporte' => $fechaReporteString,
@@ -17595,7 +17586,6 @@ class ControllerConsultante extends Controller
                                                             'NoAgencia' => $agencia,
                                                             'NombreAgencia' => $nombreAgencia,
                                                             'CuentaCoop' => $cuenta,
-                                                            'Cedula_Persona' => $cedula,
                                                             'NombreCompleto' => $nombres,
                                                             'ID_Pagare' => $idpagare,
                                                             'NoLC' => $registro['LINEA'],
@@ -17615,7 +17605,6 @@ class ControllerConsultante extends Controller
                                                             'GeneradorPagare' => $usuario,
                                                             'ID_Persona' => $persona->ID
                                                         ]);
-                                                    }
                                                 }
                                             } else {
                                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -17631,7 +17620,7 @@ class ControllerConsultante extends Controller
 
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -17669,7 +17658,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -17707,7 +17696,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -17745,7 +17734,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -17783,7 +17772,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -17828,8 +17817,8 @@ class ControllerConsultante extends Controller
                             }
                         }
 
-                        // DB::delete("DELETE FROM pagareprueba WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
-                        // DB::statement("ALTER TABLE pagareprueba AUTO_INCREMENT = 1");
+                        // DB::delete("DELETE FROM pagare WHERE CuentaCoop = ? AND ID_Pagare = ?", [$registro['CUENTA'], $registro['IDPAGARE']]);
+                        // DB::statement("ALTER TABLE pagare AUTO_INCREMENT = 1");
                         $foundMatchingPagare = true;
 
                     }
@@ -18096,7 +18085,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18136,7 +18125,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18176,7 +18165,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18216,7 +18205,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18256,7 +18245,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18307,7 +18296,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18345,7 +18334,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18383,7 +18372,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18421,7 +18410,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18459,7 +18448,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18578,7 +18567,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18618,7 +18607,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18658,7 +18647,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18698,7 +18687,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18738,7 +18727,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -18787,7 +18776,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18825,7 +18814,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18863,7 +18852,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18901,7 +18890,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -18939,7 +18928,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19058,7 +19047,7 @@ class ControllerConsultante extends Controller
 
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -19098,7 +19087,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -19138,7 +19127,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -19178,7 +19167,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -19218,7 +19207,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'edad' => $edad,
                                                         'deuda' => $deuda,
                                                         'FechaReporte' => $fechaReporteString,
@@ -19268,7 +19257,7 @@ class ControllerConsultante extends Controller
 
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19306,7 +19295,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19344,7 +19333,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19382,7 +19371,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19420,7 +19409,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19643,7 +19632,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19681,7 +19670,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19719,7 +19708,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19757,7 +19746,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19795,7 +19784,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19836,7 +19825,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19874,7 +19863,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19912,7 +19901,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19950,7 +19939,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -19988,7 +19977,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20117,7 +20106,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -20155,7 +20144,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -20193,7 +20182,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -20231,7 +20220,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -20269,7 +20258,7 @@ class ControllerConsultante extends Controller
                                                         //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                         $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                         $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        DB::table('pagareprueba')->insert([
+                                                        DB::table('pagare')->insert([
                                                             'FechaReporte' => $fechaReporteString,
                                                             'Aprobado' => 0,
                                                             'Razon' => $razon,
@@ -20316,7 +20305,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20354,7 +20343,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20392,7 +20381,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20430,7 +20419,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20468,7 +20457,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20594,7 +20583,7 @@ class ControllerConsultante extends Controller
 
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20632,7 +20621,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20670,7 +20659,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20708,7 +20697,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20746,7 +20735,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20788,7 +20777,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20826,7 +20815,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20864,7 +20853,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20902,7 +20891,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -20940,7 +20929,7 @@ class ControllerConsultante extends Controller
                                                     //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                                     $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                                     $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagareprueba')->insert([
+                                                    DB::table('pagare')->insert([
                                                         'FechaReporte' => $fechaReporteString,
                                                         'Aprobado' => 0,
                                                         'Razon' => $razon,
@@ -21130,7 +21119,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21171,7 +21160,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21212,7 +21201,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21253,7 +21242,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21294,7 +21283,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21344,7 +21333,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21383,7 +21372,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21422,7 +21411,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21461,7 +21450,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21500,7 +21489,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21614,7 +21603,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21655,7 +21644,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21696,7 +21685,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21737,7 +21726,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21778,7 +21767,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -21828,7 +21817,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21867,7 +21856,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21906,7 +21895,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21945,7 +21934,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -21984,7 +21973,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22103,7 +22092,7 @@ class ControllerConsultante extends Controller
                                             $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta entonces es aprobado.';
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22144,7 +22133,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22185,7 +22174,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22226,7 +22215,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22267,7 +22256,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22317,7 +22306,7 @@ class ControllerConsultante extends Controller
 
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22356,7 +22345,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22395,7 +22384,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22434,7 +22423,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22473,7 +22462,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 2,
                                                 'Aprobado' => 0,
@@ -22770,7 +22759,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22810,7 +22799,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22850,7 +22839,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22890,7 +22879,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22930,7 +22919,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -22979,7 +22968,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23017,7 +23006,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23055,7 +23044,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23093,7 +23082,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23131,7 +23120,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23244,7 +23233,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23284,7 +23273,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23324,7 +23313,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23364,7 +23353,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23404,7 +23393,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23453,7 +23442,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23491,7 +23480,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23529,7 +23518,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23567,7 +23556,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23605,7 +23594,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23725,7 +23714,7 @@ class ControllerConsultante extends Controller
 
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23765,7 +23754,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23805,7 +23794,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23845,7 +23834,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23885,7 +23874,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -23935,7 +23924,7 @@ class ControllerConsultante extends Controller
 
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -23973,7 +23962,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -24011,7 +24000,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -24049,7 +24038,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -24087,7 +24076,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'Aprobado' => 0,
                                                 'Razon' => $razon,
@@ -24270,7 +24259,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24311,7 +24300,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24352,7 +24341,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24393,7 +24382,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24434,7 +24423,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24484,7 +24473,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -24523,7 +24512,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -24562,7 +24551,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -24601,7 +24590,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -24640,7 +24629,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -24754,7 +24743,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24795,7 +24784,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24836,7 +24825,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24877,7 +24866,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24918,7 +24907,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -24968,7 +24957,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25007,7 +24996,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25046,7 +25035,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25085,7 +25074,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25124,7 +25113,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25243,7 +25232,7 @@ class ControllerConsultante extends Controller
                                             $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta entonces es aprobado.';
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -25284,7 +25273,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -25325,7 +25314,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -25366,7 +25355,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -25407,7 +25396,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'edad' => $edad,
                                                 'deuda' => $deuda,
                                                 'FechaReporte' => $fechaReporteString,
@@ -25458,7 +25447,7 @@ class ControllerConsultante extends Controller
 
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25497,7 +25486,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25536,7 +25525,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25575,7 +25564,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25614,7 +25603,7 @@ class ControllerConsultante extends Controller
                                             //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                            DB::table('pagareprueba')->insert([
+                                            DB::table('pagare')->insert([
                                                 'FechaReporte' => $fechaReporteString,
                                                 'ExisteDatacredito' => 1,
                                                 'Aprobado' => 0,
@@ -25665,7 +25654,7 @@ class ControllerConsultante extends Controller
         $user = DB::select("
         SELECT *
         FROM persona A
-        JOIN pagareprueba B ON A.ID = B.ID_Persona
+        JOIN pagare B ON A.ID = B.ID_Persona
         WHERE B.Ordinario = 0 && B.NombreAgencia = '$agenciaU'
         ORDER BY A.ID ASC");
 

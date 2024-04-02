@@ -69,59 +69,54 @@
                         </ul>
                     </ul>
                 </div>
-
                 <div class="dropdown nav-item">
 
                     <li class="nav-link active text-white dropdown-toggle fw-bold ms-4" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
                         Pagaré
                     </li>
-
-                    <ul class="dropdown-menu" style="background-color: #005E56;">
-                        <ul class="dropend">
-
-
-                            <ul class="dropend">
-                                <li class="dropdown-toggle text-white text-start"
-                                    style=" list-style-type: none; font-size: 25px"><a class="fw-semibold text-white"
-                                        style=" font-size: 25px; text-decoration: none; text-aling:start; margin-left: -60px">Registros
-                                        Pagare</a></li>
-
-                                <ul class="dropdown-menu" style="background-color: #005E56;">
-                                    <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
-                                            style="font-size: 25px" href="registrarpagaredir"><i
-                                                class="fa-solid fa-qrcode"></i> Escanear Pagare</a></li>
-                                    <li class="text-white dropdown-divider"></li>
-                                    <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
-                                            style="font-size: 25px" href="registrarpagareordinariodir"><i
-                                                class="fa-solid fa-qrcode"></i> Pagaré Único</a></li>
-                                    <!-- <li class="text-white dropdown-divider"></li> -->
-                                    <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
-                                </ul>
-                </div>
-
-                {{-- PAGARE --}}
-                <div class="dropdown nav-item">
-
-                    <li class="nav-link active text-white dropdown-toggle fw-bold ms-4" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
-                        Autorizaciones
-                    </li>
                     <ul class="dropdown-menu" style="background-color: #005E56;">
                         <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
-                                style="font-size: 25px" href="registrarpagaredir">
-                                Solicitar</a></li>
-                        <li class="text-white dropdown-divider"></li>
-                        <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
-                                style="font-size: 25px" href="registrarpagareordinariodir"><i
-                                    class="fa-solid fa-qrcode"></i> Pagaré Único</a></li>
-                        <!-- <li class="text-white dropdown-divider"></li> -->
-                        <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
+                                style="font-size: 25px" href="registropagares">
+                                Registro Pagares</a></li>
+                                {{-- <li class="text-white dropdown-divider"></li>
+                                <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
+                                    style="font-size: 25px" href="registrarpagaredir"><i
+                                        class="fa-solid fa-qrcode"></i> Escanear Pagare</a></li>
+                            <li class="text-white dropdown-divider"></li>
+                            <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
+                                    style="font-size: 25px" href="registrarpagareordinariodir"><i
+                                        class="fa-solid fa-qrcode"></i> Pagaré Único</a></li> --}}
                     </ul>
                     <!-- <li class="text-white dropdown-divider"></li> -->
                     <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
                 </div>
-            </ul>
+
+                {{-- PAGARE --}}
+                @if (auth()->user() && auth()->user()->agenciau == 'Coordinacion 6')
+                        <div class="dropdown nav-item">
+
+                            <li class="nav-link active text-white dropdown-toggle fw-bold ms-4" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
+                                Autorizaciones
+                            </li>
+                            <ul class="dropdown-menu" style="background-color: #005E56;">
+                                <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
+                                        style="font-size: 25px" href="registrarpagaredir">
+                                        Solicitar</a></li>
+                                <li class="text-white dropdown-divider"></li>
+                                <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
+                                        style="font-size: 25px" href="registrarpagareordinariodir"><i
+                                            class="fa-solid fa-qrcode"></i> Pagaré Único</a></li>
+                                <!-- <li class="text-white dropdown-divider"></li> -->
+                                <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
+                            </ul>
+                            <!-- <li class="text-white dropdown-divider"></li> -->
+                            <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
+                        </div>
+                    @endif
+                    </ul>
+
 
             <span class="mx-3 text-white" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-1"
                     src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>

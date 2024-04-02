@@ -328,8 +328,8 @@ Route::middleware('auth.consultante')->group(function () {
     Route::get('registrarpagareordinariodir/datatable', [ControllerConsultante::class, 'data15'])->name('datatable.dirpagareordinario');
     Route::post('registrarpagareordinariodir/crear', [ControllerConsultante::class, 'createpagareordinario'])->name('cruddir.createpagareordinario');
 
-    Route::get('pruebas', function () {
-        return view('Consultante/prueba');
+    Route::get('registropagares', function () {
+        return view('Consultante/registropagaress400');
     });
 
     Route::get('director/prueba/datatable', [ControllerConsultante::class, 'datosPagare'])
