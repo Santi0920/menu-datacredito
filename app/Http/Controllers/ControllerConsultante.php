@@ -18441,12 +18441,15 @@ class ControllerConsultante extends Controller
                                             $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
                                             Carbon::setLocale('es');
                                             $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
                                             //fecha primera cuota
                                             $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
                                             Carbon::setLocale('es');
                                             $fechaString2 = $fecha1eraCuota->format('d/m/Y');
                                             $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
 
                                             //interes proporcional
                                             $endOfMonth = $fechadelCredito->copy()->endOfMonth();
