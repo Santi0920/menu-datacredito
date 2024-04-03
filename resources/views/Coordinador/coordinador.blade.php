@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -78,7 +78,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -86,26 +86,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="mb-4 p-3">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover col-md-4">
@@ -132,30 +132,30 @@
           <th scope="col" class="">INSPEKTOR</th>
           <th scope="col" class="w-100">OBSERVACIONES</th>
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
 
-        
-        
-    
+
+
+
 
         <script>
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -165,37 +165,37 @@
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
 
-    
+
+
     //Reporte
     var reporteInput = document.getElementById('reporte3');
     var reporteError2 = document.getElementById('reporteError3');
-    
-    if (!/^[\w,]*$/i.test(reporteInput.value)) {   
+
+    if (!/^[\w,]*$/i.test(reporteInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo REPORTE debe contener solo letras, números o comas!',
         confirmButtonColor: '#005E56'
       });
-      
+
       reporteError2.textContent = 'Ingresar solo letras, números o comas!';
       return false;
     }
@@ -246,9 +246,9 @@
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -268,7 +268,7 @@
 <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
 <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.coordinador') }}",
@@ -449,29 +449,29 @@ if (diferencia > 180) {
                 <input type="text" class="form-control" name="cedula2" id="cedula2" readonly value="${row.Cedula}" style="background-color: #EBEBEB; cursor: not-allowed;">
                 <input type="hidden" name="cedula3"  value="">
               </div>
-  
+
               <div class="mb-3">
                 <label for="nombre3" id="izquierda3" class="form-label fw-bold">NOMBRE</label>
                 <input type="text" class="form-control" id="nombre3" name="nombre3" value="${row.Nombre}" maxlength="30" readonly style="background-color: #EBEBEB; cursor: not-allowed;">
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
-        
-              
-              
+
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda6" class="form-label fw-bold">APELLIDOS</label>
                   <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="${row.Apellidos}" maxlength="60" oninput="this.value = this.value.toUpperCase()" readonly style="background-color: #EBEBEB; cursor: not-allowed;">
                   <div id="apellidosError3" style="color: red;" class="fw-bold"></div>
               </div>
-  
-  
+
+
               <div class="mb-3">
                   <label for="label" id="izquierda" class="form-label fw-bold" style="background-color: #bedffb;">SCORE</label>
                   <input type="text" class="form-control" id="score3" name="score3" value="${row.Score}" maxlength="20">
                   <div id="scoreError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
               </div>
-  
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda4" class="form-label fw-bold" style="background-color: #bedffb;">REPORTE DATACRÉDITO</label>
                   <input type="text" class="form-control" id="reporte3" name="reporte3" maxlength="15" value="${row.Reporte}" pattern="[A-Za-z0-9,]+" title="Solo se permiten letras, números y comas">
@@ -479,14 +479,14 @@ if (diferencia > 180) {
                   <p class="formato-ayuda">Ingresar <strong>N</strong> = Normal, Si cuenta con Mora <strong>1 = 30, 2 = 60, <br>3 = 90, 4 = 120, 5 = 150, 6 = 180</strong>, <strong>D</strong> = Dudoso Recaudo, <br><strong>C</strong> = Cartera Castigada</p>
               </div>
 
-  
+
               <!--Label4-->
               <div class="mb-3 ">
                   <label for="label" id="izquierda2" class="form-label fw-bold">CUENTA ASOCIADA</label>
                   <input type="text" class="form-control" name="cuenta3" id="cuenta3" readonly value="${row.CuentaAsociada}" style="background-color: #EBEBEB; cursor: not-allowed;">
                   <input type="hidden" name="cuenta" value="">
               </div>
-  
+
               <!--Label5-->
               <div class="mb-3">
                   <label for="click" id="izquierda7" class="form-label fw-bold">AGENCIA</label>
@@ -494,13 +494,13 @@ if (diferencia > 180) {
                   <div id="agenciaError3" style="color: red;" class="fw-bold"></div>
               </div>
 
-  
-  
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold" style="background-color: #bedffb;">FECHA</label>
                   <input type="date" class="form-control" name="fecha3" id="fecha3" min="2022-08-01" max="`+today+`" value="${row.FechaInsercion}">
                 </div>
-  
+
                 <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda9" class="form-label fw-bold">ESTADO</label>
                 <select class="form-control" name="estado3" id="estado3" disabled style="background-color: #EBEBEB; cursor: not-allowed;">
@@ -514,13 +514,13 @@ if (diferencia > 180) {
                 </select>
                 <input type="hidden" name="estado3" value="${row.Estado}">
               </div>
-  
+
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="">
                 <p class="formato-ayuda">Formato: <strong>Sintesis-(Cédula).pdf</strong></p>
-              </div> 
-              
+              </div>
+
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="">
@@ -568,8 +568,8 @@ if (diferencia > 180) {
     }
   },
   responsive: "true",
-        dom: 'Bfrtilp',       
-        buttons:[ 
+        dom: 'Bfrtilp',
+        buttons:[
 			{
 				extend:    'excelHtml5',
 				text:      '<i class="fas fa-file-excel"></i> ',
@@ -582,7 +582,7 @@ if (diferencia > 180) {
 				titleAttr: 'Imprimir',
 				className: 'btn btn-info btn-lg'
 			}
-      ]	
+      ]
 });
 
 
@@ -594,7 +594,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 function fecha(){
@@ -606,24 +606,23 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+

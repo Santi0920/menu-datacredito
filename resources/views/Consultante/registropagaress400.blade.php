@@ -115,11 +115,9 @@
             <!-- <th scope="col">ASEGURABILIDAD</th> -->
           <th scope="col">SCORE</th>
           <th scope="col">APROBADO</th>
-          <th scope="col">RAZON</th>
           <th scope="col">AUTORIZACIÓN</th>
           <th scope="col">1 CUOTA</th>
           <th scope="col">FECHA ESCANEO</th>
-          <th scope="col">FECHA REPORTE</th>
           <th scope="col">GARANTIA</th>
           <th scope="col">AGENCIA</th>
           <th scope="col">INTERES PROPORCIONAL</th>
@@ -1091,15 +1089,6 @@
 
       }
     },
-    {
-        data: 'Razon',
-        createdCell: function (td, cellData, rowData, row, col) {
-            $(td).css({
-                'font-weight': 'bold',
-                'font-size': '20px'
-            });
-        }
-    },
 {    data: null,
       render: function(data, type, row) {
         var id = row.ID;
@@ -1133,13 +1122,6 @@
       data: null,
       render: function(data, type, row) {
         var FechaAccion = '<strong style="font-size:25px">'+row.FechaAccion+'</strong>';
-        return FechaAccion;
-      }
-    },
-    {
-      data: null,
-      render: function(data, type, row) {
-        var FechaAccion = '<strong style="font-size:25px">'+row.FechaReporte+'</strong>';
         return FechaAccion;
       }
     },

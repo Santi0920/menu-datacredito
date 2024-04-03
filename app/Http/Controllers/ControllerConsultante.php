@@ -22,6 +22,7 @@ use App\Mail\EnviarCorreo15;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\Persona;
+use App\Models\Autorizacion;
 
 
 
@@ -25616,14 +25617,25 @@ class ControllerConsultante extends Controller
         return view('Consultante/solicitarautorizacion', ['user' => $user]);
     }
 
-    public function solicitud(Request $request)
+    public function solicitudes(Request $request)
     {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+        $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.Cedula, B.Cuenta, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
+        FROM persona A
+        JOIN autorizaciones B ON B.ID_Persona = A.ID
+        JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+        WHERE B.NomAgencia = '$agenciaU'");
+        return datatables()->of($solicitudes)->toJson();
+    }
 
+    public function solicitarAutorizacion(Request $request){
 
 
 
 
     }
+
 
 
 }

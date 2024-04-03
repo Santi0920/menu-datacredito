@@ -94,7 +94,7 @@ Route::get('adminproveedor/datatable', [CRUDAdmin::class, 'data6'])
 Route::post('adminproveedor/crear', [CRUDAdmin::class, 'create3'])
     ->name('cruda.createproveedor');
 
-Route::post('adminproveedor/modificar_persona-{id}', [ControllerConsultante::class, 'update3'])
+Route::post('adminproveedor/modificar_persona-{id}', [CRUDAdmin::class, 'update3'])
     ->name('cruda.modificarproveedor');
 
 Route::get('admineliminadoe/eliminar_persona-{id}', [CRUDAdmin::class, 'delete3'])
@@ -335,11 +335,15 @@ Route::middleware('auth.consultante')->group(function () {
     Route::get('director/prueba/datatable', [ControllerConsultante::class, 'datosPagare'])
         ->name('datatable.prueba2');
 
-    Route::get('solicitud', function () {
+    Route::get('solicitudes', function () {
         return view('Consultante/solicitarautorizacion');
     });
 
-    Route::get('solicitud', [ControllerConsultante::class, 'data16']);
+    Route::get('solicitudes', [ControllerConsultante::class, 'data16']);
+    Route::get('solicitudes/datatable', [ControllerConsultante::class, 'solicitudes'])->name('data.solicitudes');
+
+    Route::post('solicitudes/crear', [ControllerConsultante::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
+
 
 });
 
