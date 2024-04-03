@@ -25062,5 +25062,26 @@ class CRUDCoordinacion extends Controller
             }
         }
 
+        public function solicitudes(Request $request)
+        {
+            $usuarioActual = Auth::user();
+            $agenciaU = $usuarioActual->agenciau;
+
+            $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
+
+            if($agenciaU = $usuarioActual->agenciau == "Coordinacion 1"){
+                $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NumAgencia, B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
+                FROM persona A
+                JOIN autorizaciones B ON B.ID_Persona = A.ID
+                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
+                WHERE B.Solicitud = 1 AND B.NumAgencia = 31");
+            }
+
+
+
+            return datatables()->of($solicitudes)->toJson();
+        }
+
+
 }
 

@@ -16221,9 +16221,7 @@ class ControllerConsultante extends Controller
                     }
 
                 }
-            }
-
-                 else {
+            } else {
 
                 if (!$foundMatchingPagare) {
 
@@ -18446,6 +18444,9 @@ class ControllerConsultante extends Controller
 
                                             //fecha primera cuota
                                             $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
 
                                             //interes proporcional
                                             $endOfMonth = $fechadelCredito->copy()->endOfMonth();
@@ -19388,619 +19389,145 @@ class ControllerConsultante extends Controller
 
 
                                         //cierre de condicion <= 3000000
-                                    }else{
+                                    } else {
 
-                                    //FECHA MES ACTUAL
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                        //FECHA MES ACTUAL
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
 
-                                        //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                        $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                        Carbon::setLocale('es');
-                                        $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                        //DIA DE REPORTE DE LA NOMINA
-                                        $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            //DIA DE REPORTE DE LA NOMINA
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
 
-                                        //se asigna la fecha de reporte de manera automatica
-                                        $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                        $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                        Carbon::setLocale('es');
-                                        $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                            //se asigna la fecha de reporte de manera automatica
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                        //fechar primera cuota
-                                        $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-
-
-                                        //interes proporcional
-                                        $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                        $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                        $tasa = $registro['TASA'];
-                                        $capital = $registro['CAPITAL'];
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($capital);
-
-                                        $interval = $fechadelCredito->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                        // Calcular el último día del mes siguiente a la fecha del crédito
-                                        $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
-
-                                        // Calcular el último día del mes de la primera cuota
-                                        $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-
-                                        // Comparar si son iguales
-                                        //resultado
-                                        $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+                                            //fechar primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
 
 
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
 
-                                        // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                        $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
 
-                                        // Implementar la lógica de la fórmula de Excel
-                                        $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                        // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                        $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+                                            $tasa = $tasa / 100;
 
-                                        // Comprobar si todas las condiciones relevantes son verdaderas
-                                        $resultado1 = $condicion1 && $condicion3 ? true : false;
+                                            $capital = floatval($capital);
 
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
 
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
 
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                        // Primera condición externa
-                                        if ($fechadelCredito->gt($fechaReporte)) {
-                                            $resultado2 = false;
-                                        } else {
-                                            // Condición interna
+                                            // Calcular el último día del mes siguiente a la fecha del crédito
+                                            $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                            // Calcular el último día del mes de la primera cuota
                                             $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                            $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
 
-                                            $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
+                                            // Comparar si son iguales
+                                            //resultado
+                                            $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
 
-                                            if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                                $resultado2 = true;
-                                            } else {
+
+
+                                            // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                            // Implementar la lógica de la fórmula de Excel
+                                            $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                            // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                            $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                            // Comprobar si todas las condiciones relevantes son verdaderas
+                                            $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+
+
+
+                                            // Primera condición externa
+                                            if ($fechadelCredito->gt($fechaReporte)) {
                                                 $resultado2 = false;
-                                            }
-                                        }
+                                            } else {
+                                                // Condición interna
+                                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
 
+                                                $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
 
-                                        // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                        $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                        // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                        $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                        // Resultado basado en las condiciones
-                                        $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                        // Calcular el último día del mes de B14
-                                        $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                        // Calcular el último día del mes anterior a E15
-                                        $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                        // Verificar las condiciones
-                                        $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                        $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                        $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                        // Evaluar si todas las condiciones son verdaderas
-                                        $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                        // Primer nivel de comprobación
-                                        if ($fechadelCredito->gt($fechaReporte)) {
-                                            $resultado5 = false;
-                                        } else {
-                                            // Segundo nivel de comprobación
-                                            $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                            $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                            $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                            $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                            $resultado5 = $condicionA && $condicionB ? true : false;
-                                        }
-
-                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                            Carbon::setLocale('es');
-                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                        }
-                                        //dd($resultado,$resultado1, $resultado2, $resultado3, $resultado4, $resultado5);
-                                        //NUMERO DE AGENCIA
-                                        $NoAgencia = $registro['AGENCIA'];
-                                        if ((($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true))) {
-                                            //dd($nombres);
-                                            $razon = "Rechazado por score bajo.";
-                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 1',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 2',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 3',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 4',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 5',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
+                                                if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                                    $resultado2 = true;
+                                                } else {
+                                                    $resultado2 = false;
                                                 }
                                             }
-                                        } else {
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 1',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 2',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 3',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 4',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 5',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
+
+
+                                            // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                            $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
+
+                                            // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                            $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
+
+                                            // Resultado basado en las condiciones
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
+
+
+                                            // Calcular el último día del mes de B14
+                                            $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
+
+                                            // Calcular el último día del mes anterior a E15
+                                            $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
+
+                                            // Verificar las condiciones
+                                            $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                            $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                            // Evaluar si todas las condiciones son verdaderas
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
+
+
+                                            // Primer nivel de comprobación
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado5 = false;
+                                            } else {
+                                                // Segundo nivel de comprobación
+                                                $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                                $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
+
+                                                $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                                $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
                                             }
-                                        }
-                                        //llave que cierra lo del mesanterior ==0
-                                    }
-                                    //FECHA MES SIGUIENTE
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                        //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                        $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                        Carbon::setLocale('es');
-                                        $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                        //DIA REPORTE DE LA S400 PLANO
-                                        $diaReporte = max(1, $existeDia[0]->DIAS);
-                                        $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                        $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                        Carbon::setLocale('es');
-                                        $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                        $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                        $formateada = $fechaReporte->format('d/m/Y');
-                                        $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
-                                        Carbon::setLocale('es');
-                                        $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                        $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                        //interes proporcional
-                                        $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                        $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                        $tasa = $registro['TASA'];
-                                        $capital = $registro['CAPITAL'];
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($capital);
-
-                                        $interval = $fechadelCredito->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                        //NUMERO DE AGENCIA
-                                        $NoAgencia = $registro['AGENCIA'];
-
-                                        // Fórmula 1
-                                        $resultado1 = (
-                                            $fechaCarbon2->copy()->endOfMonth()->eq($formateadaCarbon->copy()->addMonths(2)->endOfMonth()) &&
-                                            (
-                                                $fechadelCredito->copy()->addMonths(3)->endOfMonth() instanceof Carbon &&
-                                                $fechadelCredito->copy()->addMonths(2)->endOfMonth() instanceof Carbon &&
-                                                $formateadaCarbon->diffInDays($fechadelCredito) <= 30
-                                            )
-                                        );
-
-
-                                        // Fórmula 2
-                                        $resultado2 = (
-                                            Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
-                                            $fechaReporte->gte($fechadelCredito) &&
-                                            $fechaReporte->diffInDays($fechadelCredito) <= 30
-                                        ) ? true : false;
-
-                                        // Fórmula 3
-                                        $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
-                                            (Carbon::now('America/Bogota')->endOfMonth(0)->eq($fechaReporte->endOfMonth()) ||
-                                                $fechaReporte->diffInDays($fechadelCredito) <= 30) ? true : false
-                                        );
-                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                            Carbon::setLocale('es');
-                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                        }
-                                        // dd($resultado1, $resultado2, $resultado3);
-                                        if ($resultado1 == true && $resultado2 == true && $resultado3 == true) {
-
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
                                                 Carbon::setLocale('es');
                                                 $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-
-
+                                            }
+                                            //dd($resultado,$resultado1, $resultado2, $resultado3, $resultado4, $resultado5);
+                                            //NUMERO DE AGENCIA
+                                            $NoAgencia = $registro['AGENCIA'];
+                                            if ((($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true))) {
+                                                //dd($nombres);
                                                 $razon = "Rechazado por score bajo.";
                                                 if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                     if (empty($existingPagare)) {
@@ -20193,680 +19720,1154 @@ class ControllerConsultante extends Controller
                                                         ]);
                                                     }
                                                 }
+                                            } else {
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 1',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 2',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 3',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 4',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 5',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                }
                                             }
-                                        } else {
-                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                            //llave que cierra lo del mesanterior ==0
+                                        }
+                                        //FECHA MES SIGUIENTE
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
                                             Carbon::setLocale('es');
-                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            //NUMERO DE AGENCIA
+                                            $NoAgencia = $registro['AGENCIA'];
+
+                                            // Fórmula 1
+                                            $resultado1 = (
+                                                $fechaCarbon2->copy()->endOfMonth()->eq($formateadaCarbon->copy()->addMonths(2)->endOfMonth()) &&
+                                                (
+                                                    $fechadelCredito->copy()->addMonths(3)->endOfMonth() instanceof Carbon &&
+                                                    $fechadelCredito->copy()->addMonths(2)->endOfMonth() instanceof Carbon &&
+                                                    $formateadaCarbon->diffInDays($fechadelCredito) <= 30
+                                                )
+                                            );
 
 
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 1',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
+                                            // Fórmula 2
+                                            $resultado2 = (
+                                                Carbon::now('America/Bogota')->endOfMonth(2)->eq($fecha1eraCuota->endOfMonth()) &&
+                                                $fechaReporte->gte($fechadelCredito) &&
+                                                $fechaReporte->diffInDays($fechadelCredito) <= 30
+                                            ) ? true : false;
+
+                                            // Fórmula 3
+                                            $resultado3 = ($fechadelCredito->gt($fecha1eraCuota)) ? false : (
+                                                (Carbon::now('America/Bogota')->endOfMonth(0)->eq($fechaReporte->endOfMonth()) ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30) ? true : false
+                                            );
+                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                Carbon::setLocale('es');
+                                                $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                            }
+                                            // dd($resultado1, $resultado2, $resultado3);
+                                            if ($resultado1 == true && $resultado2 == true && $resultado3 == true) {
+
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+
+
+                                                    $razon = "Rechazado por score bajo.";
+                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                        if (empty($existingPagare)) {
+                                                            //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                            DB::table('pagare')->insert([
+                                                                'FechaReporte' => $fechaReporteString,
+                                                                'Aprobado' => 0,
+                                                                'Razon' => $razon,
+                                                                'CoorAsignada' => 'Coordinacion 1',
+                                                                'AutorizacionGerente' => 1,
+                                                                'InteresProporcional' => $interesProporcionalCorrecto,
+                                                                'FechaAccion' => $fechaStringCredito,
+                                                                'Garantia' => $garantia,
+                                                                'NoAgencia' => $agencia,
+                                                                'NombreAgencia' => $nombreAgencia,
+                                                                'CuentaCoop' => $cuenta,
+                                                                'Cedula_Persona' => $cedula,
+                                                                'NombreCompleto' => $nombres,
+                                                                'ID_Pagare' => $idpagare,
+                                                                'NoLC' => $registro['LINEA'],
+                                                                'Linea_Credito' => $registro['LINEANOM'],
+                                                                'Capital' => $capital,
+                                                                'NoCuotas' => $ncuotas,
+                                                                'ValorCuota' => $vcuotas,
+                                                                'Tasa' => $tasaAPI,
+                                                                'FechaCredito' => $fechaStringCredito,
+                                                                'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                                'Direccion' => $direccion,
+                                                                'TelFijo' => $fijo,
+                                                                'Fecha1Cuota' => $fechaFormateada,
+                                                                'FechaUltimaCuota' => $fechaFormateada2,
+                                                                'Celular' => $celular,
+                                                                'Correo' => $correo,
+                                                                'GeneradorPagare' => $usuario,
+                                                                'ID_Persona' => $persona->ID
+                                                            ]);
+                                                        }
+                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                        if (empty($existingPagare)) {
+                                                            //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                            DB::table('pagare')->insert([
+                                                                'FechaReporte' => $fechaReporteString,
+                                                                'Aprobado' => 0,
+                                                                'Razon' => $razon,
+                                                                'CoorAsignada' => 'Coordinacion 2',
+                                                                'AutorizacionGerente' => 1,
+                                                                'InteresProporcional' => $interesProporcionalCorrecto,
+                                                                'FechaAccion' => $fechaStringCredito,
+                                                                'Garantia' => $garantia,
+                                                                'NoAgencia' => $agencia,
+                                                                'NombreAgencia' => $nombreAgencia,
+                                                                'CuentaCoop' => $cuenta,
+                                                                'Cedula_Persona' => $cedula,
+                                                                'NombreCompleto' => $nombres,
+                                                                'ID_Pagare' => $idpagare,
+                                                                'NoLC' => $registro['LINEA'],
+                                                                'Linea_Credito' => $registro['LINEANOM'],
+                                                                'Capital' => $capital,
+                                                                'NoCuotas' => $ncuotas,
+                                                                'ValorCuota' => $vcuotas,
+                                                                'Tasa' => $tasaAPI,
+                                                                'FechaCredito' => $fechaStringCredito,
+                                                                'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                                'Direccion' => $direccion,
+                                                                'TelFijo' => $fijo,
+                                                                'Fecha1Cuota' => $fechaFormateada,
+                                                                'FechaUltimaCuota' => $fechaFormateada2,
+                                                                'Celular' => $celular,
+                                                                'Correo' => $correo,
+                                                                'GeneradorPagare' => $usuario,
+                                                                'ID_Persona' => $persona->ID
+                                                            ]);
+                                                        }
+                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                        if (empty($existingPagare)) {
+                                                            //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                            DB::table('pagare')->insert([
+                                                                'FechaReporte' => $fechaReporteString,
+                                                                'Aprobado' => 0,
+                                                                'Razon' => $razon,
+                                                                'CoorAsignada' => 'Coordinacion 3',
+                                                                'AutorizacionGerente' => 1,
+                                                                'InteresProporcional' => $interesProporcionalCorrecto,
+                                                                'FechaAccion' => $fechaStringCredito,
+                                                                'Garantia' => $garantia,
+                                                                'NoAgencia' => $agencia,
+                                                                'NombreAgencia' => $nombreAgencia,
+                                                                'CuentaCoop' => $cuenta,
+                                                                'Cedula_Persona' => $cedula,
+                                                                'NombreCompleto' => $nombres,
+                                                                'ID_Pagare' => $idpagare,
+                                                                'NoLC' => $registro['LINEA'],
+                                                                'Linea_Credito' => $registro['LINEANOM'],
+                                                                'Capital' => $capital,
+                                                                'NoCuotas' => $ncuotas,
+                                                                'ValorCuota' => $vcuotas,
+                                                                'Tasa' => $tasaAPI,
+                                                                'FechaCredito' => $fechaStringCredito,
+                                                                'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                                'Direccion' => $direccion,
+                                                                'TelFijo' => $fijo,
+                                                                'Fecha1Cuota' => $fechaFormateada,
+                                                                'FechaUltimaCuota' => $fechaFormateada2,
+                                                                'Celular' => $celular,
+                                                                'Correo' => $correo,
+                                                                'GeneradorPagare' => $usuario,
+                                                                'ID_Persona' => $persona->ID
+                                                            ]);
+                                                        }
+                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                        if (empty($existingPagare)) {
+                                                            //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                            DB::table('pagare')->insert([
+                                                                'FechaReporte' => $fechaReporteString,
+                                                                'Aprobado' => 0,
+                                                                'Razon' => $razon,
+                                                                'CoorAsignada' => 'Coordinacion 4',
+                                                                'AutorizacionGerente' => 1,
+                                                                'InteresProporcional' => $interesProporcionalCorrecto,
+                                                                'FechaAccion' => $fechaStringCredito,
+                                                                'Garantia' => $garantia,
+                                                                'NoAgencia' => $agencia,
+                                                                'NombreAgencia' => $nombreAgencia,
+                                                                'CuentaCoop' => $cuenta,
+                                                                'Cedula_Persona' => $cedula,
+                                                                'NombreCompleto' => $nombres,
+                                                                'ID_Pagare' => $idpagare,
+                                                                'NoLC' => $registro['LINEA'],
+                                                                'Linea_Credito' => $registro['LINEANOM'],
+                                                                'Capital' => $capital,
+                                                                'NoCuotas' => $ncuotas,
+                                                                'ValorCuota' => $vcuotas,
+                                                                'Tasa' => $tasaAPI,
+                                                                'FechaCredito' => $fechaStringCredito,
+                                                                'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                                'Direccion' => $direccion,
+                                                                'TelFijo' => $fijo,
+                                                                'Fecha1Cuota' => $fechaFormateada,
+                                                                'FechaUltimaCuota' => $fechaFormateada2,
+                                                                'Celular' => $celular,
+                                                                'Correo' => $correo,
+                                                                'GeneradorPagare' => $usuario,
+                                                                'ID_Persona' => $persona->ID
+                                                            ]);
+                                                        }
+                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                        if (empty($existingPagare)) {
+                                                            //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                            DB::table('pagare')->insert([
+                                                                'FechaReporte' => $fechaReporteString,
+                                                                'Aprobado' => 0,
+                                                                'Razon' => $razon,
+                                                                'CoorAsignada' => 'Coordinacion 5',
+                                                                'AutorizacionGerente' => 1,
+                                                                'InteresProporcional' => $interesProporcionalCorrecto,
+                                                                'FechaAccion' => $fechaStringCredito,
+                                                                'Garantia' => $garantia,
+                                                                'NoAgencia' => $agencia,
+                                                                'NombreAgencia' => $nombreAgencia,
+                                                                'CuentaCoop' => $cuenta,
+                                                                'Cedula_Persona' => $cedula,
+                                                                'NombreCompleto' => $nombres,
+                                                                'ID_Pagare' => $idpagare,
+                                                                'NoLC' => $registro['LINEA'],
+                                                                'Linea_Credito' => $registro['LINEANOM'],
+                                                                'Capital' => $capital,
+                                                                'NoCuotas' => $ncuotas,
+                                                                'ValorCuota' => $vcuotas,
+                                                                'Tasa' => $tasaAPI,
+                                                                'FechaCredito' => $fechaStringCredito,
+                                                                'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                                'Direccion' => $direccion,
+                                                                'TelFijo' => $fijo,
+                                                                'Fecha1Cuota' => $fechaFormateada,
+                                                                'FechaUltimaCuota' => $fechaFormateada2,
+                                                                'Celular' => $celular,
+                                                                'Correo' => $correo,
+                                                                'GeneradorPagare' => $usuario,
+                                                                'ID_Persona' => $persona->ID
+                                                            ]);
+                                                        }
+                                                    }
                                                 }
-                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 2',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 3',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 4',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 5',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
+                                            } else {
+                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                Carbon::setLocale('es');
+                                                $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+
+
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 1',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 2',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 3',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 4',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 5',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
                                                 }
                                             }
+
+                                            //llave que cierra mesanterior == 1
                                         }
-
-                                        //llave que cierra mesanterior == 1
-                                    }
-                                    //FECHA ENTREMES
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-
-                                        //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                        $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                        Carbon::setLocale('es');
-                                        $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                        //DIA REPORTE
-                                        $diaReporte = max(1, $existeDia[0]->DIAS);
-                                        $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                        if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                            $fechaReporteActual->addMonth();
-                                        }
-                                        $fechaReporte = $fechaReporteActual;
-
-                                        Carbon::setLocale('es');
-                                        $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                        //fechaprimera cuota
-                                        $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                        Carbon::setLocale('es');
-                                        $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                        $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                        //interes proporcional
-                                        $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                        $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                        $tasa = $registro['TASA'];
-                                        $capital = $registro['CAPITAL'];
-
-                                        $tasa = str_replace(',', '.', $tasa);
-                                        $tasa = floatval($tasa);
-
-                                        $tasa = $tasa / 100;
-
-                                        $capital = floatval($capital);
-
-                                        $interval = $fechadelCredito->diff($endOfMonth);
-                                        $c30 = $interval->days;
-
-                                        $cuotaMensual = $capital * $tasa;
-                                        $cuotaDiaria = $cuotaMensual / 30;
-                                        $interesProporcional = $cuotaDiaria * $c30;
-
-                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
-                                        $NoAgencia = $registro['AGENCIA'];
-
-                                        $result = $fechadelCredito > $fechaReporte;
-
-
-                                        $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                            ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                                $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-
-                                        $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                        //CUARTO CONDICIONAL
-                                        $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                        //QUINTO
-                                        $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
-
-
-                                        //SEXTO
-                                        $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
+                                        //FECHA ENTREMES
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(1)->endOfMonth();
+
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
                                             Carbon::setLocale('es');
-                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                        }
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                                $fechaReporteActual->addMonth();
+                                            }
+                                            $fechaReporte = $fechaReporteActual;
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fechaprimera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
 
-                                        if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                            $razon = "Rechazado por score bajo.";
-                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                            $NoAgencia = $registro['AGENCIA'];
 
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 1',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
+                                            $result = $fechadelCredito > $fechaReporte;
+
+
+                                            $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                                ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+
+                                            $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+
+                                            //CUARTO CONDICIONAL
+                                            $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                            //QUINTO
+                                            $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                            //SEXTO
+                                            $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                                $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(1)->endOfMonth();
+                                                Carbon::setLocale('es');
+                                                $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                            }
+
+
+                                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = "Rechazado por score bajo.";
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 1',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 2',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 3',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 4',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 5',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
                                                 }
-                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 2',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 3',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 4',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 5',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
+                                                //llave que cierra las condiciones
+                                            } else {
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 1',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 2',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 3',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 4',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    if (empty($existingPagare)) {
+                                                        //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
+                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                        DB::table('pagare')->insert([
+                                                            'FechaReporte' => $fechaReporteString,
+                                                            'Aprobado' => 0,
+                                                            'Razon' => $razon,
+                                                            'CoorAsignada' => 'Coordinacion 5',
+                                                            'AutorizacionGerente' => 1,
+                                                            'InteresProporcional' => $interesProporcionalCorrecto,
+                                                            'FechaAccion' => $fechaStringCredito,
+                                                            'Garantia' => $garantia,
+                                                            'NoAgencia' => $agencia,
+                                                            'NombreAgencia' => $nombreAgencia,
+                                                            'CuentaCoop' => $cuenta,
+                                                            'Cedula_Persona' => $cedula,
+                                                            'NombreCompleto' => $nombres,
+                                                            'ID_Pagare' => $idpagare,
+                                                            'NoLC' => $registro['LINEA'],
+                                                            'Linea_Credito' => $registro['LINEANOM'],
+                                                            'Capital' => $capital,
+                                                            'NoCuotas' => $ncuotas,
+                                                            'ValorCuota' => $vcuotas,
+                                                            'Tasa' => $tasaAPI,
+                                                            'FechaCredito' => $fechaStringCredito,
+                                                            'Nomina' => $nomina . ' - ' . $nomNomina,
+                                                            'Direccion' => $direccion,
+                                                            'TelFijo' => $fijo,
+                                                            'Fecha1Cuota' => $fechaFormateada,
+                                                            'FechaUltimaCuota' => $fechaFormateada2,
+                                                            'Celular' => $celular,
+                                                            'Correo' => $correo,
+                                                            'GeneradorPagare' => $usuario,
+                                                            'ID_Persona' => $persona->ID
+                                                        ]);
+                                                    }
                                                 }
                                             }
-                                            //llave que cierra las condiciones
-                                        } else {
-                                            $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                            if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 1',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 2',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 3',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 4',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                if (empty($existingPagare)) {
-                                                    //PARA TRAER EL NOMBRE DE LA AGENCIA POR EL NUMERO DE LA AGENCIA
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    DB::table('pagare')->insert([
-                                                        'FechaReporte' => $fechaReporteString,
-                                                        'Aprobado' => 0,
-                                                        'Razon' => $razon,
-                                                        'CoorAsignada' => 'Coordinacion 5',
-                                                        'AutorizacionGerente' => 1,
-                                                        'InteresProporcional' => $interesProporcionalCorrecto,
-                                                        'FechaAccion' => $fechaStringCredito,
-                                                        'Garantia' => $garantia,
-                                                        'NoAgencia' => $agencia,
-                                                        'NombreAgencia' => $nombreAgencia,
-                                                        'CuentaCoop' => $cuenta,
-                                                        'Cedula_Persona' => $cedula,
-                                                        'NombreCompleto' => $nombres,
-                                                        'ID_Pagare' => $idpagare,
-                                                        'NoLC' => $registro['LINEA'],
-                                                        'Linea_Credito' => $registro['LINEANOM'],
-                                                        'Capital' => $capital,
-                                                        'NoCuotas' => $ncuotas,
-                                                        'ValorCuota' => $vcuotas,
-                                                        'Tasa' => $tasaAPI,
-                                                        'FechaCredito' => $fechaStringCredito,
-                                                        'Nomina' => $nomina . ' - ' . $nomNomina,
-                                                        'Direccion' => $direccion,
-                                                        'TelFijo' => $fijo,
-                                                        'Fecha1Cuota' => $fechaFormateada,
-                                                        'FechaUltimaCuota' => $fechaFormateada2,
-                                                        'Celular' => $celular,
-                                                        'Correo' => $correo,
-                                                        'GeneradorPagare' => $usuario,
-                                                        'ID_Persona' => $persona->ID
-                                                    ]);
-                                                }
-                                            }
+                                            //llave que cierra entremes
                                         }
-                                        //llave que cierra entremes
                                     }
-                                }
                                     //llave que cierra si existe la nomina en s400_plano
                                 } else {
                                     $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
@@ -25621,7 +25622,7 @@ class ControllerConsultante extends Controller
     {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
-        $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.Cedula, B.Cuenta, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
+        $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
         FROM persona A
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25629,9 +25630,56 @@ class ControllerConsultante extends Controller
         return datatables()->of($solicitudes)->toJson();
     }
 
-    public function solicitarAutorizacion(Request $request){
+    public function solicitarAutorizacion(Request $request)
+    {
+
+        $existingPerson = DB::select('SELECT * FROM autorizaciones WHERE Cedula = ?', [$request->cedula]);
+        if ($existingPerson == 'asd') {
+            return back()->with("incorrecto", "Persona con cc. $request->Cedula ya existe! Error al Registrar!");
+        } else {
+
+            $tipoautorizacion = $request->tautorizacion;
+            $No = substr($tipoautorizacion, 0, 2);
+            $letra = substr($tipoautorizacion, 2, 3);
+            $cedula = $request->cedula;
+            $detalle = $request->detalle;
+
+            $fechadeSolicitud = Carbon::now('America/Bogota');
+            $fechadeSolicitudUtc = $fechadeSolicitud->setTimezone('UTC');
+            Carbon::setLocale('es');
+            $fechaStringfechadeSolicitud = $fechadeSolicitud->translatedFormat('F d Y-H:i:s');
 
 
+            $usuarioActual = Auth::user();
+            $agenciaU = $usuarioActual->agenciau;
+            $nombreU = $usuarioActual->name;
+            $existingID = DB::select('SELECT ID FROM Persona WHERE Cedula = ?', [$request->cedula]);
+            $idpersona = $existingID[0]->ID;
+
+            $existingConcepto = DB::select('SELECT ID FROM concepto_autorizaciones WHERE No = ? AND Letra = ?', [$No, $letra]);
+            $idconcepto = $existingConcepto[0]->ID;
+
+            $existeAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agenciaU]);
+            $numAgencia = $existeAgencia[0]->NumAgencia;
+
+
+            $id_insertado = DB::table('autorizaciones')->insertGetId([
+                'Fecha' => $fechaStringfechadeSolicitud,
+                'CodigoAutorizacion' => $tipoautorizacion,
+                'NumAgencia' => $numAgencia,
+                'NomAgencia' => $agenciaU,
+                'Cedula' => $cedula,
+                'Detalle' => $detalle,
+                'Estado' => 2,
+                'Solicitud' => 1,
+                'SolicitadoPor' => $nombreU,
+                'ID_Persona' => $idpersona,
+                'ID_Concepto' => $idconcepto
+            ]);
+            return back()->with("correcto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$id_insertado."</span> está en trámite.</span>");
+
+
+        }
 
 
     }

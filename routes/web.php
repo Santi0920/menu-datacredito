@@ -641,6 +641,14 @@ Route::get('coordinacion/rechazar{id}', [CRUDCoordinacion::class, 'rechazarCredi
 Route::get('coordinacionconsultarp/imprimir-{id}', [CRUDCoordinacion::class, 'imprimir3'])->name('coordinadorr.imprimir3');
 
 
+Route::get('validarautorizacion', function () {
+    return view('Coordinacion/validarautorizacion');
+});
+
+Route::get('validarautorizacion/datatable', [CRUDCoordinacion::class, 'solicitudes'])->name('datacoor.solicitudes');
+
+Route::post('validarautorizacion/crear', [CRUDCoordinacion::class, 'solicitarAutorizacion'])->name('solicitarcoor.autorizacion');
+
 
 //JEFATURAS
 

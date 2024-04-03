@@ -79,7 +79,6 @@
                         Pagaré
                     </li>
                     <ul class="dropdown-menu" style="background-color: #005E56;">
-                        <ul class="dropend">
 
                             @if (auth()->user() && auth()->user()->agenciau == 'Coordinacion 6')
                                 <ul class="dropend">
@@ -119,7 +118,7 @@
                                         'Coordinacion 5',
                                     ]))
                                 <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
-                                        style="font-size: 25px" href="coorpagare"><i class="fa-solid fa-qrcode"></i>
+                                        style="font-size: 25px" href="coorpagare">
                                         Listar Pagarés</a></li>
                             @endif
                         </ul>
