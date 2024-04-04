@@ -12,7 +12,7 @@
           title: "{{session('correcto')}}",
           text: '',
           confirmButtonColor: '#005E56',
-      });  
+      });
   </script>
   </div>
 @endif
@@ -26,8 +26,8 @@
           title: "{{session('correcto')}}",
           text: '',
           confirmButtonColor: '#005E56'
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -41,8 +41,8 @@
           title: "{{session('incorrecto')}}",
           text: '',
           confirmButtonColor: '#005E56'
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -56,8 +56,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -69,10 +69,10 @@
 <div class="container-fluid row p-4">
 <form action="{{route('crud.create2')}}" class="col 3 m-3" method="POST" enctype= "multipart/form-data" onsubmit="return validateForm()">
   <h2 class="p-2 text-secondary text-center"><b>Asociación Datacrédito</b></h2>
-  
+
  @csrf
-  
- 
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="cedula" class="form-label fw-semibold">CÉDULA<span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control" name="Cedula" id="cedula" required>
@@ -80,7 +80,7 @@
     <div id="cedulaError2" style="color: red;" class="fw-bold"></div>
 </div>
 
-  <!--VALIDACION CAMPO CEDULA--> 
+  <!--VALIDACION CAMPO CEDULA-->
   <script>
 var cedulaInput = document.getElementById('cedula');
 var cedulaError = document.getElementById('cedulaError');
@@ -97,14 +97,14 @@ cedulaInput.addEventListener('keyup', function() {
 
 cedulaInput.setAttribute("maxlength", "10");
 </script>
-   
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NOMBRE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control " name="Nombre" id="nombre" required>
     <div id="nombreError" style="color: red;" class="fw-bold"></div>
     <div id="nombreError2" style="color: red;" class="fw-bold"></div>
   </div>
-   <!--VALIDACION CAMPO NOMBRE--> 
+   <!--VALIDACION CAMPO NOMBRE-->
   <script>
   var nombreInput = document.getElementById('nombre');
   var nombreError = document.getElementById('nombreError');
@@ -130,7 +130,7 @@ nombreInput.setAttribute("maxlength", "30");
     <div id="apellidosError2" style="color: red;" class="fw-bold"></div>
   </div>
 
-  <!--VALIDACION CAMPO APELLIDOS--> 
+  <!--VALIDACION CAMPO APELLIDOS-->
   <script>
   var apellidosInput = document.getElementById('apellidos');
 var apellidosError = document.getElementById('apellidosError');
@@ -149,22 +149,22 @@ apellidosInput.setAttribute("maxlength", "60");
 
   </script>
 
- 
+
   <div class="mb-3 w-100" title="Este campo es obligatorio" style="display: none;">
     <label for="exampleInputEmail1" class="form-label fw-semibold">SCORE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input list="ScoreL" type="text" class="form-control " name="Score" id="score" placeholder="0 - 950" autocomplete="off" value="ok">
     <div id="scoreError" style="color: red;" class="fw-bold"></div>
     <div id="scoreError2" style="color: red;" class="fw-bold"></div>
     <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
-    
+
   </div>
 
   <datalist id="ScoreL">
     <option value="S/E"></option>
   </datalist>
- 
 
-<!--VALIDACION CAMPO SCORE--> 
+
+<!--VALIDACION CAMPO SCORE-->
   <script>
 var scoreInput = document.getElementById('score');
 var reporteInput = document.getElementById('reporte');
@@ -213,11 +213,11 @@ if (scoreVal === 'S/E') {
     <div id="reporteError" style="color: red;" class="fw-bold"></div>
     <div id="reporteError2" style="color: red;" class="fw-bold"></div>
   </div>
- 
+
  <script>
 
 
-  
+
  var reporteInput = document.getElementById('reporte');
 var reporteError = document.getElementById('reporteError');
 
@@ -242,11 +242,11 @@ reporteInput.setAttribute("maxlength", "15");
   font-style: normal;
 }
 </style>
-  
-  
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NÚMERO CUENTA <span class="text-danger" style="font-size:20px;">*</span></label>
-    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" required autocomplete="off"> 
+    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" required autocomplete="off">
     <p class="formato-ayuda">Si la persona no tiene cuenta, ingresar <strong>N/A(No aplica)</strong>.</p>
     <div id="cuentaError" style="color: red;" class="fw-bold"></div>
     <div id="cuentaError2" style="color: red;" class="fw-bold"></div>
@@ -256,9 +256,9 @@ reporteInput.setAttribute("maxlength", "15");
     <option value="N/A"></option>
   </datalist>
 
-  <!--VALIDACION CAMPO NUMERO DE CUENTA--> 
+  <!--VALIDACION CAMPO NUMERO DE CUENTA-->
   <script>
-var cuentaInput = document.getElementById('cuenta');  
+var cuentaInput = document.getElementById('cuenta');
 var cuentaError = document.getElementById('cuentaError');
 
 cuentaInput.addEventListener('keyup', function() {
@@ -403,7 +403,7 @@ $(document).ready(function() {
         $("#tipof option[value='N/A']").prop("disabled", false);
       }
     });
-  
+
     $("#consecutivof").on("blur", function() {
       if($(this).val().toUpperCase() === "N/A") {
         $("#tipof").val("N/A").prop("disabled", true);
@@ -504,15 +504,15 @@ $(document).ready(function() {
 
 
 
-      
+
 
     var reporteInput = document.getElementById('reporte');
     reporteInput.addEventListener('input', function() {
-      reporteInput.value = reporteInput.value.toUpperCase(); 
+      reporteInput.value = reporteInput.value.toUpperCase();
     });
     var scoreInput = document.getElementById('score');
     scoreInput.addEventListener('input', function() {
-    scoreInput.value = scoreInput.value.toUpperCase(); 
+    scoreInput.value = scoreInput.value.toUpperCase();
     });
 
     var cuentaInput = document.getElementById('cuenta');
@@ -556,7 +556,7 @@ $(document).ready(function() {
     //             Swal.showLoading();
     //         },
     //     });
-                  
+
     //       @if(session('showLoadingAlert'))
     //               Swal.fire({
     //                   icon: 'info',
@@ -643,21 +643,21 @@ $(document).ready(function() {
             $('#tipof').attr('placeholder', 'Obligatorio');
         }
     });
-    
+
     $('#cedula, #nombre, #apellidos, #score, #cuenta, #agencia, #estado, #tipof').on('input', function() {
         if ($(this).val() !== '') {
             $(this).css('background-color', '');
             $(this).attr('placeholder', '');
         }
     });
-    
+
     //VALIDACION REGISTRO
       function validateForm() {
         //Cedula
     var cedulaInput = document.getElementById('cedula');
     var cedulaError2 = document.getElementById('cedulaError2');
-    
-    if (!/^[0-9]+$/.test(cedulaInput.value)) {   
+
+    if (!/^[0-9]+$/.test(cedulaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -669,12 +669,12 @@ $(document).ready(function() {
       cedulaInput.focus();
       return false;
     }
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre');
     var nombreError2 = document.getElementById('nombreError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -686,37 +686,37 @@ $(document).ready(function() {
       nombreInput.focus();
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos');
     var apellidosError2 = document.getElementById('apellidosError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = '';
       apellidosInput.focus();
       return false;
     }
-    
+
 
     //Núm. de Cuenta
     var cuentaInput = document.getElementById('cuenta');
     var cuentaError2 = document.getElementById('cuentaError2');
-    
-    if (!/^\d{0,10}$|^N\/A$/i.test(cuentaInput.value)) {   
+
+    if (!/^\d{0,10}$|^N\/A$/i.test(cuentaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo NÚMERO DE CUENTA debe contener dígitos numéricos ó N/A!',
         confirmButtonColor: '#005E56'
       });
-    
+
       cuentaError2.textContent = '';
           cuentaInput.focus();
           return false;
@@ -736,15 +736,15 @@ $(document).ready(function() {
 
         var consecutivofInput = document.getElementById('consecutivof');
         var consecutivofError2 = document.getElementById('consecutivofError2');
-        
-        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {   
+
+        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {
           Swal.fire({
             icon: 'error',
             title: '¡Error!',
             text: 'El campo CONSECUTIVO debe contener dígitos numéricos ó N/A!',
             confirmButtonColor: '#005E56'
           });
-          
+
           consecutivofError2.textContent = '';
           consecutivofInput.focus();
           return false;
@@ -752,8 +752,8 @@ $(document).ready(function() {
 
         var consecutivoaInput = document.getElementById('consecutivoa');
     var consecutivoaError2 = document.getElementById('consecutivoaError2');
-    
-    if (!/^[0-9]+$|^N\/A$/.test(consecutivoaInput.value)) {   
+
+    if (!/^[0-9]+$|^N\/A$/.test(consecutivoaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -766,9 +766,9 @@ $(document).ready(function() {
     }
         return true;
       }
-    
+
     </script>
-    
+
     </form>
     {{-- FECHA --}}
     <div class="col-9">
@@ -787,7 +787,7 @@ $(document).ready(function() {
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -795,26 +795,26 @@ $(document).ready(function() {
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
     <div style="overflow: auto;" class="table-responsive">
         <table id="personas" class="hover table table-striped shadow-lg mt-4 table-bordered table-hover col-md-5">
@@ -837,29 +837,29 @@ $(document).ready(function() {
           <th scope="col">ID</th>
           <th scope="col">FECHA CORREO</th>
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
-        
-      
+
+
 
         <script>
 
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -869,23 +869,23 @@ $(document).ready(function() {
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
         return true;
 }
 
@@ -910,9 +910,9 @@ $(document).ready(function() {
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -921,7 +921,7 @@ $(document).ready(function() {
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.consultante') }}",
@@ -945,7 +945,7 @@ $(document).ready(function() {
       }
     },
     {data: 'Apellidos'},
-    {  
+    {
   data: 'Observaciones',
   render: function(data, type, row) {
     var html = '<span style="font-weight: 700;">' + data + '</span>';
@@ -1026,15 +1026,15 @@ $(document).ready(function() {
       }
     },
     {data: 'ConsecutivoA'},
-   
+
     {data: 'FechaCorreo'},
     {    data: null,
       render: function(data, type, row) {
-        var id = row.ID;
-        var url = "{{ route('crud.update2', ':id') }}";
-        var today = new Date().toISOString().split('T')[0];
+          var today = new Date().toISOString().split('T')[0];
+          var id = row.ID;
+          var url = "{{ route('crud.update2', ':id') }}";
         url = url.replace(':id', id);
-        
+
         var html = '';
 var fecha_insercion = new Date(data.FechaInsercion); // Assuming "FechaInsercion" is a property in the "data" object
 var fecha_actual = new Date();
@@ -1048,7 +1048,7 @@ function toggleCheckbox2() {
     var checkbox2 = document.getElementById("Tipoasociado");
     checkbox2.checked = !checkbox2.checked;
 }
-
+    console.log(url)
       var deleteButton = '<a onclick="showUnauthorizedMessage()" href="#" type="" class="btn btn-small btn-danger" name="" value=""><i class="fa-solid fa-trash"></i></a>';
       var editButton = `<a href="" id="modalLink_${id}" type="submit" class="btn btn-small btn-warning edit-button edit" data-bs-toggle="modal" data-bs-target="#modalEditar_${id}" data-id="${id}" style="margin-right: "><i class="fa-regular fa-pen-to-square"></i></a>
     <div  class="modal fade" id="modalEditar_${id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1068,21 +1068,21 @@ function toggleCheckbox2() {
                 <input type="text" class="form-control" name="cedula2" id="cedula2" readonly value="${row.Cedula}" style="background-color: #EBEBEB; cursor: not-allowed;">
                 <input type="hidden" name="cedula3"  value="">
               </div>
-  
+
               <div class="mb-3">
                 <label for="nombre3" id="izquierda3" class="form-label fw-bold">NOMBRE</label>
                 <input type="text" class="form-control" id="nombre3" name="nombre3" value="${row.Nombre}" maxlength="30" required>
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
-        
-              
-              
+
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda6" class="form-label fw-bold">APELLIDOS</label>
                   <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="${row.Apellidos}" maxlength="60" oninput="this.value = this.value.toUpperCase()" required>
                   <div id="apellidosError3" style="color: red;" class="fw-bold"></div>
               </div>
-  
+
 
               <div class="mb-3" style="display: none;>
                   <label for="label"  id="izquierda" class="form-label fw-bold">SCORE</label>
@@ -1090,7 +1090,7 @@ function toggleCheckbox2() {
                   <div id="scoreError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
               </div>
-  
+
               <div class="mb-3" style="display: none;>
                   <label for="exampleInputEmail1" id="izquierda4" class="form-label fw-bold">REPORTE DATACRÉDITO</label>
                   <input type="text" class="form-control" id="reporte3" name="reporte3" maxlength="15" value="${row.Reporte}" oninput="this.value = this.value.toUpperCase()">
@@ -1103,7 +1103,7 @@ function toggleCheckbox2() {
                   <input type="text" class="form-control" name="cuenta3" id="cuenta3" value="${row.CuentaAsociada}" >
                   <input type="hidden" name="cuenta" value="">
               </div>
-  
+
               <!--Label5-->
               <div class="mb-3">
                   <label for="click" id="izquierda7" class="form-label fw-bold">AGENCIA</label>
@@ -1133,8 +1133,8 @@ function toggleCheckbox2() {
               <div class="mb-3" style="display: none;>
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="${row.NombreS}">
-              </div> 
-              
+              </div>
+
                 <div class="mb-3" style="display: none;>
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="${row.NombrePN}">
@@ -1160,13 +1160,13 @@ function toggleCheckbox2() {
                         <option value="T2" ${row.Tipof === 'T2' ? 'selected' : ''}>Formato T2</option>
                       </select>
                     </div>
-                   
+
                     <div class="mb-3">
                     <label for="label" id="" class="form-label fw-bold" style="margin-left: -53%;">ADJUNTAR AUTORIZACIÓN</label>
                   <input type="file" class="form-control" name="archivo3" id="archivo3" accept="application/pdf" value="">
                   <p class="formato-ayuda2">Debe contener el formato: <strong>Autorizacion-(Cédula).pdf</strong></strong></p>
                   </div>
-                     
+
                   <div class="mb-3">
   <label for="label" id="izquierda11" class="form-label fw-bold" style="margin-left: -47%;">CONSECUTIVO AUTORIZACIÓN</label>
   <input type="text" class="form-control" name="consecutivoa33" id="consecutivoa33" value="${row.ConsecutivoA}" title="Ingresar números o N/A" maxlength="8">
@@ -1254,7 +1254,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 
@@ -1264,22 +1264,21 @@ function showUnauthorizedMessage() {
             return respuesta
           }
 
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
     @endsection
-    
- 
+

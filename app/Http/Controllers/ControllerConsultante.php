@@ -23077,9 +23077,14 @@ class ControllerConsultante extends Controller
                                 $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
                                 Carbon::setLocale('es');
                                 $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                $formateada = $fechaReporte->format('d/m/Y');
+                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
                                 //fecha primera cuota
                                 $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                Carbon::setLocale('es');
+                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
 
                                 //interes proporcional
                                 $endOfMonth = $fechadelCredito->copy()->endOfMonth();
@@ -25625,7 +25630,7 @@ class ControllerConsultante extends Controller
     {
         $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
-        $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
+        $solicitudes = DB::select("SELECT DISTINCT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NomAgencia, B.NumAgencia, B.Cedula, B.Detalle, B.Observaciones, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
         FROM persona A
         JOIN autorizaciones B ON B.ID_Persona = A.ID
         JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25687,7 +25692,17 @@ class ControllerConsultante extends Controller
 
     }
 
+    public function actualizardetalle(Request $request, $id){
 
+        $update = DB::table('autorizaciones')
+        ->where('ID', $id)
+        ->update([
+            'Detalle' => $request->input('Detalle'),
+            'Estado' => 2
+        ]);
+
+        return response()->json(['success' => 'Usuario actualizado correctamente']);
+    }
 
 }
 

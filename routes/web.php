@@ -344,6 +344,8 @@ Route::middleware('auth.consultante')->group(function () {
 
     Route::post('solicitudes/crear', [ControllerConsultante::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
 
+    Route::post('solicitudes/actualizar-{id}', [ControllerConsultante::class,'actualizardetalle'])->name('update.autorizacion');
+
 
 });
 
@@ -648,6 +650,8 @@ Route::get('validarautorizacion', function () {
 Route::get('validarautorizacion/datatable', [CRUDCoordinacion::class, 'solicitudes'])->name('datacoor.solicitudes');
 
 Route::post('validarautorizacion/crear', [CRUDCoordinacion::class, 'solicitarAutorizacion'])->name('solicitarcoor.autorizacion');
+
+Route::post('validarautorizacion/actualizar-{id}', [CRUDCoordinacion::class,'validarAutorizacion'])->name('updatecoor.autorizacion');
 
 
 //JEFATURAS
