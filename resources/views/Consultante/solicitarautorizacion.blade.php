@@ -54,9 +54,9 @@
             <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
                 <label for="input1" class="form-label col-form-label-lg fw-semibold">TIPO DE AUTORIZACIÓN <span
                         class="text-danger" style="font-size:20px;">*</span></label>
-                <select class="form-select form-select-lg " name="tautorizacion" required>
+                <select class="form-select form-select-lg " name="tautorizacion" id="autorizaciones" required>
                     <option selected disabled>Selecciona una opción</option>
-                    <option disabled class="fw-bold">---TALENTO HUMANO---</option>
+                    {{-- <option disabled class="fw-bold">---TALENTO HUMANO---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 10)
                             <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
@@ -64,7 +64,7 @@
                                 {{ $autorizacion->Concepto }}
                             </option>
                         @endif
-                    @endforeach
+                    @endforeach --}}
                     <option disabled class="fw-bold">---COORDINACION---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 11)
@@ -83,7 +83,7 @@
                             </option>
                         @endif
                     @endforeach
-                    <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
+                    {{-- <option disabled class="fw-bold">---JURIDICO ZONA CENTRO---</option>
                     @foreach ($user as $autorizacion)
                         @if ($autorizacion->No == 2150)
                             <option class="fw-semibold" value="{{ $autorizacion->No . $autorizacion->Letra }}">
@@ -118,26 +118,11 @@
                                 {{ $autorizacion->Concepto }}
                             </option>
                         @endif
-                    @endforeach
+                    @endforeach --}}
                 </select>
             </div>
 
-
-            <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-                <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
-                        style="font-size:20px;">*</span></label>
-                <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
-                    required>
-
-            </div>
-
-
-            <div class="mb-3 w-100" title="Este campo es obligatorio">
-                <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
-                        class="text-danger" style="font-size:20px;">*</span></label>
-                <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
-
-            </div>
+            <div id="cuerpo"></div>
 
 
 
@@ -147,6 +132,7 @@
                     style="background-color: #005E56;">SOLICITAR</button>
                 <!-- <button onclick="limpiarCampos()" id="botonRegistrar" class="btn btn-primary" name="btnregistrar" style="background-color: #005E56;">Limpiar</button> -->
             </div>
+
 
         </form>
 
@@ -229,14 +215,20 @@
                 "order": [
                     [0, 'desc']
                 ],
+                scrollY: 420,
                 "ordering": false,
                 "columns": [{
                         data: 'IDAutorizacion',
+                        render: function(data, type, row) {
+                            var ID = `<span class='text-danger fw-bold'>${row.IDAutorizacion}</span>`
+
+                            return ID
+                        },
                         createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
                                 'font-weight': '500',
-                                'font-size': '20px',
-                                'text-align': 'center'
+                                'font-size': '30px',
+                                'text-align': 'center',
                             });
                         }
                     },
@@ -283,12 +275,8 @@
                                 // Supongo que deseas mostrar el ID, no un botón de Aprobado, por lo que he cambiado el nombre de la variable a 'IDLabel'
                                 if(row.Estado == 0){
                                     var Estado = '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
-                                }else if(row.Estado == 1){
-                                    var Estado = `<div class="btn btn-success shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-
-                                    APROBADO</label></div>`
-                                }else if(row.Estado == 2){
-                                    var Estado = '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
+                                }else if(row.Estado == 1|| row.Estado == 2){
+                                    var Estado = `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
                                 }else if(row.Estado == 3){
                                     var Estado = '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
                                 }
@@ -321,12 +309,25 @@
                                 //añadir observaciones
                                 if (row.Observaciones !== "Ninguna."){
                                     var Observaciones = `<th scope="row">OBSERVACIONES:</th>
-                                                            <td id="aprobado_por" class="fw-bold text-primary">${row.Observaciones}</td>
+                                                            <td id="aprobado_por" class="fw-semibold">${row.Observaciones}</td>
                                                         </tr>`
                                 }else{
-                                    var Observaciones = `<th scope="row">OBSERVACIONES:</th>
-                                                            <td id="aprobado_por" class="fw-bold text-primary">Ninguna.</td>
+                                    var Observaciones = `
+                                                        <tr>
+                                                            <th scope="row">OBSERVACIONES:</th>
+                                                            <td id="aprobado_por" class="fw-semibold">Ninguna.</td>
                                                         </tr>`
+                                }
+
+                                if (row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D'){
+                                    var DocumentoSoporte = `
+                                    <tr>
+                                        <th scope="row">SOPORTE:</th>
+                                        <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download><img src="img/pdf.png" style="height: 2.5rem"></a></td>
+                                    </tr>
+                                    `
+                                }else{
+                                    var DocumentoSoporte = ``
                                 }
 
                                 //TRAE LA CUENTA SI ES 11D QUE ES AUTORIZACION POR SCORE BAJO CREDITO
@@ -352,14 +353,12 @@
 
                                 if(row.Estado == 0){
                                     var Estado = '<div class="btn btn-danger" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
-                                }else if(row.Estado == 1){
-                                    var Estado = `<div class="btn btn-success" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-                                    APROBADO</label></div>`
-                                }else if(row.Estado == 2){
-                                    var Estado = '<div class="btn btn-warning" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
+                                }else if(row.Estado == 1|| row.Estado == 2){
+                                    var Estado = `<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>`
                                 }else if(row.Estado == 3){
                                     var Estado = '<div class="btn btn-primary" style="padding: 0.4rem 1.5rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
                                 }
+
 
 
                                     var id = row.IDAutorizacion; // Obtener el ID de la fila
@@ -368,75 +367,14 @@
 
                                     if(row.Estado == 3){
                                         var detalleEditar = `
-                                        <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
+                                        <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}">
                                         @csrf
-                                            <input class="input text-center blink" name="Detalle" id="Detalle" type="text" value="${row.Detalle}"></input>
-
-                                            <div class="text-center">
-                                                            <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                                                style="background-color: #005E56;">GUARDAR</button>
-                                                    </div>
+                                            <input class="input text-center" name="Detalle" id="Detalle" type="text" value="${row.Detalle}"></input>
                                         </form>
 
                                         `
-
-                                        var botonafuer = `
-                                        <div class="text-center">
-                                                            <button id="botonafuera" type="submit" class="btn btn-primary fs-5 fw-bold " name="btnregistrar"
-                                                                style="background-color: #005E56;">GUARDAR</button>
-                                                    </div>`
-                                        $(document).ready(function() {
-                                            $('#botonafuera').click(function() {
-                                                $('#boton').click(); // Ejecutar el clic en el botón con id="boton"
-                                            });
-                                        });
-
-                                        $(document).ready(function() {
-                                            $('#formEditarAutorizacion').off('submit').on('submit', function(e) {
-                                                if ($(this).data('submitted')) {
-                                                    // Si el formulario ya ha sido enviado, no hagas nada
-                                                    return false;
-                                                }
-
-                                                // Marca el formulario como enviado para que no se ejecute de nuevo
-                                                $(this).data('submitted', true);
-
-                                                e.preventDefault();
-                                                var id = `${row.IDAutorizacion}`;
-                                                var Detalle = $('#Detalle').val();
-                                                var _token = "{{ csrf_token() }}"; // Agrega esta línea para obtener el token CSRF
-                                                console.log(id);
-                                                $.ajax({
-                                                    url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                                                    type: "POST",
-                                                    data: {
-                                                        Detalle: Detalle,
-                                                        _token: _token
-                                                    },
-                                                    success: function(response) {
-                                                    if (response) {
-                                                        $(`#EditarModal_${row.IDAutorizacion}`).modal('hide');
-                                                        console.log('¡Éxito!');
-                                                        $('#personas').DataTable().ajax.reload();
-                                                        Swal.fire({
-                                                            icon: 'success',
-                                                            title: "¡ACTUALIZADO!",
-                                                            html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-secondary fw-bold'>" + id + "</span></span>",
-                                                            confirmButtonColor: '#005E56'
-                                                        });
-                                                    }
-                                                },
-                                                    error: function(error) {
-                                                        console.log('Error al procesar la solicitud');
-                                                    }
-                                                });
-                                            });
-                                        });
-
                                     }else{
                                         var detalleEditar = `${row.Detalle}`
-
-                                        var botonafuer = ``
                                     }
 
 
@@ -450,7 +388,7 @@
 
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#EditarModal_${id}" data-id="${id}">
+                                        <a class="dropdown-item" id="modalLink_${id}" data-bs-toggle="modal" data-bs-target="#exampleModal_${id}" data-id="${id}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" color="black" class="bi bi-eye" viewBox="0 0 16 16">
                                             <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
                                             <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
@@ -460,7 +398,7 @@
 
 
                                     {{-- MODAL --}}
-                                    <div class="modal fade bd-example-modal-lg" id="EditarModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal fade bd-example-modal-lg" id="exampleModal_${id}" tabindex="-1" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
                                             <div class="modal-content" style="padding: 2% 5% 5% 5%">
                                                 <div class="modal-header text-center">
@@ -476,8 +414,8 @@
                                                         <tbody>
                                                         <tr>
                                                         <th scope="row" style="width: 50%;">CONSECUTIVO:</th>
-                                                        <td id="">${id}</td>
-                                                        <input class="input text-center" name="id" id="id" type="text" value="${row.IDAutorizacion}" style="display: none"></input>
+                                                        <td id="" style="font-size: 30px" class="text-danger">${id}</td>
+                                                        <input class="input text-center"  name="id" id="id" type="text" value="${row.IDAutorizacion}" style="display: none"></input>
                                                         </tr>
                                                         <tr>
                                                             <th scope="row">AGENCIA:</th>
@@ -518,11 +456,15 @@
                                                         <th scope="row">DETALLE:</th>
                                                         <td id="estado" style="text-align: center">`+detalleEditar+`</td>
                                                         </tr>
+                                                        `+DocumentoSoporte+`
+                                                        `+Observaciones+`
 
                                                     </tbody>
                                                     </table>
-                                                    `+botonafuer+Observaciones+`
-
+                                                    <div class="text-center">
+                                                            <button id="boton" type="button" class="btn btn-primary fs-5 fw-bold" name="btnregistrar"
+                                                                style="background-color: #005E56;" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)">GUARDAR</button>
+                                                    </div>
                                             </div>
                                             </div>
                                         </div>
@@ -556,7 +498,7 @@
                 },
                 "language": {
                     "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen datos!</span>",
+                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen Autorizaciones Disponibles!</span>",
                     "info": "Mostrando la página _PAGE_ de _PAGES_",
                     "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(Filtrado de _MAX_ registros totales)",
@@ -569,35 +511,113 @@
 
             });
 
-
-            function activar() {
-                var respuesta = confirm("¿Estas seguro que deseas activar este usuario?")
-                return respuesta
-            }
-
-            function desactivar() {
-                var respuesta = confirm("¿Estas seguro que deseas desactivar este usuario?")
-                return respuesta
-            }
-
-            function eliminar() {
-                var respuesta = confirm("¿Estas seguro que deseas eliminar este registro?")
-                return respuesta
-            }
-
-            function eliminar2() {
-                var respuesta = confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
-                return respuesta
-            }
             function csesion() {
                 var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
                 return respuesta
             }
+        </script>
+
+        <script>
+
+                function formEditarAutorizacion(id, event) {
+
+                var form = $("#formEditarAutorizacion" + id);
+
+                // Verificar si el formulario ya ha sido enviado
+                if (form.data('submitted')) {
+                    // Si el formulario ya ha sido enviado, no hacer nada
+                    return;
+                }
+
+                // Marcar el formulario como enviado
+                form.data('submitted', true);
+
+                var formDataArray = form.serializeArray();
+                // Almacenar los valores en variables
+                var Detalle;
+
+                // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
+                formDataArray.forEach(function(input) {
+                    if (input.name === "Detalle") {
+                        Detalle = input.value;
+                    }
+                });
+
+
+                // Realizar la solicitud AJAX para actualizar la autorización
+                $.ajax({
+                    url: "{{ route('update.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                    type: "POST",
+                    data: {
+                        Detalle: Detalle,
+                        _token: $('input[name="_token"]').val()
+                    },
+                    success: function(response) {
+                        if (response) {
+                            $(`#exampleModal_${id}`).modal('hide');
+                            console.log('¡Éxito!');
+                            $('#personas').DataTable().ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: "¡ACTUALIZADO!",
+                                html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" + id + "</span></span>",
+                                confirmButtonColor: '#005E56'
+                            });
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error');
+                    }
+                });
+                }
+
+
+
+                $(document).on('keypress', 'input[name="Detalle"]', function(e) {
+                // Verificar si la tecla presionada es Enter (código 13)
+                if (e.which == 13) {
+                e.preventDefault(); // Evitar el comportamiento predeterminado de presionar Enter (recargar la página)
+                var id = $(this).closest('form').data('id'); // Obtener el ID de la autorización
+                formEditarAutorizacion(id, e); // Llamar a la función para manejar la actualización de la autorización
+                }
+                });
+
+        </script>
+        <script>
+            $('#autorizaciones').on('change', function() {
+                // Obtener el valor seleccionado
+                var valorSeleccionado = $(this).val();
+                console.log("Valor seleccionado:", valorSeleccionado);
+
+                if(valorSeleccionado == "11A" || valorSeleccionado == "11D"){
+                    $("#cuerpo").html(`
+                    <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
+                        <label for="input1" class="form-label col-form-label-lg fw-semibold">CÉDULA <span class="text-danger"
+                                style="font-size:20px;">*</span></label>
+                        <input type="number" name="cedula" class="form-control form-control-lg" id="input1" autocomplete="off" autofocus
+                            required>
+
+                    </div>
+
+
+                    <div class="mb-3 w-100" title="Este campo es obligatorio">
+                        <label for="input2" class="form-label col-form-label-lg fw-semibold">DETALLES DE LA AUTORIZACIÓN <span
+                                class="text-danger" style="font-size:20px;">*</span></label>
+                        <textarea type="number" name="detalle" class="form-control form-control-lg" autocomplete="off" required></textarea>
+
+                    </div>
+                    <div class="mb-4 w-100" style="">
+                        <label for="exampleInputEmail1" class="form-label col-form-label-lg fw-semibold">ADJUNTAR SOPORTE<span
+                            class="text-danger" style="font-size:20px;"> *</span></label>
+                        <input type="file" class="form-control" name="SoporteScore" id="SoporteScore" required>
+                    </div>
+                    `);
+                }
+            });
 
 
 
         </script>
-
 
     </div>
 

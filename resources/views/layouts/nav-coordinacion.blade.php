@@ -72,6 +72,7 @@
                 </div>
 
 
+
                 <div class="dropdown nav-item">
 
                     <li class="nav-link active text-white dropdown-toggle fw-bold ms-4" type="button"
@@ -122,6 +123,21 @@
                                         Listar Pagarés</a></li>
                             @endif
                         </ul>
+                </div>
+                <div class="dropdown nav-item">
+
+                    <li class="nav-link active text-white dropdown-toggle fw-bold ms-4" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
+                        Autorizaciones
+                    </li>
+                    <ul class="dropdown-menu" style="background-color: #005E56;">
+                        <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
+                                style="font-size: 25px" href="validarautorizacion">
+                                Validación</a></li>
+                    </ul>
+
+                    <!-- <li class="text-white dropdown-divider"></li> -->
+                    <!-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="dirpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li> -->
                 </div>
             </ul>
 

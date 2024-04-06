@@ -25070,7 +25070,11 @@ class CRUDCoordinacion extends Controller
             $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
 
             if($agenciaU = $usuarioActual->agenciau == "Coordinacion 1"){
-                $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos, B.ID AS IDAutorizacion, B.Fecha, B.Observaciones, B.CodigoAutorizacion, B.NumAgencia, B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor, B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No, C.Concepto, C.Areas
+                $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
+                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
+                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
+                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
+                C.Concepto, C.Areas
                 FROM persona A
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25078,10 +25082,10 @@ class CRUDCoordinacion extends Controller
             }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 2"){
                 $solicitudes = DB::select("
                 SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                       B.ID AS IDAutorizacion, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                       B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                       B.Validacion, B.ValidadoPor, B.Observaciones, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                       C.Concepto, C.Areas
+                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
+                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
+                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
+                C.Concepto, C.Areas
                 FROM persona A
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25089,10 +25093,10 @@ class CRUDCoordinacion extends Controller
             }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 3"){
                 $solicitudes = DB::select("
                 SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                       B.ID AS IDAutorizacion, B.Observaciones, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                       B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                       B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                       C.Concepto, C.Areas
+                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
+                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
+                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
+                C.Concepto, C.Areas
                 FROM persona A
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25100,10 +25104,10 @@ class CRUDCoordinacion extends Controller
             }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 4"){
                 $solicitudes = DB::select("
                 SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                       B.ID AS IDAutorizacion, B.Observaciones, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                       B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                       B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                       C.Concepto, C.Areas
+                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
+                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
+                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
+                C.Concepto, C.Areas
                 FROM persona A
                 JOIN autorizaciones B ON B.ID_Persona = A.ID
                 JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
@@ -25111,7 +25115,7 @@ class CRUDCoordinacion extends Controller
             }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 5"){
                 $solicitudes = DB::select("
                 SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                       B.ID AS IDAutorizacion, B.Observaciones, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
+                       B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
                        B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
                        B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
                        C.Concepto, C.Areas
@@ -25125,12 +25129,31 @@ class CRUDCoordinacion extends Controller
 
 
         public function validarAutorizacion(Request $request, $id){
-            $update = DB::table('autorizaciones')
+            $usuarioActual = Auth::user();
+            $nombre = $usuarioActual->name;
+            $estadoautorizacion = $request->Estado;
+
+
+            if($estadoautorizacion == '0' || $estadoautorizacion == '2' || $estadoautorizacion == '3'){
+                $update = DB::table('autorizaciones')
                 ->where('ID', $id)
                 ->update([
                     'Observaciones' => $request->input('Observaciones'),
-                    'Estado' => $request->input('Estado')
+                    'Estado' => $request->input('Estado'),
+                    'ValidadoPor' => $nombre
                 ]);
+            }else if($estadoautorizacion == '1'){
+                $update = DB::table('autorizaciones')
+                ->where('ID', $id)
+                ->update([
+                    'Observaciones' => $request->input('Observaciones'),
+                    'Estado' => $request->input('Estado'),
+                    'ValidadoPor' => $nombre,
+                    'Validacion' => 1,
+                ]);
+            }
+
+
 
             return response()->json(['success' => true]);
         }

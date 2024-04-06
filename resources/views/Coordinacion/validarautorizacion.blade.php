@@ -97,9 +97,9 @@
                         <tr class="text-white">
                             <th scope="col" class="text-center">#</th>
                             <th scope="col" class="text-center" style="width: 15%">CÉDULA</th>
-                            <th scope="col" class="text-center" style="width: 35%">CONCEPTO</th>
+                            <th scope="col" class="text-center" style="width: 30%">CONCEPTO</th>
                             <th scope="col" class="text-center">FECHA SOLICITUD</th>
-                            <th scope="col" class="text-center" style="width: 13%">ESTADO</th>
+                            <th scope="col" class="text-center" style="width: 17%">ESTADO</th>
                             <th scope="col" class="text-center" style="width: 13%">DETALLE</th>
                         </tr>
                     </thead>
@@ -117,14 +117,15 @@
         <script src="ResourcesAll/dtables/estilobotondt.min.js"></script>
         <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
         <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
+
         <script>
+
             var table = $('#personas').DataTable({
                 "ajax": "{{ route('datacoor.solicitudes') }}",
                 "order": [
                     [0, 'desc']
                 ],
                 scrollY: 420,
-                "ordering": false,
                 "columns": [{
                         data: 'IDAutorizacion',
                         createdCell: function(td, cellData, rowData, row, col) {
@@ -180,9 +181,9 @@
                                     var Estado = '<div class="btn btn-danger shadow" style="padding: 0.4rem 1.7rem; border-radius: 10%;font-weight: 600;font-size: 14px;">ANULADO</div>';
                                 }else if(row.Estado == 1){
                                     var Estado = `<div class="btn btn-success shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">
-                                    APROBADO</label></div>`
+                                    REMITIDO A GERENCIA</label></div>`
                                 }else if(row.Estado == 2){
-                                    var Estado = '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">EN TRAMITE</div>'
+                                    var Estado = '<div class="btn btn-warning shadow" style="padding: 0.4rem 1.4rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;" class="blink">EN TRAMITE</div>'
                                 }else if(row.Estado == 3){
                                     var Estado = '<div class="btn btn-primary shadow" style="padding: 0.4rem 1.6rem; border-radius: 10%;font-weight: 600;font-size: 14px;"><label style="margin-bottom: 0px;">CORREGIR</div>'
                                 }else{
@@ -200,7 +201,7 @@
                         }
                     },
                     {
-                            data: 'Fecha',
+                            data: 'Detalle',
                             render: function(data, type, row) {
 
                                 //para traer por quien LO SOLICITÓ
@@ -218,208 +219,12 @@
                                 var url = "{{ route('updatecoor.autorizacion', ':id') }}";
                                 url = url.replace(':id', id);
 
-                                //PARA IMPRIMIR LOS BOTONES RADIO EN EL MODAL DE DETALLES Y ADEMAS LAS OBSERVACIONES
-                                if(row.Estado == 0){
-                                    var Estado = `
-                                    <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
-                                        @csrf
-                                        <label class="label" >
-                                            <input value="1" type="radio" name="Estado" id="Estado">
-                                            <span>APROBADO</span>
-                                        </label>
-                                        <label class="label" value="2">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>EN TRAMITE</span>
-                                        </label>
-
-                                        <label class="label">
-                                            <input value="3" type="radio" name="Estado" id="Estado">
-                                            <span>CORREGIR</span>
-                                        </label>
-
-
-                                        <textarea class="input" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></textarea>
-
-                                        <div class="text-center">
-                                        <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                            style="background-color: #005E56;">GUARDAR</button>
-                                    </div>
-                                    </form>
-                                                    `
-                                }else if(row.Estado == 1){
-                                    var Estado = `
-                                    <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
-                                        @csrf
-                                        <label class="label" value="2">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>EN TRAMITE</span>
-                                        </label>
-                                        <label class="label">
-                                            <input value="0" type="radio" name="Estado" id="Estado">
-                                            <span>ANULADO</span>
-                                        </label>
-
-                                        <label value="3" class="label">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>CORREGIR</span>
-                                        </label>
-
-                                        <textarea class="input" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></textarea>
-
-                                        <div class="text-center">
-                                        <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                            style="background-color: #005E56;">GUARDAR</button>
-                                    </div>
-                                    </form>
-                                                    `
-                                }else if(row.Estado == 2){
-                                    var Estado = `
-                                    <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
-                                        @csrf
-
-                                        <label class="label">
-                                            <input value="0" type="radio" name="Estado" id="Estado">
-                                            <span>ANULADO</span>
-                                        </label>
-                                        <label class="label">
-                                            <input value="1" type="radio" name="Estado" id="Estado">
-                                            <span>APROBADO</span>
-                                        </label>
-                                        <label class="label">
-                                            <input value="3" type="radio" name="Estado" id="Estado">
-                                            <span>CORREGIR</span>
-                                        </label>
-
-                                        <textarea class="input" name="Observaciones" type="text" id="Observaciones" value="${row.Observaciones}"></textarea>
-
-                                        <div class="text-center">
-                                        <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                            style="background-color: #005E56;" required>GUARDAR</button>
-                                    </div>
-                                    </form>
-
-                                                    `
-                                }else if(row.Estado == 3){
-                                    var Estado = `
-                                    <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
-                                        @csrf
-                                        <label class="label" >
-                                            <input value="1" type="radio" name="Estado" id="Estado">
-                                            <span>APROBADO</span>
-                                        </label>
-                                        <label class="label" value="2">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>EN TRAMITE</span>
-                                        </label>
-                                        <label class="label">
-                                            <input value="0" type="radio" name="Estado" id="Estado" >
-                                            <span>ANULADO</span>
-                                        </label>
-
-                                        <textarea class="input" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></textarea>
-
-                                        <div class="text-center">
-                                        <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                            style="background-color: #005E56;">GUARDAR</button>
-                                    </div>
-                                    </form>
-                                                    `
-                                }else{
-                                    var Estado = `
-                                    <form action="`+url+`" method="POST" enctype="multipart/form-data" id="formEditarAutorizacion">
-                                        @csrf
-                                        <label class="label" >
-                                            <input value="1" type="radio" name="Estado" id="Estado">
-                                            <span>APROBADO</span>
-                                        </label>
-                                        <label class="label" value="2">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>EN TRAMITE</span>
-                                        </label>
-                                        <label class="label">
-                                            <input value="0" type="radio" name="Estado" id="Estado" >
-                                            <span>ANULADO</span>
-                                        </label>
-                                        <label value="3" class="label">
-                                            <input type="radio" name="Estado" id="Estado">
-                                            <span>CORREGIR</span>
-                                        </label>
-
-                                        <textarea class="input" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></textarea>
-
-                                        <div class="text-center">
-                                        <button id="boton" type="submit" class="btn btn-primary fs-5 fw-bold d-none" name="btnregistrar"
-                                            style="background-color: #005E56;">GUARDAR</button>
-                                    </div>
-                                    </form>
-
-                                `
-                            }
-
-
-
-
-                                var botonafuer = `
-                                    <div class="text-center">
-                                                        <button id="botonafuera" type="submit" class="btn btn-primary fs-5 fw-bold" name="btnregistrar"
-                                                            style="background-color: #005E56;">GUARDAR</button>
-                                    </div>`
-                                $(document).ready(function() {
-                                    $('#botonafuera').click(function() {
-                                        $('#boton').click(); // Ejecutar el clic en el botón con id="boton"
-                                    });
-                                });
-
-                                $(document).ready(function() {
-                                            $('#formEditarAutorizacion').off('submit').on('submit', function(e) {
-                                                if ($(this).data('submitted')) {
-                                                    // Si el formulario ya ha sido enviado, no hagas nada
-                                                    return false;
-                                                }
-
-                                                // Marca el formulario como enviado para que no se ejecute de nuevo
-                                                $(this).data('submitted', true);
-
-                                                e.preventDefault();
-                                                var id = `${row.IDAutorizacion}`;
-                                                var Observaciones = $('#Observaciones').val();
-                                                var Estado = $('input[name="Estado"]:checked').val();
-                                                var _token = "{{ csrf_token() }}";
-
-                                                $.ajax({
-                                                    url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
-                                                    type: "POST",
-                                                    data: {
-                                                        Observaciones: Observaciones,
-                                                        Estado: Estado,
-                                                        _token: _token
-                                                    },
-                                                    success: function(response) {
-                                                    if (response) {
-                                                        $(`#exampleModal_${row.IDAutorizacion}`).modal('hide');
-                                                        console.log('¡Éxito!');
-                                                        $('#personas').DataTable().ajax.reload();
-                                                        Swal.fire({
-                                                            icon: 'success',
-                                                            title: "¡ACTUALIZADO!",
-                                                            html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-secondary fw-bold'>" + id + "</span></span>",
-                                                            confirmButtonColor: '#005E56'
-                                                        });
-                                                    }
-                                                },
-                                                    error: function(error) {
-                                                        console.log('Error');
-                                                    }
-                                                });
-                                            });
-                                        });
-
 
                                 //TRAE LA CUENTA SI ES 11D QUE ES AUTORIZACION POR SCORE BAJO CREDITO
                                 if (row.CodigoAutorizacion == '11D'){
                                     var cuenta = `<th scope="row">CUENTA:</th>
-                                                            <td id="aprobado_por" class="text-dark">${row.CuentaAsociada}</td>
-                                                        </tr>`
+                                                    <td id="aprobado_por" class="text-dark">${row.CuentaAsociada}</td>
+                                                </tr>`
                                 }else{
                                     var cuenta = ``
                                 }
@@ -437,6 +242,98 @@
                                     var score = `<div class="btn btn-danger" style="padding: 0.3rem 1.3rem; border-radius: 10%;font-weight: 600;font-size: 15px;"><label style="margin-bottom: 0px;">${row.Score}</label></div>`
                                 }
 
+                                if(row.Estado == 0){
+                                    var RadioEstado = `
+                                    <label class="label">
+                                        <input value="0" type="radio" name="Estado" id="Estado" checked>
+                                        <span>ANULADO</span>
+                                    </label>
+
+                                    <label class="label" >
+                                        <input value="1" type="radio" name="Estado" id="Estado">
+                                        <span>APROBADO</span>
+                                    </label>
+                                    <label class="label">
+                                        <input value="2" type="radio" name="Estado" id="Estado" >
+                                        <span>EN TRAMITE</span>
+                                    </label>
+                                    <label class="label" >
+                                        <input value="3" type="radio" name="Estado" id="Estado">
+                                        <span>CORREGIR</span>
+                                    </label>
+                                    `
+                                }else if(row.Estado == 1){
+                                    var RadioEstado = `
+                                    <label class="label">
+                                        <input value="0" type="radio" name="Estado" id="Estado" >
+                                        <span>ANULADO</span>
+                                    </label>
+
+                                    <label class="label" >
+                                        <input value="1" type="radio" name="Estado" id="Estado" checked>
+                                        <span>APROBADO</span>
+                                    </label>
+                                    <label class="label">
+                                        <input value="2" type="radio" name="Estado" id="Estado" >
+                                        <span>EN TRAMITE</span>
+                                    </label>
+                                    <label class="label" >
+                                        <input value="3" type="radio" name="Estado" id="Estado">
+                                        <span>CORREGIR</span>
+                                    </label>
+                                    `
+                                }else if(row.Estado == 2){
+                                    var RadioEstado = `
+                                    <label class="label">
+                                        <input value="0" type="radio" name="Estado" id="Estado">
+                                        <span>ANULADO</span>
+                                    </label>
+
+                                    <label class="label" >
+                                        <input value="1" type="radio" name="Estado" id="Estado">
+                                        <span>APROBADO</span>
+                                    </label>
+                                    <label class="label">
+                                        <input value="2" type="radio" name="Estado" id="Estado" checked>
+                                        <span>EN TRAMITE</span>
+                                    </label>
+                                    <label class="label" >
+                                        <input value="3" type="radio" name="Estado" id="Estado">
+                                        <span>CORREGIR</span>
+                                    </label>
+                                    `
+                                }else if(row.Estado == 3){
+                                    var RadioEstado = `
+                                    <label class="label">
+                                        <input value="0" type="radio" name="Estado" id="Estado" >
+                                        <span>ANULADO</span>
+                                    </label>
+
+                                    <label class="label" >
+                                        <input value="1" type="radio" name="Estado" id="Estado">
+                                        <span>APROBADO</span>
+                                    </label>
+                                    <label class="label">
+                                        <input value="2" type="radio" name="Estado" id="Estado" >
+                                        <span>EN TRAMITE</span>
+                                    </label>
+                                    <label class="label" >
+                                        <input value="3" type="radio" name="Estado" id="Estado" checked>
+                                        <span>CORREGIR</span>
+                                    </label>
+                                    `
+                                }
+
+                                if (row.CodigoAutorizacion == '11A' || row.CodigoAutorizacion == '11D'){
+                                    var DocumentoSoporte = `
+                                    <tr>
+                                        <th scope="row">SOPORTE:</th>
+                                        <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download><img src="img/pdf.png" style="height: 2.5rem"></a></td>
+                                    </tr>
+                                    `
+                                }else{
+                                    var DocumentoSoporte = ``
+                                }
 
 
                                 var Detalle = `<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -470,62 +367,67 @@
                                                             <div style="margin-top: 4%;width: 100%;">
                                                                 <table class="table table-bordered" style="color: #111 !important; font-size: 17px;">
                                                                     <tbody>
-                                                            <tr>
-                                                            <th scope="row" style="width: 50%;">CONSECUTIVO:</th>
-                                                            <td id="consecutivo">${row.IDAutorizacion}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row">AGENCIA:</th>
-                                                                <td id="tipo">${row.NomAgencia}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">CODIGO:</th>
-                                                            <td id="tipo">${row.CodigoAutorizacion}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">CONCEPTO:</th>
-                                                            <td id="motivo">${row.Concepto}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">FECHA DE LA SOLICITUD:</th>
-                                                            <td id="fe_ho_in">${row.Fecha}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">CÉDULA</th>
-                                                            <td id="fe_ho_fi">${row.Cedula}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">NOMBRE:</th>
-                                                            <td id="fe_ho_so">${row.Nombre} ${row.Apellidos}</</td>
-                                                            </tr>
-                                                            `+cuenta+`
-                                                            <tr>
-                                                            <th scope="row">SCORE:</th>
-                                                            <td id="observacion">`+score+`</td>
-                                                            </tr>
-                                                            <tr>
-                                                            <th scope="row">DETALLE:</th>
-                                                            <td id="estado" style="text-align: center">${row.Detalle}</td>
-                                                            </tr>
-                                                            <tr>
-                                                            `+solicitadopor+`
-                                                            <th scope="row">CAMBIAR ESTADO:<br><br><br><br>OBSERVACIONES:</th>
-                                                                <td id="estado" style="text-align: center">`+Estado+`
-
-
-
-                                                        </tbody>
-
-                                                        </table>
-                                                        `+botonafuer+`
-                                                    </div>
+                                                                        <tr>
+                                                                        <th scope="row" style="width: 50%;">CONSECUTIVO:</th>
+                                                                        <td id="consecutivo">${row.IDAutorizacion}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th scope="row">AGENCIA:</th>
+                                                                            <td id="tipo">${row.NomAgencia}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">CODIGO:</th>
+                                                                        <td id="tipo">${row.CodigoAutorizacion}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">CONCEPTO:</th>
+                                                                        <td id="motivo">${row.Concepto}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">FECHA DE LA SOLICITUD:</th>
+                                                                        <td id="fe_ho_in">${row.Fecha}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">CÉDULA</th>
+                                                                        <td id="fe_ho_fi">${row.Cedula}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">NOMBRE:</th>
+                                                                        <td id="fe_ho_so">${row.Nombre} ${row.Apellidos}</</td>
+                                                                        </tr>
+                                                                        `+cuenta+`
+                                                                        <tr>
+                                                                        <th scope="row">SCORE:</th>
+                                                                        <td id="observacion">`+score+`</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                        <th scope="row">DETALLE:</th>
+                                                                        <td id="estado" style="text-align: center">${row.Detalle}</td>
+                                                                        </tr>
+                                                                        `+DocumentoSoporte+`
+                                                                        `+solicitadopor+`
+                                                                        <th scope="row">CAMBIAR ESTADO:<br><br><br><br>OBSERVACIONES:</th>
+                                                                        <td id="estado" style="text-align: center">
+                                                                            <form enctype="multipart/form-data" id="formEditarAutorizacion${row.IDAutorizacion}" data-id="${row.IDAutorizacion}">
+                                                                                @csrf
+                                                                                `+RadioEstado+`
+                                                                                <input class="input text-center" name="Observaciones" id="Observaciones" type="text" value="${row.Observaciones}"></input>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tbody>
+                                                                </table>
+                                                                <div class="text-center">
+                                                                        <button id="boton${row.IDAutorizacion}" type="button" class="btn btn-primary fs-5 fw-bold" name="btnregistrar" onclick="formEditarAutorizacion(${row.IDAutorizacion}, event)"
+                                                                        style="background-color: #005E56;">GUARDAR</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                </div>
-                                            </div>
                                             </div>`;
                                 return Detalle + modal;
                             },
+                            orderable:false,
                             createdCell: function(td, cellData, rowData, row, col) {
                             $(td).css({
                                 'text-align': 'center'
@@ -550,7 +452,7 @@
                 },
                 "language": {
                     "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen datos!</span>",
+                    "zeroRecords": "<span style='font-size: 40px; text-align: left;'>No existen Autorizaciones Disponibles!</span>",
                     "info": "Mostrando la página _PAGE_ de _PAGES_",
                     "infoEmpty": "No hay registros disponibles",
                     "infoFiltered": "(Filtrado de _MAX_ registros totales)",
@@ -617,35 +519,81 @@
             });
 
 
-
-
-
-            function activar() {
-                var respuesta = confirm("¿Estas seguro que deseas activar este usuario?")
-                return respuesta
-            }
-
-            function desactivar() {
-                var respuesta = confirm("¿Estas seguro que deseas desactivar este usuario?")
-                return respuesta
-            }
-
-            function eliminar() {
-                var respuesta = confirm("¿Estas seguro que deseas eliminar este registro?")
-                return respuesta
-            }
-
-            function eliminar2() {
-                var respuesta = confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
-                return respuesta
-            }
-
             function csesion() {
                 var respuesta = confirm("¿Estas seguro que deseas cerrar sesión?")
                 return respuesta
             }
         </script>
+        <script>
+                function formEditarAutorizacion(id, event) {
 
+                    var form = $("#formEditarAutorizacion" + id);
+
+                    // Verificar si el formulario ya ha sido enviado
+                    if (form.data('submitted')) {
+                        // Si el formulario ya ha sido enviado, no hacer nada
+                        return;
+                    }
+
+                    // Marcar el formulario como enviado
+                    form.data('submitted', true);
+
+                    var formDataArray = form.serializeArray();
+
+                    // Almacenar los valores en variables
+                    var estado, observaciones;
+
+                    // Recorrer el array de objetos y asignar valores a las variables según el nombre del campo
+                    formDataArray.forEach(function(input) {
+                        if (input.name === "Estado") {
+                            estado = input.value;
+                        } else if (input.name === "Observaciones") {
+                            observaciones = input.value;
+                            event.preventDefault();
+                        }
+                    });
+                    console.log(estado+' ' + observaciones);
+
+                    // Realizar la solicitud AJAX para actualizar la autorización
+                    $.ajax({
+                        url: "{{ route('updatecoor.autorizacion', ['id' => ':id']) }}".replace(':id', id),
+                        type: "POST",
+                        data: {
+                            Observaciones: observaciones,
+                            Estado: estado,
+                            _token: $('input[name="_token"]').val()
+                        },
+                        success: function(response) {
+                            if (response) {
+                                $(`#exampleModal_${id}`).modal('hide');
+                                console.log('¡Éxito!');
+                                $('#personas').DataTable().ajax.reload();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: "¡ACTUALIZADO!",
+                                    html: "<span class='fw-semibold'>Se actualizó correctamente la autorización No. <span class='badge bg-primary fw-bold'>" + id + "</span></span>",
+                                    confirmButtonColor: '#005E56'
+                                });
+                            }
+                        },
+                        error: function(error) {
+                            console.log('Error');
+                        }
+                    });
+                }
+
+
+
+                $(document).on('keypress', 'input[name="Observaciones"]', function(e) {
+                // Verificar si la tecla presionada es Enter (código 13)
+                if (e.which == 13) {
+                    e.preventDefault(); // Evitar el comportamiento predeterminado de presionar Enter (recargar la página)
+                    var id = $(this).closest('form').data('id'); // Obtener el ID de la autorización
+                    formEditarAutorizacion(id, e); // Llamar a la función para manejar la actualización de la autorización
+                }
+            });
+
+        </script>
 
     </div>
 
