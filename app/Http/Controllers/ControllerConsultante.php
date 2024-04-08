@@ -16193,8 +16193,8 @@ class ControllerConsultante extends Controller
                         DB::statement("ALTER TABLE pagare AUTO_INCREMENT = 1");
                         $foundMatchingPagare = true;
                     }
-
-
+                    $existePersona = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
+                    $pagare= $existingPagare[0];
                     if ($pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != null && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "NULL" && $pagare->ExisteDatacredito == 2 && $existePersona[0]->Score != "null") {
 
 
@@ -16247,7 +16247,7 @@ class ControllerConsultante extends Controller
                     $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
 
                     $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
-
+                    $url = env('URL_SERVER_API');
                     $attempts = 0;
                     $maxAttempts = 3; // INTENTOS MÁXIMOS
                     $retryDelay = 500; // Milisegundos
@@ -16268,7 +16268,6 @@ class ControllerConsultante extends Controller
 
                             $estadoEdad = $data['status'];
                             $deudatotalAPI = $data2['deudatotal'];
-
                             // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
                             break;
                         } catch (\Exception $e) {
@@ -16276,7 +16275,6 @@ class ControllerConsultante extends Controller
                             usleep($retryDelay * 1000);
                         }
                     } while ($attempts < $maxAttempts);
-
 
 
                     //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA

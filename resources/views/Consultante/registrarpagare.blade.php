@@ -121,7 +121,7 @@
   </div>
 </div>
 
-@if (auth()->user() && auth()->user()->agenciau == 'Coordinacion 6')
+@if (auth()->user() && auth()->user()->agenciau == 'Tunja')
 <div class="container-fluid row p-4">
     <form action="{{ route('cruddir.createpagare')}}" class="col m-3" method="POST" enctype= "multipart/form-data" id="pagare">
     @csrf
