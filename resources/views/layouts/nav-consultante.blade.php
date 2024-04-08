@@ -76,17 +76,17 @@
                         Pagaré
                     </li>
                     <ul class="dropdown-menu" style="background-color: #005E56;">
-                        <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
+                        {{-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
                                 style="font-size: 25px" href="#">
-                                MANTENIMIENTO</a></li>
-                                {{-- <li class="text-white dropdown-divider"></li>
+                                MANTENIMIENTO</a></li> --}}
+                                {{-- <li class="text-white dropdown-divider"></li> --}}
                                 <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
                                     style="font-size: 25px" href="registrarpagaredir"><i
                                         class="fa-solid fa-qrcode"></i> Escanear Pagare</a></li>
                             <li class="text-white dropdown-divider"></li>
                             <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
                                     style="font-size: 25px" href="registrarpagareordinariodir"><i
-                                        class="fa-solid fa-qrcode"></i> Pagaré Único</a></li> --}}
+                                        class="fa-solid fa-qrcode"></i> Pagaré Único</a></li>
                     </ul>
 
                     <!-- <li class="text-white dropdown-divider"></li> -->

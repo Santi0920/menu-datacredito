@@ -127,7 +127,7 @@
 @enderror
 
 @include('layouts/nav-consultante')
-@if (auth()->user() && auth()->user()->agenciau == 'Coordinacion 6')
+
 <div class="contenedor2">
   <div class="agregar2">
     <a href="datacredito.php" class="btn btn-primary" style="font-size: 35px;font-family: 'Montserrat', sans-serif; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#exampleModal3">
@@ -1076,6 +1076,6 @@ function limpiarCampos() {
 
    </style>
 </div>
-@endif
+
 
     @endsection
