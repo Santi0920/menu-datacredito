@@ -232,7 +232,13 @@
     data: null,
       render: function(data, type, row) {
 
-        if(row.Aprobado == 1){
+        if(row.ExisteDatacredito == 2){
+              var AprobadoButton = '<span class="text-danger blink" style="font-weight: bold; font-size: 25px">SCORE NULO</span><br><span class="text-dark opacity-50" style="font-weight: bold; font-size: 15px">Espere a area de cumplimiento a que sea consultado.</span>';
+        }else if(row.ExisteDatacredito == 3){
+              var AprobadoButton = '<span class="text-danger blink" style="font-weight: bold; font-size: 25px">EL DATACRÉDITO ESTA VENCIDO</span></span></a>';
+        }else if(row.ExisteDatacredito == 1){
+              var AprobadoButton = '<span class="text-danger blink" style="font-weight: bold; font-size: 25px">NO EXISTE EN DATACRÉDITO</span><br><a href="director"><span class="text-primary-emphasis" style="font-weight: bold; font-size: 15px">Registra en datacrédito.</span></a>';
+        }else if(row.Aprobado == 1){
             var AprobadoButton = '<span class="text-success" style="font-weight: bold; font-size: 30px">SI</span>';
         }else if(row.Aprobado == 0){
             var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">NO</span>';
