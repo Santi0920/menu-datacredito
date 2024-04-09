@@ -17821,8 +17821,8 @@ class ControllerConsultante extends Controller
                                         if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                             $razon = 'Aprobado por cumplir fechas pero el datacredito esta vencido.';
                                             $existedatacredito = '3';
-                                            $aprobado = '1';
-                                            $AutorizacionGerente = '0';
+                                            $aprobado = '0';
+                                            $AutorizacionGerente = '1';
                                             $NoAgencia = $registro['AGENCIA'];
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
@@ -17950,8 +17950,8 @@ class ControllerConsultante extends Controller
                                         if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
                                             $razon = 'Aprobado por cumplir fechas pero el datacredito esta vencido.';
                                             $existedatacredito = '3';
-                                            $aprobado = '1';
-                                            $AutorizacionGerente = '0';
+                                            $aprobado = '0';
+                                            $AutorizacionGerente = '1';
                                             $NoAgencia = $registro['AGENCIA'];
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
@@ -18082,8 +18082,8 @@ class ControllerConsultante extends Controller
                                         if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                             $razon = 'Aprobado por cumplir fechas pero el datacredito esta vencido.';
                                             $existedatacredito = '3';
-                                            $aprobado = '1';
-                                            $AutorizacionGerente = '0';
+                                            $aprobado = '0';
+                                            $AutorizacionGerente = '1';
                                             $NoAgencia = $registro['AGENCIA'];
                                             $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
                                             $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
