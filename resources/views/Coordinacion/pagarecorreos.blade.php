@@ -191,24 +191,14 @@
   "order": [[0, 'desc']],
   "columns": [
     {
-    data: null,
-    title: '#',
-    render: function (data, type, row, meta) {
-        if (meta.row >= 0 && meta.row <= 69) { // 584 - 515 = 69
-            return meta.row + 515; // Empieza desde 515
-        } else if (meta.row > 69) { // Después del 584
-            return meta.row + 531; // Continúa desde 601
-        } else {
-            return '';
+        data: 'ID',
+        createdCell: function (td, cellData, rowData, row, col) {
+            $(td).css({
+                'font-weight': 'bold',
+                'font-size': '30px'
+            });
         }
     },
-    createdCell: function (td, cellData, rowData, row, col) {
-        $(td).css({
-            'font-weight': 'bold',
-            'font-size': '30px'
-        });
-    }
-},
 
     {
         data: 'Score',
