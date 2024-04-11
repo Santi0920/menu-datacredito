@@ -20670,6 +20670,8 @@ class ControllerConsultante extends Controller
                                                 $aprobado = '0';
                                                 $AutorizacionGerente = '1';
                                                 $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                                 $id_persona = $persona->ID;
                                                 if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                     $coordinacion = 'Coordinacion 1';
@@ -20852,6 +20854,8 @@ class ControllerConsultante extends Controller
                                             $aprobado = '0';
                                             $AutorizacionGerente = '1';
                                             $NoAgencia = $registro['AGENCIA'];
+                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                             $id_persona = '7323';
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 $coordinacion = 'Coordinacion 1';
@@ -21101,6 +21105,8 @@ class ControllerConsultante extends Controller
                                             $aprobado = '0';
                                             $AutorizacionGerente = '1';
                                             $NoAgencia = $registro['AGENCIA'];
+                                            $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                            $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                             $id_persona = '7323';
                                             if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                 $coordinacion = 'Coordinacion 1';
@@ -21289,6 +21295,8 @@ class ControllerConsultante extends Controller
                                     $aprobado = '0';
                                     $AutorizacionGerente = '1';
                                     $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                     $id_persona = '7323';
                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                         $coordinacion = 'Coordinacion 1';
@@ -21728,6 +21736,8 @@ class ControllerConsultante extends Controller
                                         $aprobado = '0';
                                         $AutorizacionGerente = '1';
                                         $NoAgencia = $registro['AGENCIA'];
+                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                         $id_persona = '7323';
                                         if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                             $coordinacion = 'Coordinacion 1';
@@ -21977,6 +21987,8 @@ class ControllerConsultante extends Controller
                                         $aprobado = '0';
                                         $AutorizacionGerente = '1';
                                         $NoAgencia = $registro['AGENCIA'];
+                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                         $id_persona = '7323';
                                         if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                             $coordinacion = 'Coordinacion 1';
