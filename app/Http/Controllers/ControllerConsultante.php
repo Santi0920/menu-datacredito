@@ -19233,7 +19233,7 @@ class ControllerConsultante extends Controller
                                     $usuarioActual = Auth::user();
                                     $nombre = $usuarioActual->name;
                                     $rol = $usuarioActual->rol;
-                                    $cedulaagregada = $request->Cedula_Persona;
+                                    $cedulaagregada = '0';
                                     date_default_timezone_set('America/Bogota');
                                     $ip = $_SERVER['REMOTE_ADDR'];
                                     $fechaHoraActual = date('Y-m-d H:i:s');
@@ -22019,7 +22019,7 @@ class ControllerConsultante extends Controller
                         $usuarioActual = Auth::user();
                         $nombre = $usuarioActual->name;
                         $rol = $usuarioActual->rol;
-                        $cedulaagregada = $request->Cedula_Persona;
+                        $cedulaagregada = '0';
                         date_default_timezone_set('America/Bogota');
                         $ip = $_SERVER['REMOTE_ADDR'];
                         $fechaHoraActual = date('Y-m-d H:i:s');
