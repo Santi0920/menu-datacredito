@@ -16176,6 +16176,7 @@ class ControllerConsultante extends Controller
             $nomina = $registro['NOMINA'];
             $entidad = $registro['ENTIDAD'];
             $dependencia = $registro['DEPENDENCIA'];
+            $nomdependencia = $registro['NOMDEPENDENCIA'];
             $direccion = $registro['DIRECCION'];
             $fijo = $registro['FIJO'];
             $pcuota = $registro['PCUOTA'];
@@ -19250,11 +19251,11 @@ class ControllerConsultante extends Controller
                                     ]);
 
                                     $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
-                                        $NOMINA,
-                                        $NOMBRENOMINA,
-                                        $NODEPENDENCIA,
-                                        $DEPENDENCIA,
-                                        $ENTIDAD
+                                        $nomina,
+                                        $nomNomina,
+                                        $dependencia,
+                                        $nomdependencia,
+                                        $entidad
                                     ]);
                                     $foundMatchingPagare = true;
                                 }
@@ -22036,11 +22037,11 @@ class ControllerConsultante extends Controller
                         ]);
 
                         $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
-                            $NOMINA,
-                            $NOMBRENOMINA,
-                            $NODEPENDENCIA,
-                            $DEPENDENCIA,
-                            $ENTIDAD
+                            $nomina,
+                            $nomNomina ,
+                            $dependencia,
+                            $nomdependencia,
+                            $entidad
                         ]);
                         $foundMatchingPagare = true;
                     }
