@@ -16176,7 +16176,6 @@ class ControllerConsultante extends Controller
             $nomina = $registro['NOMINA'];
             $entidad = $registro['ENTIDAD'];
             $dependencia = $registro['DEPENDENCIA'];
-            $nomdependencia = $registro['NOMDEPENDENCIA'];
             $direccion = $registro['DIRECCION'];
             $fijo = $registro['FIJO'];
             $pcuota = $registro['PCUOTA'];
@@ -19250,11 +19249,10 @@ class ControllerConsultante extends Controller
                                         $ip
                                     ]);
 
-                                    $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
+                                    $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?)", [
                                         $nomina,
                                         $nomNomina,
                                         $dependencia,
-                                        $nomdependencia,
                                         $entidad
                                     ]);
                                     $foundMatchingPagare = true;
@@ -22036,11 +22034,10 @@ class ControllerConsultante extends Controller
                             $ip
                         ]);
 
-                        $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?, ?)", [
+                        $insertNomiDepe = DB::insert("INSERT INTO s400_plano (CODNOMINA, NOMBRENOMINA, CODDEPENDENCIA, CODENTIDAD) VALUES (?, ?, ?, ?)", [
                             $nomina,
-                            $nomNomina ,
+                            $nomNomina,
                             $dependencia,
-                            $nomdependencia,
                             $entidad
                         ]);
                         $foundMatchingPagare = true;
