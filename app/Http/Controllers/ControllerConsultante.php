@@ -16303,897 +16303,897 @@ class ControllerConsultante extends Controller
                                     //VALIDO SI EXISTE EN LA BD DE DATACREDITO
                                     $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
 
-                                        $persona = $existingPerson[0];
+                                    $persona = $existingPerson[0];
 
-                                        //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
-                                        if ($persona->Score >= 650) {
+                                    //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
+                                    if ($persona->Score >= 650) {
 
-                                            //FECHA MES ACTUAL
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                        //FECHA MES ACTUAL
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
 
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                                //DIA DE REPORTE DE LA NOMINA
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            //DIA DE REPORTE DE LA NOMINA
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
 
-                                                //se asigna la fecha de reporte de manera automatica
-                                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            //se asigna la fecha de reporte de manera automatica
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
 
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
 
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
 
-                                                $tasa = $tasa / 100;
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
 
-                                                $capital = floatval($capital);
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
 
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
+                                            $tasa = $tasa / 100;
 
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
+                                            $capital = floatval($capital);
 
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
 
-                                                // Calcular el último día del mes siguiente a la fecha del crédito
-                                                $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
 
-                                                // Calcular el último día del mes de la primera cuota
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            // Calcular el último día del mes siguiente a la fecha del crédito
+                                            $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                            // Calcular el último día del mes de la primera cuota
+                                            $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                            // Comparar si son iguales
+                                            //resultado
+                                            $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+
+                                            // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                            // Implementar la lógica de la fórmula de Excel
+                                            $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                            // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                            $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                            // Comprobar si todas las condiciones relevantes son verdaderas
+                                            $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+                                            // Primera condición externa
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado2 = false;
+                                            } else {
+                                                // Condición interna
                                                 $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
 
-                                                // Comparar si son iguales
-                                                //resultado
-                                                $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+                                                $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
 
-                                                // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-
-                                                // Implementar la lógica de la fórmula de Excel
-                                                $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                                // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                                $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
-
-                                                // Comprobar si todas las condiciones relevantes son verdaderas
-                                                $resultado1 = $condicion1 && $condicion3 ? true : false;
-
-                                                // Primera condición externa
-                                                if ($fechadelCredito->gt($fechaReporte)) {
+                                                if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                                    $resultado2 = true;
+                                                } else {
                                                     $resultado2 = false;
-                                                } else {
-                                                    // Condición interna
-                                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                                    $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
-
-                                                    $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
-
-                                                    if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                                        $resultado2 = true;
-                                                    } else {
-                                                        $resultado2 = false;
-                                                    }
                                                 }
-
-
-                                                // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                                $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                                // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                                $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                                // Resultado basado en las condiciones
-                                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                                // Calcular el último día del mes de B14
-                                                $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                                // Calcular el último día del mes anterior a E15
-                                                $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                                // Verificar las condiciones
-                                                $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                                $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                                $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                // Evaluar si todas las condiciones son verdaderas
-                                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                                // Primer nivel de comprobación
-                                                if ($fechadelCredito->gt($fechaReporte)) {
-                                                    $resultado5 = false;
-                                                } else {
-                                                    // Segundo nivel de comprobación
-                                                    $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                                    $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                                    $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                                    $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                    $resultado5 = $condicionA && $condicionB ? true : false;
-                                                }
-                                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                    $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '1';
-                                                    $AutorizacionGerente = '0';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                    //else si las condiciones no se cumplen pero es mes actual
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                }
-                                                //cierra mes actual
                                             }
 
-                                            //FECHA MES SIGUIENTE
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                //DIA REPORTE DE LA S400 PLANO
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                            // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                            $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
 
-                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                    // Ajustar al último día del mes actual
-                                                    $fechaReporteActual->endOfMonth();
-                                                }
+                                            // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                            $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
 
-                                                $fechaReporte = $fechaReporteActual->copy();
+                                            // Resultado basado en las condiciones
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
 
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                $formateada = $fechaReporte->format('d/m/Y');
-                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                            // Calcular el último día del mes de B14
+                                            $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
 
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
+                                            // Calcular el último día del mes anterior a E15
+                                            $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
 
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
+                                            // Verificar las condiciones
+                                            $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                            $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                                $tasa = $tasa / 100;
+                                            // Evaluar si todas las condiciones son verdaderas
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
 
-                                                $capital = floatval($capital);
 
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
+                                            // Primer nivel de comprobación
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado5 = false;
+                                            } else {
+                                                // Segundo nivel de comprobación
+                                                $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                                $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
 
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
+                                                $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                                $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
 
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
-
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
+                                            }
+                                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
                                                 $NoAgencia = $registro['AGENCIA'];
-                                                if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                                    $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '1';
-                                                    $AutorizacionGerente = '0';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
 
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-
-                                                    //else de MES ANTERIOR
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                 }
-                                                //FIN DE MES ANTERIOR
-                                            }
-
-                                            //FECHA ENTREMES
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                //DIA REPORTE
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                                if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                                    $fechaReporteActual->addMonth();
+                                                //else si las condiciones no se cumplen pero es mes actual
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                                 }
-                                                $fechaReporte = $fechaReporteActual;
-
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                //fechaprimera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                                //interesproporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
-
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
-
-                                                $tasa = $tasa / 100;
-
-                                                $capital = floatval($capital);
-
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
-
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
-
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
                                                 $NoAgencia = $registro['AGENCIA'];
-
-                                                $result = $fechadelCredito > $fechaReporte;
-
-
-                                                $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                                    ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                                        $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-
-                                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                                //CUARTO CONDICIONAL
-                                                $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                                //QUINTO
-                                                $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
-
-
-                                                //SEXTO
-                                                $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-                                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                    $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '1';
-                                                    $AutorizacionGerente = '0';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                    //else de las condiciones
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                 }
-
-                                                //FIN DE MES entre mes
                                             }
-                                            //else if si score es < 650
-                                        }else if ($persona->Score < 650) {
-                                            //FECHA MES ACTUAL
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            //cierra mes actual
+                                        }
 
-                                                //DIA DE REPORTE DE LA NOMINA
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                        //FECHA MES SIGUIENTE
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                                //se asigna la fecha de reporte de manera automatica
-                                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-
-
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
-
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
-
-                                                $tasa = $tasa / 100;
-
-                                                $capital = floatval($capital);
-
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
-
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
-
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                // Calcular el último día del mes siguiente a la fecha del crédito
-                                                $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
-
-                                                // Calcular el último día del mes de la primera cuota
-                                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-
-                                                // Comparar si son iguales
-                                                //resultado
-                                                $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
-
-                                                // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-
-                                                // Implementar la lógica de la fórmula de Excel
-                                                $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                                // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                                $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
-
-                                                // Comprobar si todas las condiciones relevantes son verdaderas
-                                                $resultado1 = $condicion1 && $condicion3 ? true : false;
-
-                                                // Primera condición externa
-                                                if ($fechadelCredito->gt($fechaReporte)) {
-                                                    $resultado2 = false;
-                                                } else {
-                                                    // Condición interna
-                                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                                    $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
-
-                                                    $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
-
-                                                    if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                                        $resultado2 = true;
-                                                    } else {
-                                                        $resultado2 = false;
-                                                    }
-                                                }
-
-
-                                                // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                                $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                                // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                                $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                                // Resultado basado en las condiciones
-                                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                                // Calcular el último día del mes de B14
-                                                $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                                // Calcular el último día del mes anterior a E15
-                                                $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                                // Verificar las condiciones
-                                                $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                                $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                                $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                // Evaluar si todas las condiciones son verdaderas
-                                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                                // Primer nivel de comprobación
-                                                if ($fechadelCredito->gt($fechaReporte)) {
-                                                    $resultado5 = false;
-                                                } else {
-                                                    // Segundo nivel de comprobación
-                                                    $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                                    $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                                    $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                                    $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                    $resultado5 = $condicionA && $condicionB ? true : false;
-                                                }
-                                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                    $razon = 'Rechazado por score bajo < 650.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                    //else si las condiciones no se cumplen pero es mes actual
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                }
-                                                //cierra mes actual
+                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                // Ajustar al último día del mes actual
+                                                $fechaReporteActual->endOfMonth();
                                             }
 
-                                            //FECHA MES SIGUIENTE
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                //DIA REPORTE DE LA S400 PLANO
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                            $fechaReporte = $fechaReporteActual->copy();
 
-                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                    // Ajustar al último día del mes actual
-                                                    $fechaReporteActual->endOfMonth();
-                                                }
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                                $fechaReporte = $fechaReporteActual->copy();
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
 
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                $formateada = $fechaReporte->format('d/m/Y');
-                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
 
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
+                                            $tasa = $tasa / 100;
 
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
+                                            $capital = floatval($capital);
 
-                                                $tasa = $tasa / 100;
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
 
-                                                $capital = floatval($capital);
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
 
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
+                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
-
+                                            $NoAgencia = $registro['AGENCIA'];
+                                            if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
                                                 $NoAgencia = $registro['AGENCIA'];
-                                                if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                                    $razon = 'Rechazado por score bajo < 650.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
 
-                                                    //else de MES ANTERIOR
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                 }
-                                                //FIN DE MES ANTERIOR
-                                            }
 
-                                            //FECHA ENTREMES
-                                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                //DIA REPORTE
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                                if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                                    $fechaReporteActual->addMonth();
+                                                //else de MES ANTERIOR
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                                 }
-                                                $fechaReporte = $fechaReporteActual;
-
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                //fechaprimera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                                //interesproporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
-
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
-
-                                                $tasa = $tasa / 100;
-
-                                                $capital = floatval($capital);
-
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
-
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
-
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
                                                 $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //FIN DE MES ANTERIOR
+                                        }
 
-                                                $result = $fechadelCredito > $fechaReporte;
+                                        //FECHA ENTREMES
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                                $fechaReporteActual->addMonth();
+                                            }
+                                            $fechaReporte = $fechaReporteActual;
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fechaprimera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interesproporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
 
-                                                $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                                    ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                                        $fechaReporte->diffInDays($fechadelCredito) <= 30);
+                                            $NoAgencia = $registro['AGENCIA'];
+
+                                            $result = $fechadelCredito > $fechaReporte;
 
 
-                                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                                //CUARTO CONDICIONAL
-                                                $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                                //QUINTO
-                                                $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                            $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                                ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
 
-                                                //SEXTO
-                                                $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+                                            $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
 
-                                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                    $razon = 'Rechazado por score bajo < 650.';
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
-                                                } else {
-                                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                        Carbon::setLocale('es');
-                                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                    }
-                                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                    $existedatacredito = null;
-                                                    $existecreditoexistente = 1;
-                                                    //aquii
-                                                    $aprobado = '0';
-                                                    $AutorizacionGerente = '1';
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                    $id_persona = $persona->ID;
-                                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                        $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                        $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                        $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                        $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                        $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                    }
+                                            //CUARTO CONDICIONAL
+                                            $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                            //QUINTO
+                                            $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                            //SEXTO
+                                            $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
                                                 //else de las condiciones
-                                                }
-                                            //FIN DE MES entre mes
                                             }
-                                    //cierre de llave si el score es < 650
+
+                                            //FIN DE MES entre mes
+                                        }
+                                        //else if si score es < 650
+                                    } else if ($persona->Score < 650) {
+                                        //FECHA MES ACTUAL
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA DE REPORTE DE LA NOMINA
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+
+                                            //se asigna la fecha de reporte de manera automatica
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            // Calcular el último día del mes siguiente a la fecha del crédito
+                                            $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                            // Calcular el último día del mes de la primera cuota
+                                            $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                            // Comparar si son iguales
+                                            //resultado
+                                            $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+
+                                            // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                            // Implementar la lógica de la fórmula de Excel
+                                            $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                            // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                            $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                            // Comprobar si todas las condiciones relevantes son verdaderas
+                                            $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+                                            // Primera condición externa
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado2 = false;
+                                            } else {
+                                                // Condición interna
+                                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
+
+                                                $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
+
+                                                if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                                    $resultado2 = true;
+                                                } else {
+                                                    $resultado2 = false;
+                                                }
+                                            }
+
+
+                                            // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                            $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
+
+                                            // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                            $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
+
+                                            // Resultado basado en las condiciones
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
+
+
+                                            // Calcular el último día del mes de B14
+                                            $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
+
+                                            // Calcular el último día del mes anterior a E15
+                                            $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
+
+                                            // Verificar las condiciones
+                                            $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                            $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                            // Evaluar si todas las condiciones son verdaderas
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
+
+
+                                            // Primer nivel de comprobación
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado5 = false;
+                                            } else {
+                                                // Segundo nivel de comprobación
+                                                $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                                $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
+
+                                                $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                                $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
+                                            }
+                                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else si las condiciones no se cumplen pero es mes actual
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //cierra mes actual
+                                        }
+
+                                        //FECHA MES SIGUIENTE
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+
+                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                // Ajustar al último día del mes actual
+                                                $fechaReporteActual->endOfMonth();
+                                            }
+
+                                            $fechaReporte = $fechaReporteActual->copy();
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+
+                                            $NoAgencia = $registro['AGENCIA'];
+                                            if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+
+                                                //else de MES ANTERIOR
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //FIN DE MES ANTERIOR
+                                        }
+
+                                        //FECHA ENTREMES
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                                $fechaReporteActual->addMonth();
+                                            }
+                                            $fechaReporte = $fechaReporteActual;
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fechaprimera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interesproporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+
+                                            $NoAgencia = $registro['AGENCIA'];
+
+                                            $result = $fechadelCredito > $fechaReporte;
+
+
+                                            $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                                ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+
+                                            $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+
+                                            //CUARTO CONDICIONAL
+                                            $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                            //QUINTO
+                                            $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                            //SEXTO
+                                            $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 1;
+                                                //aquii
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else de las condiciones
+                                            }
+                                            //FIN DE MES entre mes
+                                        }
+                                        //cierre de llave si el score es < 650
                                     }
                                 }
                             }
@@ -17309,7 +17309,1035 @@ class ControllerConsultante extends Controller
                                     //VALIDO SI EXISTE EN LA BD DE DATACREDITO
                                     $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
 
+                                    $persona = $existingPerson[0];
+
+                                    //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
+                                    if ($persona->Score >= 650) {
+
+                                        //FECHA MES ACTUAL
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA DE REPORTE DE LA NOMINA
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+
+                                            //se asigna la fecha de reporte de manera automatica
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            // Calcular el último día del mes siguiente a la fecha del crédito
+                                            $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                            // Calcular el último día del mes de la primera cuota
+                                            $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                            // Comparar si son iguales
+                                            //resultado
+                                            $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+
+                                            // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                            // Implementar la lógica de la fórmula de Excel
+                                            $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                            // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                            $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                            // Comprobar si todas las condiciones relevantes son verdaderas
+                                            $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+                                            // Primera condición externa
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado2 = false;
+                                            } else {
+                                                // Condición interna
+                                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
+
+                                                $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
+
+                                                if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                                    $resultado2 = true;
+                                                } else {
+                                                    $resultado2 = false;
+                                                }
+                                            }
+
+
+                                            // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                            $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
+
+                                            // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                            $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
+
+                                            // Resultado basado en las condiciones
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
+
+
+                                            // Calcular el último día del mes de B14
+                                            $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
+
+                                            // Calcular el último día del mes anterior a E15
+                                            $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
+
+                                            // Verificar las condiciones
+                                            $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                            $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                            // Evaluar si todas las condiciones son verdaderas
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
+
+
+                                            // Primer nivel de comprobación
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado5 = false;
+                                            } else {
+                                                // Segundo nivel de comprobación
+                                                $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                                $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
+
+                                                $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                                $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
+                                            }
+                                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else si las condiciones no se cumplen pero es mes actual
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //cierra mes actual
+                                        }
+
+                                        //FECHA MES SIGUIENTE
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+
+                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                // Ajustar al último día del mes actual
+                                                $fechaReporteActual->endOfMonth();
+                                            }
+
+                                            $fechaReporte = $fechaReporteActual->copy();
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+
+                                            $NoAgencia = $registro['AGENCIA'];
+                                            if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+
+                                                //else de MES ANTERIOR
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //FIN DE MES ANTERIOR
+                                        }
+
+                                        //FECHA ENTREMES
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                                $fechaReporteActual->addMonth();
+                                            }
+                                            $fechaReporte = $fechaReporteActual;
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fechaprimera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interesproporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+
+                                            $NoAgencia = $registro['AGENCIA'];
+
+                                            $result = $fechadelCredito > $fechaReporte;
+
+
+                                            $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                                ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+
+                                            $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+
+                                            //CUARTO CONDICIONAL
+                                            $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                            //QUINTO
+                                            $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                            //SEXTO
+                                            $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '1';
+                                                $AutorizacionGerente = '0';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else de las condiciones
+                                            }
+
+                                            //FIN DE MES entre mes
+                                        }
+                                        //else if si score es < 650
+                                    } else if ($persona->Score < 650) {
+                                        //FECHA MES ACTUAL
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA DE REPORTE DE LA NOMINA
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+
+                                            //se asigna la fecha de reporte de manera automatica
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            // Calcular el último día del mes siguiente a la fecha del crédito
+                                            $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                            // Calcular el último día del mes de la primera cuota
+                                            $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                            // Comparar si son iguales
+                                            //resultado
+                                            $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+
+                                            // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                            $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                            // Implementar la lógica de la fórmula de Excel
+                                            $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                            // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                            $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                            // Comprobar si todas las condiciones relevantes son verdaderas
+                                            $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+                                            // Primera condición externa
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado2 = false;
+                                            } else {
+                                                // Condición interna
+                                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
+
+                                                $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
+
+                                                if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                                    $resultado2 = true;
+                                                } else {
+                                                    $resultado2 = false;
+                                                }
+                                            }
+
+
+                                            // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                            $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
+
+                                            // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                            $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
+
+                                            // Resultado basado en las condiciones
+                                            $resultado3 = ($condicion3 || $condicion4) ? true : false;
+
+
+                                            // Calcular el último día del mes de B14
+                                            $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
+
+                                            // Calcular el último día del mes anterior a E15
+                                            $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
+
+                                            // Verificar las condiciones
+                                            $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                            $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                            // Evaluar si todas las condiciones son verdaderas
+                                            $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
+
+
+                                            // Primer nivel de comprobación
+                                            if ($fechadelCredito->gt($fechaReporte)) {
+                                                $resultado5 = false;
+                                            } else {
+                                                // Segundo nivel de comprobación
+                                                $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                                $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
+
+                                                $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                                $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                                $resultado5 = $condicionA && $condicionB ? true : false;
+                                            }
+                                            if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else si las condiciones no se cumplen pero es mes actual
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //cierra mes actual
+                                        }
+
+                                        //FECHA MES SIGUIENTE
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+
+                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                // Ajustar al último día del mes actual
+                                                $fechaReporteActual->endOfMonth();
+                                            }
+
+                                            $fechaReporte = $fechaReporteActual->copy();
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+
+                                            $NoAgencia = $registro['AGENCIA'];
+                                            if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+
+                                                //else de MES ANTERIOR
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            }
+                                            //FIN DE MES ANTERIOR
+                                        }
+
+                                        //FECHA ENTREMES
+                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                            //DIA REPORTE
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                            if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                                $fechaReporteActual->addMonth();
+                                            }
+                                            $fechaReporte = $fechaReporteActual;
+
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                            //fechaprimera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                            //interesproporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
+
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
+
+                                            $tasa = $tasa / 100;
+
+                                            $capital = floatval($capital);
+
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
+
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
+
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+
+                                            $NoAgencia = $registro['AGENCIA'];
+
+                                            $result = $fechadelCredito > $fechaReporte;
+
+
+                                            $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                                ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                                    $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+
+                                            $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+
+                                            //CUARTO CONDICIONAL
+                                            $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                            //QUINTO
+                                            $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                            //SEXTO
+                                            $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                            if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                                $razon = 'Rechazado por score bajo < 650.';
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                            } else {
+                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                                    Carbon::setLocale('es');
+                                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                                }
+                                                $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                                $existedatacredito = null;
+                                                $existecreditoexistente = 2;
+                                                //aquii
+                                                $aprobado = '0';
+                                                $AutorizacionGerente = '1';
+                                                $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                                $id_persona = $persona->ID;
+                                                if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                                    $coordinacion = 'Coordinacion 1';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                                    $coordinacion = 'Coordinacion 2';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                                    $coordinacion = 'Coordinacion 3';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                                    $coordinacion = 'Coordinacion 4';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                                    $coordinacion = 'Coordinacion 5';
+                                                    $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                }
+                                                //else de las condiciones
+                                            }
+                                            //FIN DE MES entre mes
+                                        }
+                                        //cierre de llave si el score es < 650
+                                    }
+                                }
+                            }
+                        }
+
+
+                        // Obtener la fecha actual
+                        $fechaActual = Carbon::now();
+
+                        $fechaDatacredito = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$existePersona[0]->ID]);
+
+                        if (!empty($fechaDatacredito)) {
+                            $fechaInsercion = Carbon::parse($fechaDatacredito[0]->FechaInsercion);
+
+                            $diferencia = $fechaActual->diffInDays($fechaInsercion);
+                        } else {
+                            $diferencia = 0;
+                        }
+
+                        if (!empty($fechaDatacredito)) {
+                            if ($pagare->ExisteDatacredito == 3 && $diferencia <= 180) {
+                                //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
+                                $codigoAnio = substr($pcuota, 0, 1);
+                                $anio = substr($pcuota, 1, 2);
+                                $mes = substr($pcuota, 3, 2);
+                                $dia = substr($pcuota, 5, 2);
+
+                                $codigoAnio2 = substr($ucuota, 0, 1);
+                                $anio2 = substr($ucuota, 1, 2);
+                                $mes2 = substr($ucuota, 3, 2);
+                                $dia2 = substr($ucuota, 5, 2);
+
+                                $anioReal = 2000 + (int) $anio;
+
+                                $anioReal2 = 2000 + (int) $anio2;
+                                $meses = [
+                                    '01' => 'Enero',
+                                    '02' => 'Febrero',
+                                    '03' => 'Marzo',
+                                    '04' => 'Abril',
+                                    '05' => 'Mayo',
+                                    '06' => 'Junio',
+                                    '07' => 'Julio',
+                                    '08' => 'Agosto',
+                                    '09' => 'Septiembre',
+                                    '10' => 'Octubre',
+                                    '11' => 'Noviembre',
+                                    '12' => 'Diciembre'
+                                ];
+                                $nombreMes = $meses[$mes];
+                                $nombreMes2 = $meses[$mes2];
+                                //FECHAS CON FORMATO TEXTO
+                                $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
+
+                                $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
+
+                                $attempts = 0;
+                                $maxAttempts = 3; // INTENTOS MÁXIMOS
+                                $retryDelay = 500; // Milisegundos
+
+                                $estadoEdad = null;
+                                $deudatotalAPI = null;
+                                $url = env('URL_SERVER_API');
+                                do {
+                                    try {
+                                        $response = Http::get($url . 'fechan/' . $cuenta);
+                                        $data = $response->json();
+
+                                        $response2 = Http::get($url . 'deudatotal/' . $cuenta);
+                                        $data2 = $response2->json();
+
+                                        $response3 = Http::get($url . 'deudaespecial/' . $cuenta);
+                                        $data3 = $response3->json();
+
+
+                                        $estadoEdad = $data['status'];
+                                        $deudatotalAPI = $data2['deudatotal'];
+
+                                        // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
+                                        break;
+                                    } catch (\Exception $e) {
+                                        $attempts++;
+                                        usleep($retryDelay * 1000);
+                                    }
+                                } while ($attempts < $maxAttempts);
+                                if ($data3['creditoespecial']['ESPECIAL'] === null) {
+                                    $especialapi = 0;
+                                } else {
+                                    $especialapi = $data3['creditoespecial']['ESPECIAL'];
+                                }
+                                $especial = $especialapi + $capital;
+
+                                //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA
+                                $deudatotal = $deudatotalAPI + $registro['CAPITAL'];
+                                if ($estadoEdad == 200 && $deudatotal >= 20000000) {
+                                    $edad = 1;
+                                    $deuda = 1;
+                                } else if ($estadoEdad == 200 && $deudatotal >= 50000000) {
+                                    $edad = 1;
+                                    $deuda = 2;
+                                } else if ($estadoEdad == 200) {
+                                    $edad = 1;
+                                    $deuda = null;
+                                } else if ($deudatotal >= 20000000) {
+                                    $edad = null;
+                                    $deuda = 1;
+                                } else if ($deudatotal >= 50000000) {
+                                    $edad = null;
+                                    $deuda = 2;
+                                } else {
+                                    $edad = null;
+                                    $deuda = null;
+                                }
+
+                                // dd($especial > 7000000, $cuenta, $capital, $especial.'>7000000');
+                                //VALIDO QUE SEA IGUAL A LO QUE ESTA EN LA BD DE DATACREDITO EN LA TABLA S400_PLANO
+                                $existeNominaDepen = DB::select('SELECT CODNOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$nomina, $dependencia, $entidad]);
+                                //SI LA NOMINA Y DEPENDENCIA EXISTE EN EL ARCHIVO PLANO
+                                if (!empty($existeNominaDepen)) {
+
+                                    $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$nomina, $dependencia, $entidad]);
+                                    if (($registro['LINEA'] == 90 || $registro['LINEA'] == 94 || $registro['LINEA'] == 99) && $especial > 7000000 || ($capital > 3000000 || $especial > 7000000)) {
+                                        //dd(($registro['LINEA'] == 90 || $registro['LINEA'] == 94 || $registro['LINEA'] == 99) && $especial > 7000000 || ($capital > 3000000 || $especial > 7000000));
+                                        //VALIDO SI EXISTE EN LA BD DE DATACREDITO
+                                        $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
+
                                         $persona = $existingPerson[0];
+
+                                        // Obtener la fecha actual
+                                        $fechaActual = Carbon::now();
+
+                                        // Suponiendo que $fechaDatacredito es el resultado de tu consulta a la base de datos
+                                        $fechaDatacredito = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$persona->ID]);
+                                        // Obtener la fecha de la primera fila devuelta por la consulta
+                                        $fechaInsercion = Carbon::parse($fechaDatacredito[0]->FechaInsercion);
+
+                                        // Calcular la diferencia en días
+                                        $diferencia = $fechaActual->diffInDays($fechaInsercion);
 
                                         //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
                                         if ($persona->Score >= 650) {
@@ -17439,7 +18467,7 @@ class ControllerConsultante extends Controller
                                                 if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                                     $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '1';
                                                     $AutorizacionGerente = '0';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17449,19 +18477,19 @@ class ControllerConsultante extends Controller
 
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                     //else si las condiciones no se cumplen pero es mes actual
                                                 } else {
@@ -17472,7 +18500,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17481,19 +18509,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 }
                                                 //cierra mes actual
@@ -17563,7 +18591,7 @@ class ControllerConsultante extends Controller
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
                                                     $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '1';
                                                     $AutorizacionGerente = '0';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17573,19 +18601,19 @@ class ControllerConsultante extends Controller
 
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
 
                                                     //else de MES ANTERIOR
@@ -17597,7 +18625,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17606,19 +18634,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 }
                                                 //FIN DE MES ANTERIOR
@@ -17698,7 +18726,7 @@ class ControllerConsultante extends Controller
                                                 if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                                     $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '1';
                                                     $AutorizacionGerente = '0';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17708,19 +18736,19 @@ class ControllerConsultante extends Controller
 
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 } else {
                                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -17730,7 +18758,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17739,19 +18767,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                     //else de las condiciones
                                                 }
@@ -17759,7 +18787,7 @@ class ControllerConsultante extends Controller
                                                 //FIN DE MES entre mes
                                             }
                                             //else if si score es < 650
-                                        }else if ($persona->Score < 650) {
+                                        } else if ($persona->Score < 650) {
                                             //FECHA MES ACTUAL
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
@@ -17884,7 +18912,7 @@ class ControllerConsultante extends Controller
                                                 if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                                     $razon = 'Rechazado por score bajo < 650.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17893,19 +18921,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                     //else si las condiciones no se cumplen pero es mes actual
                                                 } else {
@@ -17916,7 +18944,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -17925,19 +18953,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 }
                                                 //cierra mes actual
@@ -18006,7 +19034,7 @@ class ControllerConsultante extends Controller
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
                                                     $razon = 'Rechazado por score bajo < 650.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -18015,19 +19043,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
 
                                                     //else de MES ANTERIOR
@@ -18039,7 +19067,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -18048,19 +19076,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 }
                                                 //FIN DE MES ANTERIOR
@@ -18140,7 +19168,7 @@ class ControllerConsultante extends Controller
                                                 if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                                     $razon = 'Rechazado por score bajo < 650.';
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -18149,19 +19177,19 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
                                                 } else {
                                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
@@ -18171,8 +19199,7 @@ class ControllerConsultante extends Controller
                                                     }
                                                     $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
                                                     $existedatacredito = null;
-                                                    $existecreditoexistente = 2;
-                                                    //aquii
+                                                    $existecreditoexistente = 3;
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
@@ -18181,1055 +19208,28 @@ class ControllerConsultante extends Controller
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
                                                         $coordinacion = 'Coordinacion 2';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
                                                         $coordinacion = 'Coordinacion 3';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
                                                         $coordinacion = 'Coordinacion 4';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
                                                         $coordinacion = 'Coordinacion 5';
-                                                        $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                                        $this->pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
                                                     }
-                                                //else de las condiciones
+                                                    //else de las condiciones
                                                 }
-                                            //FIN DE MES entre mes
+                                                //FIN DE MES entre mes
                                             }
-                                    //cierre de llave si el score es < 650
-                                    }
-                                }
-                            }
-                        }
-
-
-                        // Obtener la fecha actual
-                        $fechaActual = Carbon::now();
-
-                        $fechaDatacredito = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$existePersona[0]->ID]);
-
-                        if (!empty($fechaDatacredito)) {
-                            $fechaInsercion = Carbon::parse($fechaDatacredito[0]->FechaInsercion);
-
-                            $diferencia = $fechaActual->diffInDays($fechaInsercion);
-                        } else {
-                            $diferencia = 0;
-                        }
-
-                        if(!empty($fechaDatacredito)){
-                            if ($pagare->ExisteDatacredito == 3 && $diferencia <= 180) {
-                                //PARA QUE LAS FECHAS SE CONVIERTAN EN TEXTO
-                                $codigoAnio = substr($pcuota, 0, 1);
-                                $anio = substr($pcuota, 1, 2);
-                                $mes = substr($pcuota, 3, 2);
-                                $dia = substr($pcuota, 5, 2);
-
-                                $codigoAnio2 = substr($ucuota, 0, 1);
-                                $anio2 = substr($ucuota, 1, 2);
-                                $mes2 = substr($ucuota, 3, 2);
-                                $dia2 = substr($ucuota, 5, 2);
-
-                                $anioReal = 2000 + (int) $anio;
-
-                                $anioReal2 = 2000 + (int) $anio2;
-                                $meses = [
-                                    '01' => 'Enero',
-                                    '02' => 'Febrero',
-                                    '03' => 'Marzo',
-                                    '04' => 'Abril',
-                                    '05' => 'Mayo',
-                                    '06' => 'Junio',
-                                    '07' => 'Julio',
-                                    '08' => 'Agosto',
-                                    '09' => 'Septiembre',
-                                    '10' => 'Octubre',
-                                    '11' => 'Noviembre',
-                                    '12' => 'Diciembre'
-                                ];
-                                $nombreMes = $meses[$mes];
-                                $nombreMes2 = $meses[$mes2];
-                                //FECHAS CON FORMATO TEXTO
-                                $fechaFormateada = $nombreMes . " " . (int) $dia . " del " . $anioReal;
-
-                                $fechaFormateada2 = $nombreMes2 . " " . (int) $dia2 . " del " . $anioReal2;
-
-                                $attempts = 0;
-                                $maxAttempts = 3; // INTENTOS MÁXIMOS
-                                $retryDelay = 500; // Milisegundos
-
-                                $estadoEdad = null;
-                                $deudatotalAPI = null;
-                                $url = env('URL_SERVER_API');
-                                do {
-                                    try {
-                                        $response = Http::get($url . 'fechan/' . $cuenta);
-                                        $data = $response->json();
-
-                                        $response2 = Http::get($url . 'deudatotal/' . $cuenta);
-                                        $data2 = $response2->json();
-
-                                        $response3 = Http::get($url . 'deudaespecial/' . $cuenta);
-                                        $data3 = $response3->json();
-
-
-                                        $estadoEdad = $data['status'];
-                                        $deudatotalAPI = $data2['deudatotal'];
-
-                                        // Si llegamos aquí, la solicitud fue exitosa, podemos salir del bucle.
-                                        break;
-                                    } catch (\Exception $e) {
-                                        $attempts++;
-                                        usleep($retryDelay * 1000);
-                                    }
-                                } while ($attempts < $maxAttempts);
-                                if ($data3['creditoespecial']['ESPECIAL'] === null) {
-                                    $especialapi = 0;
-                                } else {
-                                    $especialapi = $data3['creditoespecial']['ESPECIAL'];
-                                }
-                                $especial = $especialapi + $capital;
-
-                                //ES EL TOTAL DE LO DE ARRIBA MAS EL CAPITAL QUE APENAS SE SOLICITA
-                                $deudatotal = $deudatotalAPI + $registro['CAPITAL'];
-                                if ($estadoEdad == 200 && $deudatotal >= 20000000) {
-                                    $edad = 1;
-                                    $deuda = 1;
-                                } else if ($estadoEdad == 200 && $deudatotal >= 50000000) {
-                                    $edad = 1;
-                                    $deuda = 2;
-                                } else if ($estadoEdad == 200) {
-                                    $edad = 1;
-                                    $deuda = null;
-                                } else if ($deudatotal >= 20000000) {
-                                    $edad = null;
-                                    $deuda = 1;
-                                } else if ($deudatotal >= 50000000) {
-                                    $edad = null;
-                                    $deuda = 2;
-                                } else {
-                                    $edad = null;
-                                    $deuda = null;
-                                }
-
-                                // dd($especial > 7000000, $cuenta, $capital, $especial.'>7000000');
-                                //VALIDO QUE SEA IGUAL A LO QUE ESTA EN LA BD DE DATACREDITO EN LA TABLA S400_PLANO
-                                $existeNominaDepen = DB::select('SELECT CODNOMINA, CODDEPENDENCIA, NOMDEPENDENCIA, CODENTIDAD FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$nomina, $dependencia, $entidad]);
-                                //SI LA NOMINA Y DEPENDENCIA EXISTE EN EL ARCHIVO PLANO
-                                if (!empty($existeNominaDepen)) {
-
-                                    $existeDia = DB::select('SELECT DIAS, MESANTERIOR, ENTREMES FROM s400_plano WHERE CODNOMINA = ? AND CODDEPENDENCIA = ? AND CODENTIDAD = ?', [$nomina, $dependencia, $entidad]);
-                                    if (($registro['LINEA'] == 90 || $registro['LINEA'] == 94 || $registro['LINEA'] == 99) && $especial > 7000000 || ($capital > 3000000 || $especial > 7000000)) {
-                                        //dd(($registro['LINEA'] == 90 || $registro['LINEA'] == 94 || $registro['LINEA'] == 99) && $especial > 7000000 || ($capital > 3000000 || $especial > 7000000));
-                                        //VALIDO SI EXISTE EN LA BD DE DATACREDITO
-                                        $existingPerson = DB::select('SELECT Cedula, ID, Score FROM persona WHERE Cedula = ?', [$registro['CEDULA']]);
-
-                                            $persona = $existingPerson[0];
-
-                                            // Obtener la fecha actual
-                                            $fechaActual = Carbon::now();
-
-                                            // Suponiendo que $fechaDatacredito es el resultado de tu consulta a la base de datos
-                                            $fechaDatacredito = DB::select('SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?', [$persona->ID]);
-                                            // Obtener la fecha de la primera fila devuelta por la consulta
-                                            $fechaInsercion = Carbon::parse($fechaDatacredito[0]->FechaInsercion);
-
-                                            // Calcular la diferencia en días
-                                            $diferencia = $fechaActual->diffInDays($fechaInsercion);
-
-                                            //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
-                                            if ($persona->Score >= 650) {
-
-                                                //FECHA MES ACTUAL
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                    //DIA DE REPORTE DE LA NOMINA
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-
-                                                    //se asigna la fecha de reporte de manera automatica
-                                                    $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                                    $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-
-                                                    //fecha primera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-
-
-                                                    //interes proporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                    // Calcular el último día del mes siguiente a la fecha del crédito
-                                                    $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
-
-                                                    // Calcular el último día del mes de la primera cuota
-                                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-
-                                                    // Comparar si son iguales
-                                                    //resultado
-                                                    $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
-
-                                                    // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                                    $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-
-                                                    // Implementar la lógica de la fórmula de Excel
-                                                    $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                                    // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                                    $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
-
-                                                    // Comprobar si todas las condiciones relevantes son verdaderas
-                                                    $resultado1 = $condicion1 && $condicion3 ? true : false;
-
-                                                    // Primera condición externa
-                                                    if ($fechadelCredito->gt($fechaReporte)) {
-                                                        $resultado2 = false;
-                                                    } else {
-                                                        // Condición interna
-                                                        $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                                        $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
-
-                                                        $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
-
-                                                        if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                                            $resultado2 = true;
-                                                        } else {
-                                                            $resultado2 = false;
-                                                        }
-                                                    }
-
-
-                                                    // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                                    $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                                    // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                                    $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                                    // Resultado basado en las condiciones
-                                                    $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                                    // Calcular el último día del mes de B14
-                                                    $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                                    // Calcular el último día del mes anterior a E15
-                                                    $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                                    // Verificar las condiciones
-                                                    $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                                    $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                    // Evaluar si todas las condiciones son verdaderas
-                                                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                                    // Primer nivel de comprobación
-                                                    if ($fechadelCredito->gt($fechaReporte)) {
-                                                        $resultado5 = false;
-                                                    } else {
-                                                        // Segundo nivel de comprobación
-                                                        $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                                        $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                                        $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                                        $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                        $resultado5 = $condicionA && $condicionB ? true : false;
-                                                    }
-                                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                        $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '1';
-                                                        $AutorizacionGerente = '0';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                        //else si las condiciones no se cumplen pero es mes actual
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    }
-                                                    //cierra mes actual
-                                                }
-
-                                                //FECHA MES SIGUIENTE
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    //DIA REPORTE DE LA S400 PLANO
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                    $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
-
-                                                    // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                    if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                        // Ajustar al último día del mes actual
-                                                        $fechaReporteActual->endOfMonth();
-                                                    }
-
-                                                    $fechaReporte = $fechaReporteActual->copy();
-
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                    //fecha primera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                    Carbon::setLocale('es');
-                                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                    $formateada = $fechaReporte->format('d/m/Y');
-                                                    $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
-
-                                                    //interes proporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                    $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                    $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                    $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
-
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                                        $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '1';
-                                                        $AutorizacionGerente = '0';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-
-                                                        //else de MES ANTERIOR
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    }
-                                                    //FIN DE MES ANTERIOR
-                                                }
-
-                                                //FECHA ENTREMES
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                    //DIA REPORTE
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                    $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                                    if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                                        $fechaReporteActual->addMonth();
-                                                    }
-                                                    $fechaReporte = $fechaReporteActual;
-
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                    //fechaprimera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                    Carbon::setLocale('es');
-                                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                                    //interesproporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
-                                                    $NoAgencia = $registro['AGENCIA'];
-
-                                                    $result = $fechadelCredito > $fechaReporte;
-
-
-                                                    $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                                        ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                                            $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-
-                                                    $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                                    //CUARTO CONDICIONAL
-                                                    $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                                    //QUINTO
-                                                    $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
-
-
-                                                    //SEXTO
-                                                    $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-                                                    if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                        $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '1';
-                                                        $AutorizacionGerente = '0';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                        //else de las condiciones
-                                                    }
-
-                                                    //FIN DE MES entre mes
-                                                }
-                                                //else if si score es < 650
-                                            }else if ($persona->Score < 650) {
-                                                //FECHA MES ACTUAL
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                    //DIA DE REPORTE DE LA NOMINA
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-
-                                                    //se asigna la fecha de reporte de manera automatica
-                                                    $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                                    $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-
-                                                    //fecha primera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-
-
-                                                    //interes proporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                    // Calcular el último día del mes siguiente a la fecha del crédito
-                                                    $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
-
-                                                    // Calcular el último día del mes de la primera cuota
-                                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-
-                                                    // Comparar si son iguales
-                                                    //resultado
-                                                    $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
-
-                                                    // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                                    $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-
-                                                    // Implementar la lógica de la fórmula de Excel
-                                                    $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                                    // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                                    $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
-
-                                                    // Comprobar si todas las condiciones relevantes son verdaderas
-                                                    $resultado1 = $condicion1 && $condicion3 ? true : false;
-
-                                                    // Primera condición externa
-                                                    if ($fechadelCredito->gt($fechaReporte)) {
-                                                        $resultado2 = false;
-                                                    } else {
-                                                        // Condición interna
-                                                        $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                                        $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
-
-                                                        $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
-
-                                                        if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                                            $resultado2 = true;
-                                                        } else {
-                                                            $resultado2 = false;
-                                                        }
-                                                    }
-
-
-                                                    // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                                    $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                                    // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                                    $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                                    // Resultado basado en las condiciones
-                                                    $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                                    // Calcular el último día del mes de B14
-                                                    $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                                    // Calcular el último día del mes anterior a E15
-                                                    $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                                    // Verificar las condiciones
-                                                    $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                                    $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                    // Evaluar si todas las condiciones son verdaderas
-                                                    $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                                    // Primer nivel de comprobación
-                                                    if ($fechadelCredito->gt($fechaReporte)) {
-                                                        $resultado5 = false;
-                                                    } else {
-                                                        // Segundo nivel de comprobación
-                                                        $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                                        $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                                        $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                                        $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                                        $resultado5 = $condicionA && $condicionB ? true : false;
-                                                    }
-                                                    if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                        $razon = 'Rechazado por score bajo < 650.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                        //else si las condiciones no se cumplen pero es mes actual
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    }
-                                                    //cierra mes actual
-                                                }
-
-                                                //FECHA MES SIGUIENTE
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    //DIA REPORTE DE LA S400 PLANO
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                    $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
-
-                                                    // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                    if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                        // Ajustar al último día del mes actual
-                                                        $fechaReporteActual->endOfMonth();
-                                                    }
-
-                                                    $fechaReporte = $fechaReporteActual->copy();
-
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                    //fecha primera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                    Carbon::setLocale('es');
-                                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                    $formateada = $fechaReporte->format('d/m/Y');
-                                                    $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
-
-                                                    //interes proporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                                    $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                    $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                                    $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
-
-                                                    $NoAgencia = $registro['AGENCIA'];
-                                                    if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                                        $razon = 'Rechazado por score bajo < 650.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-
-                                                        //else de MES ANTERIOR
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    }
-                                                    //FIN DE MES ANTERIOR
-                                                }
-
-                                                //FECHA ENTREMES
-                                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                    Carbon::setLocale('es');
-                                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                                    //DIA REPORTE
-                                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                    $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                                    if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                                        $fechaReporteActual->addMonth();
-                                                    }
-                                                    $fechaReporte = $fechaReporteActual;
-
-                                                    Carbon::setLocale('es');
-                                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                                    //fechaprimera cuota
-                                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                    Carbon::setLocale('es');
-                                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                                    //interesproporcional
-                                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                    $tasa = $registro['TASA'];
-                                                    $capital = $registro['CAPITAL'];
-
-                                                    $tasa = str_replace(',', '.', $tasa);
-                                                    $tasa = floatval($tasa);
-
-                                                    $tasa = $tasa / 100;
-
-                                                    $capital = floatval($capital);
-
-                                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                                    $c30 = $interval->days;
-
-                                                    $cuotaMensual = $capital * $tasa;
-                                                    $cuotaDiaria = $cuotaMensual / 30;
-                                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
-                                                    $NoAgencia = $registro['AGENCIA'];
-
-                                                    $result = $fechadelCredito > $fechaReporte;
-
-
-                                                    $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                                        ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                                            $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-
-                                                    $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                                    //CUARTO CONDICIONAL
-                                                    $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                                    //QUINTO
-                                                    $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
-
-
-                                                    //SEXTO
-                                                    $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-                                                    if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                                        $razon = 'Rechazado por score bajo < 650.';
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                    } else {
-                                                        if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                                            $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                                            Carbon::setLocale('es');
-                                                            $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                                        }
-                                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                                        $existedatacredito = null;
-                                                        $existecreditoexistente = 3;
-                                                        $aprobado = '0';
-                                                        $AutorizacionGerente = '1';
-                                                        $NoAgencia = $registro['AGENCIA'];
-                                                        $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                                        $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                                        $id_persona = $persona->ID;
-                                                        if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                                            $coordinacion = 'Coordinacion 1';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                                            $coordinacion = 'Coordinacion 2';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                                            $coordinacion = 'Coordinacion 3';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                                            $coordinacion = 'Coordinacion 4';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                                            $coordinacion = 'Coordinacion 5';
-                                                            $this->pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                                        }
-                                                        //else de las condiciones
-                                                    }
-                                                    //FIN DE MES entre mes
-                                                }
-                                        //cierre de llave si el score es < 650
+                                            //cierre de llave si el score es < 650
                                         }
                                     }
-                                }else{
+                                } else {
                                     $usuarioActual = Auth::user();
                                     $nombre = $usuarioActual->name;
                                     $rol = $usuarioActual->rol;
@@ -20443,62 +20443,62 @@ class ControllerConsultante extends Controller
 
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                //DIA REPORTE DE LA S400 PLANO
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            Carbon::setLocale('es');
+                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                            //DIA REPORTE DE LA S400 PLANO
+                                            $diaReporte = max(1, $existeDia[0]->DIAS);
+                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                    // Ajustar al último día del mes actual
-                                                    $fechaReporteActual->endOfMonth();
-                                                }
+                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                // Ajustar al último día del mes actual
+                                                $fechaReporteActual->endOfMonth();
+                                            }
 
-                                                $fechaReporte = $fechaReporteActual->copy();
+                                            $fechaReporte = $fechaReporteActual->copy();
 
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                            Carbon::setLocale('es');
+                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                $formateada = $fechaReporte->format('d/m/Y');
-                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                            //fecha primera cuota
+                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                            Carbon::setLocale('es');
+                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                            $formateada = $fechaReporte->format('d/m/Y');
+                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
+                                            //interes proporcional
+                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                            $tasa = $registro['TASA'];
+                                            $capital = $registro['CAPITAL'];
 
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
+                                            $tasa = str_replace(',', '.', $tasa);
+                                            $tasa = floatval($tasa);
 
-                                                $tasa = $tasa / 100;
+                                            $tasa = $tasa / 100;
 
-                                                $capital = floatval($capital);
+                                            $capital = floatval($capital);
 
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
+                                            $interval = $fechadelCredito->diff($endOfMonth);
+                                            $c30 = $interval->days;
 
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
+                                            $cuotaMensual = $capital * $tasa;
+                                            $cuotaDiaria = $cuotaMensual / 30;
+                                            $interesProporcional = $cuotaDiaria * $c30;
 
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -20694,8 +20694,8 @@ class ControllerConsultante extends Controller
                                             //FIN DE MES entre mes
                                         }
                                     }
-                                //else si esta vencido el datacredito
-                                }else{
+                                    //else si esta vencido el datacredito
+                                } else {
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
@@ -20878,62 +20878,62 @@ class ControllerConsultante extends Controller
 
                                     //FECHA MES SIGUIENTE
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                                $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                Carbon::setLocale('es');
-                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                                //DIA REPORTE DE LA S400 PLANO
-                                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                        //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                        $fechadelCredito = Carbon::now('America/Bogota');
+                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                        Carbon::setLocale('es');
+                                        $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                        //DIA REPORTE DE LA S400 PLANO
+                                        $diaReporte = max(1, $existeDia[0]->DIAS);
+                                        $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                    // Ajustar al último día del mes actual
-                                                    $fechaReporteActual->endOfMonth();
-                                                }
+                                        // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                        if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                            // Ajustar al último día del mes actual
+                                            $fechaReporteActual->endOfMonth();
+                                        }
 
-                                                $fechaReporte = $fechaReporteActual->copy();
+                                        $fechaReporte = $fechaReporteActual->copy();
 
-                                                Carbon::setLocale('es');
-                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                        Carbon::setLocale('es');
+                                        $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                                //fecha primera cuota
-                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                                Carbon::setLocale('es');
-                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                                $formateada = $fechaReporte->format('d/m/Y');
-                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                        //fecha primera cuota
+                                        $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                        Carbon::setLocale('es');
+                                        $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                        $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                        $formateada = $fechaReporte->format('d/m/Y');
+                                        $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                                //interes proporcional
-                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                                $tasa = $registro['TASA'];
-                                                $capital = $registro['CAPITAL'];
+                                        //interes proporcional
+                                        $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                        $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                        $tasa = $registro['TASA'];
+                                        $capital = $registro['CAPITAL'];
 
-                                                $tasa = str_replace(',', '.', $tasa);
-                                                $tasa = floatval($tasa);
+                                        $tasa = str_replace(',', '.', $tasa);
+                                        $tasa = floatval($tasa);
 
-                                                $tasa = $tasa / 100;
+                                        $tasa = $tasa / 100;
 
-                                                $capital = floatval($capital);
+                                        $capital = floatval($capital);
 
-                                                $interval = $fechadelCredito->diff($endOfMonth);
-                                                $c30 = $interval->days;
+                                        $interval = $fechadelCredito->diff($endOfMonth);
+                                        $c30 = $interval->days;
 
-                                                $cuotaMensual = $capital * $tasa;
-                                                $cuotaDiaria = $cuotaMensual / 30;
-                                                $interesProporcional = $cuotaDiaria * $c30;
+                                        $cuotaMensual = $capital * $tasa;
+                                        $cuotaDiaria = $cuotaMensual / 30;
+                                        $interesProporcional = $cuotaDiaria * $c30;
 
-                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                        $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                        $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                        $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                        $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
 
                                         $NoAgencia = $registro['AGENCIA'];
                                         if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -21134,452 +21134,11 @@ class ControllerConsultante extends Controller
 
 
                                 }
-                            //else si no existe en la bd de datacredito
+                                //else si no existe en la bd de datacredito
                             } else {
-                            //FECHA MES ACTUAL
-                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                Carbon::setLocale('es');
-                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                //DIA DE REPORTE DE LA NOMINA
-                                $diaReporte = max(1, $existeDia[0]->DIAS);
-
-                                //se asigna la fecha de reporte de manera automatica
-                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-                                Carbon::setLocale('es');
-                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-
-                                //fecha primera cuota
-                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-
-
-                                //interes proporcional
-                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                $tasa = $registro['TASA'];
-                                $capital = $registro['CAPITAL'];
-
-                                $tasa = str_replace(',', '.', $tasa);
-                                $tasa = floatval($tasa);
-
-                                $tasa = $tasa / 100;
-
-                                $capital = floatval($capital);
-
-                                $interval = $fechadelCredito->diff($endOfMonth);
-                                $c30 = $interval->days;
-
-                                $cuotaMensual = $capital * $tasa;
-                                $cuotaDiaria = $cuotaMensual / 30;
-                                $interesProporcional = $cuotaDiaria * $c30;
-
-                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                // Calcular el último día del mes siguiente a la fecha del crédito
-                                $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
-
-                                // Calcular el último día del mes de la primera cuota
-                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-
-                                // Comparar si son iguales
-                                //resultado
-                                $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
-
-                                // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
-                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
-
-                                // Implementar la lógica de la fórmula de Excel
-                                $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
-                                // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
-                                $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
-
-                                // Comprobar si todas las condiciones relevantes son verdaderas
-                                $resultado1 = $condicion1 && $condicion3 ? true : false;
-
-                                // Primera condición externa
-                                if ($fechadelCredito->gt($fechaReporte)) {
-                                    $resultado2 = false;
-                                } else {
-                                    // Condición interna
-                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
-                                    $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
-
-                                    $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
-
-                                    if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
-                                        $resultado2 = true;
-                                    } else {
-                                        $resultado2 = false;
-                                    }
-                                }
-
-
-                                // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
-                                $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
-
-                                // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
-                                $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
-
-                                // Resultado basado en las condiciones
-                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
-
-
-                                // Calcular el último día del mes de B14
-                                $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
-
-                                // Calcular el último día del mes anterior a E15
-                                $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
-
-                                // Verificar las condiciones
-                                $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
-                                $condicion6 = $fechaReporte->gte($fechadelCredito);
-                                $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                // Evaluar si todas las condiciones son verdaderas
-                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
-
-
-                                // Primer nivel de comprobación
-                                if ($fechadelCredito->gt($fechaReporte)) {
-                                    $resultado5 = false;
-                                } else {
-                                    // Segundo nivel de comprobación
-                                    $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
-                                    $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
-
-                                    $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
-                                    $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
-
-                                    $resultado5 = $condicionA && $condicionB ? true : false;
-                                }
-                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                    $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
-                                    $existedatacredito = '1';
-                                    $aprobado = '1';
-                                    $AutorizacionGerente = '0';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-                                    //else si las condiciones no se cumplen pero es mes actual
-                                } else {
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
-                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
-                                        Carbon::setLocale('es');
-                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                    }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
-                                    $existedatacredito = '1';
-                                    $aprobado = '0';
-                                    $AutorizacionGerente = '1';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-                                }
-                                //cierra mes actual
-                            }
-
-                            //FECHA MES SIGUIENTE
-                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                    $fechadelCredito = Carbon::now('America/Bogota');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                    Carbon::setLocale('es');
-                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                    //DIA REPORTE DE LA S400 PLANO
-                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                    $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
-
-                                    // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                    if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                        // Ajustar al último día del mes actual
-                                        $fechaReporteActual->endOfMonth();
-                                    }
-
-                                    $fechaReporte = $fechaReporteActual->copy();
-
-                                    Carbon::setLocale('es');
-                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                    //fecha primera cuota
-                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                    Carbon::setLocale('es');
-                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                    $formateada = $fechaReporte->format('d/m/Y');
-                                    $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
-
-                                    //interes proporcional
-                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                    $tasa = $registro['TASA'];
-                                    $capital = $registro['CAPITAL'];
-
-                                    $tasa = str_replace(',', '.', $tasa);
-                                    $tasa = floatval($tasa);
-
-                                    $tasa = $tasa / 100;
-
-                                    $capital = floatval($capital);
-
-                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                    $c30 = $interval->days;
-
-                                    $cuotaMensual = $capital * $tasa;
-                                    $cuotaDiaria = $cuotaMensual / 30;
-                                    $interesProporcional = $cuotaDiaria * $c30;
-
-                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-                                    $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                    $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
-
-                                    $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
-
-                                $NoAgencia = $registro['AGENCIA'];
-                                if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                    $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
-                                    $existedatacredito = '1';
-                                    $aprobado = '1';
-                                    $AutorizacionGerente = '0';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-
-                                    //else de MES ANTERIOR
-                                } else {
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                        Carbon::setLocale('es');
-                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                    }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
-                                    $existedatacredito = '1';
-                                    $aprobado = '0';
-                                    $AutorizacionGerente = '1';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-                                }
-                                //FIN DE MES ANTERIOR
-                            }
-
-                            //FECHA ENTREMES
-                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
-                                Carbon::setLocale('es');
-                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-
-                                //DIA REPORTE
-                                $diaReporte = max(1, $existeDia[0]->DIAS);
-                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
-
-                                if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
-                                    $fechaReporteActual->addMonth();
-                                }
-                                $fechaReporte = $fechaReporteActual;
-
-                                Carbon::setLocale('es');
-                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
-
-                                //fechaprimera cuota
-                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                Carbon::setLocale('es');
-                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-
-                                //interesproporcional
-                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                $tasa = $registro['TASA'];
-                                $capital = $registro['CAPITAL'];
-
-                                $tasa = str_replace(',', '.', $tasa);
-                                $tasa = floatval($tasa);
-
-                                $tasa = $tasa / 100;
-
-                                $capital = floatval($capital);
-
-                                $interval = $fechadelCredito->diff($endOfMonth);
-                                $c30 = $interval->days;
-
-                                $cuotaMensual = $capital * $tasa;
-                                $cuotaDiaria = $cuotaMensual / 30;
-                                $interesProporcional = $cuotaDiaria * $c30;
-
-                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
-
-
-                                $NoAgencia = $registro['AGENCIA'];
-
-                                $result = $fechadelCredito > $fechaReporte;
-
-
-                                $result1 = $fechaReporte->lt($fechadelCredito) &&
-                                    ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
-                                        $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-
-                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
-
-                                //CUARTO CONDICIONAL
-                                $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
-
-                                //QUINTO
-                                $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
-
-
-                                //SEXTO
-                                $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
-
-                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                    $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
-                                    $existedatacredito = '1';
-                                    $aprobado = '1';
-                                    $AutorizacionGerente = '0';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-                                } else {
-                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
-                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
-                                        Carbon::setLocale('es');
-                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
-                                    }
-                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
-                                    $existedatacredito = '1';
-                                    $aprobado = '0';
-                                    $AutorizacionGerente = '1';
-                                    $NoAgencia = $registro['AGENCIA'];
-                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
-                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
-                                    $id_persona = '7323';
-                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
-                                        $coordinacion = 'Coordinacion 1';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
-                                        $coordinacion = 'Coordinacion 2';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
-                                        $coordinacion = 'Coordinacion 3';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
-                                        $coordinacion = 'Coordinacion 4';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
-                                        $coordinacion = 'Coordinacion 5';
-                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
-                                    }
-                                    //else de las condiciones
-                                }
-
-                                //FIN DE MES entre mes
-                            }
-
-
-
-                            }
-
-                            //cierre de si necesita consulta Se verifica si la línea es 90, 94 o 99 y si $especial es mayor que 7000000.Si la primera condición no se cumple, se verifica si $capital es mayor que 3000000 o si $especial es mayor que 7000000.
-                        } else {
-
                                 //FECHA MES ACTUAL
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
-                                    //FECHA DEL SISTEMA  PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                     $fechadelCredito = Carbon::now('America/Bogota');
                                     $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
                                     Carbon::setLocale('es');
@@ -21699,8 +21258,8 @@ class ControllerConsultante extends Controller
                                         $resultado5 = $condicionA && $condicionB ? true : false;
                                     }
                                     if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                        $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
-                                        $existedatacredito = null;
+                                        $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
+                                        $existedatacredito = '1';
                                         $aprobado = '1';
                                         $AutorizacionGerente = '0';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -21730,8 +21289,8 @@ class ControllerConsultante extends Controller
                                             Carbon::setLocale('es');
                                             $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                         }
-                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                        $existedatacredito = null;
+                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
+                                        $existedatacredito = '1';
                                         $aprobado = '0';
                                         $AutorizacionGerente = '1';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -21819,8 +21378,8 @@ class ControllerConsultante extends Controller
 
                                     $NoAgencia = $registro['AGENCIA'];
                                     if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
-                                        $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
-                                        $existedatacredito = null;
+                                        $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
+                                        $existedatacredito = '1';
                                         $aprobado = '1';
                                         $AutorizacionGerente = '0';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -21851,8 +21410,8 @@ class ControllerConsultante extends Controller
                                             Carbon::setLocale('es');
                                             $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                         }
-                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                        $existedatacredito = null;
+                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
+                                        $existedatacredito = '1';
                                         $aprobado = '0';
                                         $AutorizacionGerente = '1';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -21951,8 +21510,8 @@ class ControllerConsultante extends Controller
                                     $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
 
                                     if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
-                                        $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
-                                        $existedatacredito = null;
+                                        $razon = 'Aprobado por cumplir fechas pero NO existe en datacredito.';
+                                        $existedatacredito = '1';
                                         $aprobado = '1';
                                         $AutorizacionGerente = '0';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -21981,8 +21540,8 @@ class ControllerConsultante extends Controller
                                             Carbon::setLocale('es');
                                             $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
                                         }
-                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
-                                        $existedatacredito = null;
+                                        $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ". NO existe en datacredito.";
+                                        $existedatacredito = '1';
                                         $aprobado = '0';
                                         $AutorizacionGerente = '1';
                                         $NoAgencia = $registro['AGENCIA'];
@@ -22010,6 +21569,447 @@ class ControllerConsultante extends Controller
 
                                     //FIN DE MES entre mes
                                 }
+
+
+
+                            }
+
+                            //cierre de si necesita consulta Se verifica si la línea es 90, 94 o 99 y si $especial es mayor que 7000000.Si la primera condición no se cumple, se verifica si $capital es mayor que 3000000 o si $especial es mayor que 7000000.
+                        } else {
+
+                            //FECHA MES ACTUAL
+                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                //FECHA DEL SISTEMA  PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                $fechadelCredito = Carbon::now('America/Bogota');
+                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                Carbon::setLocale('es');
+                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                //DIA DE REPORTE DE LA NOMINA
+                                $diaReporte = max(1, $existeDia[0]->DIAS);
+
+                                //se asigna la fecha de reporte de manera automatica
+                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+                                Carbon::setLocale('es');
+                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+
+                                //fecha primera cuota
+                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+
+
+                                //interes proporcional
+                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                $tasa = $registro['TASA'];
+                                $capital = $registro['CAPITAL'];
+
+                                $tasa = str_replace(',', '.', $tasa);
+                                $tasa = floatval($tasa);
+
+                                $tasa = $tasa / 100;
+
+                                $capital = floatval($capital);
+
+                                $interval = $fechadelCredito->diff($endOfMonth);
+                                $c30 = $interval->days;
+
+                                $cuotaMensual = $capital * $tasa;
+                                $cuotaDiaria = $cuotaMensual / 30;
+                                $interesProporcional = $cuotaDiaria * $c30;
+
+                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                // Calcular el último día del mes siguiente a la fecha del crédito
+                                $ultimoDiaMesSiguienteCredito = $fechadelCredito->copy()->addMonth()->endOfMonth();
+
+                                // Calcular el último día del mes de la primera cuota
+                                $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                // Comparar si son iguales
+                                //resultado
+                                $resultado = $ultimoDiaMesSiguienteCredito->eq($ultimoDiaMesPrimeraCuota) ? true : false;
+
+                                // Ajustar $fechaReporte basado en si la fecha del crédito es mayor que $fechaReporteActual
+                                $fechaReporte = $fechadelCredito->gt($fechaReporteActual) ? $fechaReporteActual->addMonth() : $fechaReporteActual;
+
+                                // Implementar la lógica de la fórmula de Excel
+                                $condicion1 = $fechadelCredito->lt($fechaReporte); // B14 < E15
+                                // La condición 2 es redundante y siempre verdadera, por lo que la omitimos
+                                $condicion3 = $fechaReporte->diffInDays($fechadelCredito) <= 31; // DIAS(E15;B14)<=31
+
+                                // Comprobar si todas las condiciones relevantes son verdaderas
+                                $resultado1 = $condicion1 && $condicion3 ? true : false;
+
+                                // Primera condición externa
+                                if ($fechadelCredito->gt($fechaReporte)) {
+                                    $resultado2 = false;
+                                } else {
+                                    // Condición interna
+                                    $ultimoDiaMesPrimeraCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                    $ultimoDiaMesSiguienteReporte = $fechaReporte->copy()->addMonth()->endOfMonth();
+
+                                    $diasDiferencia = $fechaReporte->diffInDays($fechadelCredito, false);
+
+                                    if ($ultimoDiaMesPrimeraCuota->eq($ultimoDiaMesSiguienteReporte) && $diasDiferencia <= 31) {
+                                        $resultado2 = true;
+                                    } else {
+                                        $resultado2 = false;
+                                    }
+                                }
+
+
+                                // Condición 1: Comprobar si el último día del mes de la fecha en C14 es igual al último día del mes siguiente a E15
+                                $condicion3 = $fecha1eraCuota->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth());
+
+                                // Condición 2: La diferencia en días entre E15 y B14 es de 31 días o menos
+                                $condicion4 = $fechaReporte->diffInDays($fechadelCredito, false) <= 31;
+
+                                // Resultado basado en las condiciones
+                                $resultado3 = ($condicion3 || $condicion4) ? true : false;
+
+
+                                // Calcular el último día del mes de B14
+                                $ultimoDiaMesB14 = $fechadelCredito->copy()->endOfMonth();
+
+                                // Calcular el último día del mes anterior a E15
+                                $ultimoDiaMesAnteriorE15 = $fechaReporte->copy()->subMonth()->endOfMonth();
+
+                                // Verificar las condiciones
+                                $condicion5 = $ultimoDiaMesB14->eq($ultimoDiaMesAnteriorE15);
+                                $condicion6 = $fechaReporte->gte($fechadelCredito);
+                                $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                // Evaluar si todas las condiciones son verdaderas
+                                $resultado4 = $condicion5 && $condicion6 && $condicion7 ? true : false;
+
+
+                                // Primer nivel de comprobación
+                                if ($fechadelCredito->gt($fechaReporte)) {
+                                    $resultado5 = false;
+                                } else {
+                                    // Segundo nivel de comprobación
+                                    $ultimoDiaMesC14 = $fecha1eraCuota->endOfMonth(); // Último día del mes para C14
+                                    $ultimoDiaMesSiguienteB14 = $fechadelCredito->copy()->addMonth()->endOfMonth(); // Último día del mes siguiente a B14
+
+                                    $condicionA = $ultimoDiaMesC14->eq($ultimoDiaMesSiguienteB14);
+                                    $condicionB = $fechaReporte->diffInDays($fechadelCredito) <= 31;
+
+                                    $resultado5 = $condicionA && $condicionB ? true : false;
+                                }
+                                if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                    $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
+                                    $existedatacredito = null;
+                                    $aprobado = '1';
+                                    $AutorizacionGerente = '0';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+                                    //else si las condiciones no se cumplen pero es mes actual
+                                } else {
+                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                        Carbon::setLocale('es');
+                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                    }
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                    $existedatacredito = null;
+                                    $aprobado = '0';
+                                    $AutorizacionGerente = '1';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+                                }
+                                //cierra mes actual
+                            }
+
+                            //FECHA MES SIGUIENTE
+                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                $fechadelCredito = Carbon::now('America/Bogota');
+                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                Carbon::setLocale('es');
+                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                //DIA REPORTE DE LA S400 PLANO
+                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+
+                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                    // Ajustar al último día del mes actual
+                                    $fechaReporteActual->endOfMonth();
+                                }
+
+                                $fechaReporte = $fechaReporteActual->copy();
+
+                                Carbon::setLocale('es');
+                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                //fecha primera cuota
+                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                Carbon::setLocale('es');
+                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                $formateada = $fechaReporte->format('d/m/Y');
+                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+
+                                //interes proporcional
+                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                $tasa = $registro['TASA'];
+                                $capital = $registro['CAPITAL'];
+
+                                $tasa = str_replace(',', '.', $tasa);
+                                $tasa = floatval($tasa);
+
+                                $tasa = $tasa / 100;
+
+                                $capital = floatval($capital);
+
+                                $interval = $fechadelCredito->diff($endOfMonth);
+                                $c30 = $interval->days;
+
+                                $cuotaMensual = $capital * $tasa;
+                                $cuotaDiaria = $cuotaMensual / 30;
+                                $interesProporcional = $cuotaDiaria * $c30;
+
+                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+
+                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+
+                                $NoAgencia = $registro['AGENCIA'];
+                                if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
+                                    $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
+                                    $existedatacredito = null;
+                                    $aprobado = '1';
+                                    $AutorizacionGerente = '0';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+
+                                    //else de MES ANTERIOR
+                                } else {
+                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                        Carbon::setLocale('es');
+                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                    }
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                    $existedatacredito = null;
+                                    $aprobado = '0';
+                                    $AutorizacionGerente = '1';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+                                }
+                                //FIN DE MES ANTERIOR
+                            }
+
+                            //FECHA ENTREMES
+                            if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                $fechadelCredito = Carbon::now('America/Bogota');
+                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+                                Carbon::setLocale('es');
+                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+
+                                //DIA REPORTE
+                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                $fechaReporteActual = Carbon::createFromFormat('Y/m/d', $fechadelCredito->format('Y') . '/' . $fechadelCredito->format('m') . '/' . $diaReporte);
+
+                                if ($fechadelCredito->format('m') != $fechaReporteActual->format('m')) {
+                                    $fechaReporteActual->addMonth();
+                                }
+                                $fechaReporte = $fechaReporteActual;
+
+                                Carbon::setLocale('es');
+                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+
+                                //fechaprimera cuota
+                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                Carbon::setLocale('es');
+                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+
+                                //interesproporcional
+                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                $tasa = $registro['TASA'];
+                                $capital = $registro['CAPITAL'];
+
+                                $tasa = str_replace(',', '.', $tasa);
+                                $tasa = floatval($tasa);
+
+                                $tasa = $tasa / 100;
+
+                                $capital = floatval($capital);
+
+                                $interval = $fechadelCredito->diff($endOfMonth);
+                                $c30 = $interval->days;
+
+                                $cuotaMensual = $capital * $tasa;
+                                $cuotaDiaria = $cuotaMensual / 30;
+                                $interesProporcional = $cuotaDiaria * $c30;
+
+                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+
+
+                                $NoAgencia = $registro['AGENCIA'];
+
+                                $result = $fechadelCredito > $fechaReporte;
+
+
+                                $result1 = $fechaReporte->lt($fechadelCredito) &&
+                                    ($fechaReporte->diffInMonths($fechaReporte, false) === 1 ||
+                                        $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+
+                                $result2 = $fechaReporte->gt($fechadelCredito) || ($fechaReporte->diffInDays($fechadelCredito) <= 30 && $fecha1eraCuota->diffInMonths($fechadelCredito) == 2);
+
+                                //CUARTO CONDICIONAL
+                                $resultado3 = $fechadelCredito->copy()->addMonth()->endOfMonth()->eq($fechaCarbon2->copy()->endOfMonth());
+
+                                //QUINTO
+                                $resultado4 = $fechadelCredito->lt($fechaReporte) && $fechaReporte->copy()->addMonth()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+
+                                //SEXTO
+                                $resultado5 = $fechadelCredito->gt($fechaReporte) ? false : ($fechaCarbon2->copy()->endOfMonth()->eq($fechaReporte->copy()->addMonth()->endOfMonth()) && $fechaReporte->diffInDays($fechadelCredito) <= 30);
+
+                                if (($result == true && $result1 == true && $result2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
+                                    $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
+                                    $existedatacredito = null;
+                                    $aprobado = '1';
+                                    $AutorizacionGerente = '0';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+                                } else {
+                                    if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                        $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                        Carbon::setLocale('es');
+                                        $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                    }
+                                    $razon = "Como la fecha de crédito fue " . $fechaStringCredito . " la primera cuota debe ser " . $fechadeStringCuotaEsperada . ".";
+                                    $existedatacredito = null;
+                                    $aprobado = '0';
+                                    $AutorizacionGerente = '1';
+                                    $NoAgencia = $registro['AGENCIA'];
+                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
+                                    $id_persona = '7323';
+                                    if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
+                                        $coordinacion = 'Coordinacion 1';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 33 || $NoAgencia == 39 || $NoAgencia == 46 || $NoAgencia == 70 || $NoAgencia == 77 || $NoAgencia == 78 || $NoAgencia == 80 || $NoAgencia == 88 || $NoAgencia == 92 || $NoAgencia == 98) {
+                                        $coordinacion = 'Coordinacion 2';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 32 || $NoAgencia == 42 || $NoAgencia == 47 || $NoAgencia == 81 || $NoAgencia == 82 || $NoAgencia == 83 || $NoAgencia == 85 || $NoAgencia == 90 || $NoAgencia == 94) {
+                                        $coordinacion = 'Coordinacion 3';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 44 || $NoAgencia == 45 || $NoAgencia == 48 || $NoAgencia == 49 || $NoAgencia == 74 || $NoAgencia == 75 || $NoAgencia == 84 || $NoAgencia == 89 || $NoAgencia == 91 || $NoAgencia == 95 || $NoAgencia == 97) {
+                                        $coordinacion = 'Coordinacion 4';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    } else if ($NoAgencia == 13 || $NoAgencia == 30 || $NoAgencia == 31 || $NoAgencia == 43 || $NoAgencia == 68 || $NoAgencia == 73 || $NoAgencia == 76 || $NoAgencia == 86) {
+                                        $coordinacion = 'Coordinacion 5';
+                                        $this->S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona);
+                                    }
+                                    //else de las condiciones
+                                }
+
+                                //FIN DE MES entre mes
+                            }
 
 
                         }
@@ -22213,13 +22213,13 @@ class ControllerConsultante extends Controller
 
             // Actualizar base de datos
             $actualizacion = DB::table("autorizaciones")
-            ->where('ID', $id_insertado)
-            ->update(['DocumentoSoporte' => $newFilename]);
+                ->where('ID', $id_insertado)
+                ->update(['DocumentoSoporte' => $newFilename]);
 
 
 
 
-            return back()->with("correcto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>".$id_insertado."</span> está en trámite.</span>");
+            return back()->with("correcto", "<span class='fs-4'>La autorización No. <span class='badge bg-primary fw-bold'>" . $id_insertado . "</span> está en trámite.</span>");
 
 
         }
@@ -22227,18 +22227,20 @@ class ControllerConsultante extends Controller
 
     }
 
-    public function actualizardetalle(Request $request, $id){
+    public function actualizardetalle(Request $request, $id)
+    {
 
         $update = DB::table('autorizaciones')
-        ->where('ID', $id)
-        ->update([
-            'Detalle' => $request->input('Detalle'),
-            'Estado' => 2
-        ]);
+            ->where('ID', $id)
+            ->update([
+                'Detalle' => $request->input('Detalle'),
+                'Estado' => 2
+            ]);
 
         return response()->json(['success' => 'Usuario actualizado correctamente']);
     }
-    private function S400pagare($fechaReporteString, $existedatacredito,$aprobado, $razon,$coordinacion, $AutorizacionGerente,$interesProporcionalCorrecto,$fechaStringCredito,$garantia,$agencia,$nombreAgencia,$cuenta,$cedula,$nombres,$idpagare,$registro,$capital,$ncuotas,$vcuotas,$tasaAPI,$nomina,$nomNomina,$direccion,$fijo,$fechaFormateada,$fechaFormateada2,$celular,$correo,$usuario, $id_persona){
+    private function S400pagare($fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $registro, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona)
+    {
         DB::table('pagare')->insert([
             'FechaReporte' => $fechaReporteString,
             'ExisteDatacredito' => $existedatacredito,
@@ -22275,9 +22277,9 @@ class ControllerConsultante extends Controller
     }
 
 
-    private function pagareactualizar($existecreditoexistente,$fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea,$NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona)
+    private function pagareactualizar($existecreditoexistente, $fechaReporteString, $existedatacredito, $aprobado, $razon, $coordinacion, $AutorizacionGerente, $interesProporcionalCorrecto, $fechaStringCredito, $garantia, $agencia, $nombreAgencia, $cuenta, $cedula, $nombres, $idpagare, $NoLinea, $NomLinea, $capital, $ncuotas, $vcuotas, $tasaAPI, $nomina, $nomNomina, $direccion, $fijo, $fechaFormateada, $fechaFormateada2, $celular, $correo, $usuario, $id_persona)
     {
-        $actualizar =DB::table('pagare')
+        $actualizar = DB::table('pagare')
             ->where('ID_Pagare', $idpagare)
             ->where('ExisteDatacredito', $existecreditoexistente)
             ->update([
