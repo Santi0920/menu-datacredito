@@ -14689,6 +14689,19 @@ class ControllerConsultante extends Controller
                                 $NoAgencia = $request->NoAgencia;
                                 $usuarioActual = Auth::user();
                                 $nombreGenerador = $usuarioActual->name;
+                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(1)->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                }
 
                                 //COORDINACION 1
                                 if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
@@ -14735,6 +14748,7 @@ class ControllerConsultante extends Controller
                                         $nombreGenerador,
                                         7323
                                     ]);
+                                    //aqui
                                     $message = "<span style='font-size: 20px'>¡EL PAGARÉ DE <strong>" . e($request->NombreCompleto) . "</strong> CON CUENTA <strong>" . e($request->CuentaCoop) . "</strong> FUE APROBADO!</span>";
                                 }
                                 //COORDINACION 2
