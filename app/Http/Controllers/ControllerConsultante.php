@@ -16093,6 +16093,27 @@ class ControllerConsultante extends Controller
     {
 
         $usuarioActual = Auth::user();
+        $nombre = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        $cedulaagregada = '0';
+        date_default_timezone_set('America/Bogota');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Recargolapaginadelospagarestepillamos', ?, ?, ?, ?)", [
+            null,
+            $nombre,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $cedulaagregada,
+            null,
+            $ip
+        ]);
+
+
+
+        $usuarioActual = Auth::user();
         $agenciaU = $usuarioActual->agenciau;
         $noagencia = DB::select("SELECT NumAgencia FROM agencias WHERE NameAgencia = ?", [$agenciaU]);
         $noagencia = $noagencia[0]->NumAgencia;
