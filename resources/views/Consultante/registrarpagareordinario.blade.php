@@ -185,9 +185,6 @@
                 <select class="form-control" name="Linea_Credito" id="input7" required>
                     <option value="">Seleccionar...</option>
                     <option value="60">60</option>
-                    <option value="90">90</option>
-                    <option value="94">94</option>
-                    <option value="99">99</option>
                 </select>
             </div>
 
@@ -1045,21 +1042,21 @@
                     $(buttonsHtml).prependTo('.dataTables_filter');
                     $('#btnT').on('click', function() {
                         var newAjaxSource =
-                        '{{ route('datatable.consultarpagareger') }}'; // Adjust the route as needed
+                            '{{ route('datatable.consultarpagareger') }}'; // Adjust the route as needed
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
                     $('#btnR').on('click', function() {
                         var newAjaxSource =
-                        '{{ route('datatable.rechazados') }}'; // Adjust the route as needed
+                            '{{ route('datatable.rechazados') }}'; // Adjust the route as needed
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
 
                     $('#btnA').on('click', function() {
                         var newAjaxSource =
-                        '{{ route('datatable.aprobados') }}'; // Adjust the route as needed
+                            '{{ route('datatable.aprobados') }}'; // Adjust the route as needed
 
                         $('#personas').DataTable().ajax.url(newAjaxSource).load();
                     });
