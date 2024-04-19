@@ -4028,7 +4028,7 @@ class ControllerConsultante extends Controller
                                     }
 
                                     $fechadelCredito = Carbon::now('America/Bogota');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                     // $fechadelCredito = Carbon::createFromFormat('Y/m/d', $anioCompleto . '/' . $mes3 . '/' . $dia3);
                                     Carbon::setLocale('es');
                                     $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -8078,7 +8078,7 @@ class ControllerConsultante extends Controller
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0) {
 
                                         $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                         // $fechadelCredito = Carbon::createFromFormat('Y/m/d', $anioCompleto . '/' . $mes3 . '/' . $dia3);
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -10360,7 +10360,7 @@ class ControllerConsultante extends Controller
                                     return back()->with('incorrecto3', 'La fecha ingresada no es válida. Por favor, verifica e intenta de nuevo.');
                                 }
                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                 // $fechadelCredito = Carbon::createFromFormat('Y/m/d', $anioCompleto . '/' . $mes3 . '/' . $dia3);
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
@@ -16348,7 +16348,7 @@ class ControllerConsultante extends Controller
 
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -16533,10 +16533,10 @@ class ControllerConsultante extends Controller
 
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             //DIA REPORTE DE LA S400 PLANO
                                             $diaReporte = max(1, $existeDia[0]->DIAS);
                                             $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -16657,7 +16657,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -16793,7 +16793,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -16976,10 +16976,10 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             //DIA REPORTE DE LA S400 PLANO
                                             $diaReporte = max(1, $existeDia[0]->DIAS);
                                             $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -17099,7 +17099,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -17354,7 +17354,7 @@ class ControllerConsultante extends Controller
 
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -17539,10 +17539,10 @@ class ControllerConsultante extends Controller
 
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             //DIA REPORTE DE LA S400 PLANO
                                             $diaReporte = max(1, $existeDia[0]->DIAS);
                                             $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -17663,7 +17663,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -17799,7 +17799,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -17982,10 +17982,10 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             //DIA REPORTE DE LA S400 PLANO
                                             $diaReporte = max(1, $existeDia[0]->DIAS);
                                             $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -18105,7 +18105,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -18382,7 +18382,7 @@ class ControllerConsultante extends Controller
 
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -18567,10 +18567,10 @@ class ControllerConsultante extends Controller
 
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 //DIA REPORTE DE LA S400 PLANO
                                                 $diaReporte = max(1, $existeDia[0]->DIAS);
                                                 $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -18691,7 +18691,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -18827,7 +18827,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -19010,10 +19010,10 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 //DIA REPORTE DE LA S400 PLANO
                                                 $diaReporte = max(1, $existeDia[0]->DIAS);
                                                 $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -19133,7 +19133,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -19436,7 +19436,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -19618,10 +19618,10 @@ class ControllerConsultante extends Controller
 
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 //DIA REPORTE DE LA S400 PLANO
                                                 $diaReporte = max(1, $existeDia[0]->DIAS);
                                                 $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -19739,7 +19739,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -19872,7 +19872,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -20053,10 +20053,10 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 //DIA REPORTE DE LA S400 PLANO
                                                 $diaReporte = max(1, $existeDia[0]->DIAS);
                                                 $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -20174,7 +20174,7 @@ class ControllerConsultante extends Controller
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                                 Carbon::setLocale('es');
                                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -20307,7 +20307,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -20486,10 +20486,10 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             //DIA REPORTE DE LA S400 PLANO
                                             $diaReporte = max(1, $existeDia[0]->DIAS);
                                             $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -20607,7 +20607,7 @@ class ControllerConsultante extends Controller
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                             //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                             $fechadelCredito = Carbon::now('America/Bogota');
-                                            $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                             Carbon::setLocale('es');
                                             $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -20740,7 +20740,7 @@ class ControllerConsultante extends Controller
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -20921,10 +20921,10 @@ class ControllerConsultante extends Controller
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                         //DIA REPORTE DE LA S400 PLANO
                                         $diaReporte = max(1, $existeDia[0]->DIAS);
                                         $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -21042,7 +21042,7 @@ class ControllerConsultante extends Controller
                                     if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                         //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                         $fechadelCredito = Carbon::now('America/Bogota');
-                                        $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                         Carbon::setLocale('es');
                                         $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -21181,7 +21181,7 @@ class ControllerConsultante extends Controller
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                     //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                     $fechadelCredito = Carbon::now('America/Bogota');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                     Carbon::setLocale('es');
                                     $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -21362,10 +21362,10 @@ class ControllerConsultante extends Controller
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                     //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                     $fechadelCredito = Carbon::now('America/Bogota');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                     Carbon::setLocale('es');
                                     $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                     //DIA REPORTE DE LA S400 PLANO
                                     $diaReporte = max(1, $existeDia[0]->DIAS);
                                     $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -21483,7 +21483,7 @@ class ControllerConsultante extends Controller
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                     //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                     $fechadelCredito = Carbon::now('America/Bogota');
-                                    $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                     Carbon::setLocale('es');
                                     $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -21621,8 +21621,9 @@ class ControllerConsultante extends Controller
                             //FECHA MES ACTUAL
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                 //FECHA DEL SISTEMA  PARA ASIGNARLO A LOS NUEVOS REGISTROS
+
                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
@@ -21739,6 +21740,7 @@ class ControllerConsultante extends Controller
 
                                     $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
+                                dd($fechadelCredito, $fechaReporte, $fecha1eraCuota,$resultado,$resultado1,$resultado2,$resultado3,$resultado4,$resultado5);
                                 if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                     $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
                                     $existedatacredito = null;
@@ -21803,10 +21805,10 @@ class ControllerConsultante extends Controller
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                 //DIA REPORTE DE LA S400 PLANO
                                 $diaReporte = max(1, $existeDia[0]->DIAS);
                                 $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
@@ -21924,7 +21926,7 @@ class ControllerConsultante extends Controller
                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                 $fechadelCredito = Carbon::now('America/Bogota');
-                                $fechadelCreditoUtc = $fechadelCredito->setTimezone('UTC');
+
                                 Carbon::setLocale('es');
                                 $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
