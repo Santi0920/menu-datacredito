@@ -21740,7 +21740,7 @@ class ControllerConsultante extends Controller
 
                                     $resultado5 = $condicionA && $condicionB ? true : false;
                                 }
-                                dd($fechadelCredito, $fechaReporte, $fecha1eraCuota,$resultado,$resultado1,$resultado2,$resultado3,$resultado4,$resultado5);
+                                //dd($fechadelCredito, $fechaReporte, $fecha1eraCuota,$resultado,$resultado1,$resultado2,$resultado3,$resultado4,$resultado5);
                                 if (($resultado == true && $resultado1 == true && $resultado2 == true) || ($resultado3 == true && $resultado4 == true && $resultado5 == true)) {
                                     $razon = 'Aprobado por cumplir las fechas y ademas el credito no requiere consulta porque el capital es <3m y especial <7m.';
                                     $existedatacredito = null;
