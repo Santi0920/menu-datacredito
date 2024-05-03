@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -28,8 +28,8 @@
           title: "{{session('alert')}}",
           text: '',
           confirmButtonColor: '#005E56'
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -59,8 +59,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -94,7 +94,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -102,26 +102,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="mb-4 p-3 table-responsive">
         <table id="personas" class="hover table table-striped shadow-lg mt-2 table-bordered table-hover col-md-4">
@@ -154,15 +154,15 @@
 
 
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
 
 
@@ -177,8 +177,8 @@
 <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
 <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
         <script>
-          
- 
+
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.coordinadorcredito') }}",
@@ -204,27 +204,7 @@
       }
     },
     {data: 'Apellidos'},
-    {
-  data: 'Score',
-  render: function(data, type, row) {
-    var html = ''; // Variable para almacenar el HTML generado
-    
-    if (data === 'S/E') {
-      html += data+'<span class="fw-bold" style="color: #1565c0;"><br></span>';
-    } else if (650 <= data && data <= 699) {
-      html += data+'<span class="fw-bold" style="color: #1565c0;"><br>NORMAL</span>';
-    } else if (700 <= data && data <= 749) {
-      html += data+'<span class="fw-bold" style="color: #1565c0;"><br>BUENO</span>';
-    } else if (data >= 750) {
-      html += data+'<span class="fw-bold" style="color: #1565c0;"><br>EXCELENTE</span>';
-    } else {
-      html += data+'<span class="fw-bold" style="color: #1565c0;"><br>BAJO</span>';
-    }
-
-
-    return html;
-  }
-},
+    {data: 'Score'},
     {data: 'Reporte'},
     {data: 'CuentaAsociada'},
     {
@@ -296,7 +276,7 @@ if(row.FechaInsercion == null){
       }
     },
     {data: 'ConsecutivoA'},
-    {  
+    {
   data: 'NombreAnalisis',
   render: function(data, type, row) {
     if (type === 'display') {
@@ -410,8 +390,8 @@ if(row.FechaInsercion == null){
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="">
                 <p class="formato-ayuda">Formato: <strong>Sintesis-(Cédula).pdf</strong></p>
-              </div> 
-              
+              </div>
+
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="">
@@ -460,8 +440,8 @@ if(row.FechaInsercion == null){
     }
   },
   responsive: "true",
-        dom: 'Bfrtilp',       
-        buttons:[ 
+        dom: 'Bfrtilp',
+        buttons:[
 			{
 				extend:    'excelHtml5',
 				text:      '<i class="fas fa-file-excel"></i> ',
@@ -474,7 +454,7 @@ if(row.FechaInsercion == null){
 				titleAttr: 'Imprimir',
 				className: 'btn btn-info btn-lg'
 			}
-      ]	
+      ]
 });
 
 function showUnauthorizedMessage() {
@@ -484,7 +464,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 
@@ -494,12 +474,12 @@ function showUnauthorizedMessage() {
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
-          
+
           function toggleFields() {
     var consecutivoInput = document.getElementById('consecutivoa');
     var archivoInput = document.getElementById('archivo22');
@@ -515,17 +495,16 @@ function showUnauthorizedMessage() {
   }
 
         </script>
-        
 
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+
