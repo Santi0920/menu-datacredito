@@ -31,7 +31,11 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 10),
+    // 'lifetime' => env('SESSION_LIFETIME', 10),
+    // Esto establece la sesión en 1 año (60 minutos * 24 horas * 365 días)
+    // 'lifetime' => env('SESSION_LIFETIME', 525600),
+    // Esto establece la sesión para que nunca expire
+    'lifetime' => env('SESSION_LIFETIME', null),
 
     'expire_on_close' => true,
 

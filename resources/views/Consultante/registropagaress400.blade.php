@@ -113,7 +113,7 @@
                         <th scope="col">SCORE</th>
                         <th scope="col" style="width: 1px">APROBADO</th>
                         <th scope="col">AUTORIZACIÓN</th>
-                        <th scope="col">ESTADO</th>
+                        {{-- <th scope="col">ESTADO</th> --}}
                         <th scope="col">1 CUOTA</th>
                         <th scope="col">FECHA ESCANEO</th>
                         <th scope="col">GARANTIA</th>
@@ -1118,16 +1118,16 @@
 
                     }
                 },
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        var Fecha1Cuota =
-                            `<div class="text-center mt-2 "><a onclick="return estado()" href="" type="submit" class="fw-bold btn btn-small btn-danger fs-5" name="eliminar" value="ok">ANULADO</a></div>
-                            <div class="text-center mt-2 "><a onclick="return estado()" href="" type="submit" class="fw-bold btn btn-small btn-warning fs-5 w-100" name="eliminar" value="ok">DESISTIÓ</a></div>`
-                            .replace(':id', row.ID);
-                        return Fecha1Cuota;
-                    }
-                },
+                // {
+                //     data: null,
+                //     render: function(data, type, row) {
+                //         var Fecha1Cuota =
+                //             `<div class="text-center mt-2 "><a onclick="return estado()" href="" type="submit" class="fw-bold btn btn-small btn-danger fs-5" name="eliminar" value="ok">ANULADO</a></div>
+                //             <div class="text-center mt-2 "><a onclick="return estado()" href="" type="submit" class="fw-bold btn btn-small btn-warning fs-5 w-100" name="eliminar" value="ok">DESISTIÓ</a></div>`
+                //             .replace(':id', row.ID);
+                //         return Fecha1Cuota;
+                //     }
+                // },
                 {
                     data: null,
                     render: function(data, type, row) {
