@@ -470,7 +470,7 @@ Route::post('proveedortah/crear', [ControllerNuevoEmpleado::class, 'createprov']
 
 
 Route::post('proveedortah/modificar{id}', [ControllerNuevoEmpleado::class, 'updateprov'])
-    ->name('crudnuevo.update');
+    ->name('crudnuevoprov.update');
 
 Route::get('consultarprovtah', function () {
     return view('NuevosEmpleados/consultarproveedor');
