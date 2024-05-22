@@ -413,12 +413,12 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             $nuevo_nombre3 = $nuevo_archivo3;
         }
 
-        if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
-            return back()->withErrors([
-                'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
-            ]);
+        // if (isset($nombre_archivo3) && isset($nuevo_nombre3) && $nombre_archivo3 !== $nuevo_nombre3) {
+        //     return back()->withErrors([
+        //         'message' => 'El archivo subido contiene un nombre diferente al archivo AUTORIZACIÓN ' . $nombre_archivo3 . ' actual (' . $nombre_archivo3 . ').\n'
+        //     ]);
 
-        }
+        // }
 
         $archivo4 = DB::select("SELECT NombreContrato FROM documentoa WHERE ID_Persona = ?", [$id]);
         $nombre_archivo4 = $archivo4[0]->NombreContrato;
