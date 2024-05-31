@@ -13,9 +13,9 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 5000
-          
-    
-      });  
+
+
+      });
   </script>
   </div>
 @endif
@@ -30,8 +30,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000,
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -41,21 +41,21 @@
 <!-- NAV DE LISTA-->
 <a name="arriba"></a>
 <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-  <div class="container-fluid menu-bar" style="" > 
+  <div class="container-fluid menu-bar" style="" >
     <!-- Coopserp.com-->
-    
-    <!-- Botón que aparece al reducir pantalla--> 
+
+    <!-- Botón que aparece al reducir pantalla-->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
     </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <!-- Foto Coopserp--> 
+  <!-- Foto Coopserp-->
   <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2" style="filter: drop-shadow(0 2px 0.8px white);">
-    
-  
-  <ul class="navbar-nav me-auto mb-lg-0 header">        
-      <!-- DataCreditos-->       
+
+
+  <ul class="navbar-nav me-auto mb-lg-0 header">
+      <!-- DataCreditos-->
       <div class="dropdown nav-item">
         <li class="nav-link active text-white dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
           Datacrédito
@@ -63,7 +63,7 @@
         <ul class="dropdown-menu" style="background-color: #005E56;">
         <ul class="dropend">
         <li class="dropdown-toggle text-white text-start" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Solicitud Datacrédito</a></li>
-         
+
             <ul class="dropdown-menu" style="background-color: #005E56;">
               <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="gerenciaproveedor">Proveedores y Terceros</a></li>
               <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="consultarproveedorger">Consultar Proveedores y Terceros</a></li>
@@ -72,7 +72,7 @@
           <li class="text-white dropdown-divider"></li>
             <ul class="dropend">
               <li class="dropdown-toggle text-white text-start" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Registros Pagare</a></li>
-               
+
                   <ul class="dropdown-menu" style="background-color: #005E56;">
                       <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="gerpagare"><i class="fa-solid fa-qrcode"></i> Escanear QR</a></li>
                       <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold " style="font-size: 25px" href="gerpagarefiltrar"><img src="img/pdf.png" style="height: 2.0rem;"> Generar PDF</a></li>
@@ -108,7 +108,7 @@
                           </script>
                         </select>
                       </div>
-                      
+
                       <div class="mb-3">
                         <label for="select-month" class="form-label" style="font-size: 20px; font-weight: bold">Mes:</label>
                         <select class="form-select" id="select-month" name="month" required>
@@ -125,6 +125,7 @@
                             <option value="Octubre">Octubre</option>
                             <option value="Noviembre">Noviembre</option>
                             <option value="Diciembre">Diciembre</option>
+                            <option value="General">General</option>
                         </select>
                     </div>
                     <script>
@@ -216,11 +217,11 @@
 
     </ul>
 
-    
+
     <span class="mx-4 text-white" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-1" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
     <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-light"><b style="font-size: 25px;">Cerrar Sesión</b></button></a>
 
-   
+
   </div>
 </div>
 </nav>
@@ -236,123 +237,123 @@
 
 <div class="container-fluid row p-4">
     <form action="{{ route('crudger.createpagare')}}" class="col m-3" method="POST" enctype= "multipart/form-data">
-    @csrf 
+    @csrf
     <h2 class="p-2 text-secondary text-center"><b>Escanear Pagaré</b></h2>
-    
+
 
     <div class="mb-3 w-100" title="Este campo es obligatorio" id="input1">
         <label for="input1" class="form-label fw-semibold">ID <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control" id="nombre" autocomplete="off" autofocus required>
-        
+
       </div>
 
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input2" class="form-label fw-semibold">NÚMERO DE AGENCIA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="NoAgencia" id="input2" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input3" class="form-label fw-semibold">CUENTA ASOCIADO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="CuentaCoop" id="input3" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input4" class="form-label fw-semibold">CÉDULA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="Cedula_Persona" id="input4" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input5" class="form-label fw-semibold">NOMBRE COMPLETO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="NombreCompleto" id="input5" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input6" class="form-label fw-semibold">ID PAGARE <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="ID_Pagare" id="input6" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input7" class="form-label fw-semibold">LÍNEA CRÉDITO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Linea_Credito" id="input7" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input8" class="form-label fw-semibold">CAPITAL <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Capital" id="input8" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input9" class="form-label fw-semibold">NÚMERO DE CUOTAS <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="NoCuotas" id="input9" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input10" class="form-label fw-semibold">VALOR CUOTA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="ValorCuota" id="input10" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input11" class="form-label fw-semibold">TASA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Tasa" id="input11" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input12" class="form-label fw-semibold">FECHA CRÉDITO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="FechaCredito" id="input12" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input13" class="form-label fw-semibold">NOMINA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Nomina" id="input13" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input14" class="form-label fw-semibold">DIRECCIÓN <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Direccion" id="input14" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input15" class="form-label fw-semibold">TELÉFONO FIJO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="TelFijo" id="input15" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input16" class="form-label fw-semibold">FECHA 1ra CUOTA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Fecha1Cuota" id="input16" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input17" class="form-label fw-semibold">Fecha ULTIMA CUOTA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="FechaUltimaCuota" id="input17" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input18" class="form-label fw-semibold">CELULAR <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="number" class="form-control " name="Celular" id="input18" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input19" class="form-label fw-semibold">CORREO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Correo" id="input19" autocomplete="off" required>
-        
+
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
@@ -360,13 +361,13 @@
         <input type="text" class="form-control " name="GeneradorPagare" id="input20" autocomplete="off" required>
       </div>
 
-      
+
 
       <div>
           <!-- onclick="return confirmar()" -->
           <button onclick="return confirmar()" id="agregar" type="submit" class="btn btn-primary" name="btnregistrar" style="background-color: #005E56;">Registrar</button>
       </div>
-    
+
     </form>
 
     <script>
@@ -379,7 +380,7 @@
 
         </script>
 
-        
+
     {{-- FECHA --}}
     <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
       <div class="">
@@ -397,7 +398,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -405,26 +406,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div class="table-responsive">
     <table id="personas" class="hover table table-striped shadow-lg mt-4 table-bordered table-hover">
@@ -454,11 +455,11 @@
           <th scope="col">CELULAR</th>
           <th scope="col">CORREO</th>
           <th scope="col">GENERADOR PAGARE</th>
-          
-        </tr> 
-      </thead> 
+
+        </tr>
+      </thead>
       <tbody class="table-group-divider">
-        
+
       </tbody>
     </table>
 
@@ -469,7 +470,7 @@
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.consultarpagareger') }}",
@@ -509,8 +510,8 @@
         }else{
             var AprobadoButton = '<span class="text-secondary-emphasis" style="font-weight: bold; font-size: 30px">FA</span>';
         }
-    
-                 
+
+
   return AprobadoButton;
 
 }
@@ -523,9 +524,9 @@
     {
       data: null,
       render: function(data, type, row) {
-        var NoLC = '<strong>'+row.NoLC+'</strong>'; 
+        var NoLC = '<strong>'+row.NoLC+'</strong>';
         var Linea_Credito = row.Linea_Credito;
-        
+
 
         return NoLC+'-'+Linea_Credito;
       }
@@ -543,7 +544,7 @@
     {data: 'Celular'},
     {data: 'Correo'},
     {data: 'GeneradorPagare'},
-    
+
   ],
 
 
@@ -627,19 +628,19 @@
             var respuesta=confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
    <style>
     .custom-buttons {
@@ -664,9 +665,8 @@
     }
 
    </style>
-</div>    
+</div>
 
 
     @endsection
-    
- 
+

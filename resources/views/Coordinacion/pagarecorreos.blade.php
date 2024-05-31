@@ -233,7 +233,7 @@
         }else if(row.Aprobado == 0){
             var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">NO</span>';
         }else{
-            var AprobadoButton = '<span class="" style="font-weight: bold; font-size: 30px">PENDIENTE</span>';
+            var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">ANULADO</span>';
         }
     return AprobadoButton;
 
@@ -266,17 +266,23 @@
           }else if(row.Aprobado == 0){
             var RechazadoButton = '<div class="text-center"><a onclick="return eliminar2()" href="{{ route('crud.pagarecorreorecha', ':id') }}" type="submit" class="btn btn-small btn-outline-danger fs-4" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return RechazadoButton + aprobar;
+          }else{
+            var RechazadoButton = '<div class="text-center"><a onclick="" type="submit" class="btn btn-small btn-danger fs-4 disabled-link" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
+            return RechazadoButton;
           }
-        }else {
+        }else if(row.CorreoEnviado == 1)  {
           if(row.Aprobado == 1){
             var AprobadoButton = '<div class="text-center"><a onclick="return false;" title="CORREO YA FUE ENVIADO!" class="btn btn-small btn-outline-primary fs-4 disabled-link" name="eliminar" value="ok" disabled><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return AprobadoButton ;
           }else if(row.Aprobado == 0){
             var RechazadoButton = '<div class="text-center"><a onclick="" type="submit" class="btn btn-small btn-danger fs-4 disabled-link" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
             return RechazadoButton+ rechazar;
+          }else{
+            var RechazadoButton = '<div class="text-center"><a onclick="" type="submit" class="btn btn-small btn-danger fs-4 disabled-link" name="eliminar" value="ok"><i class="fa-solid fa-envelope"></i></a></div>'.replace(':id', row.ID);
+            return RechazadoButton;
           }
         }
-}
+    }
 },
 {    data: null,
       render: function(data, type, row) {

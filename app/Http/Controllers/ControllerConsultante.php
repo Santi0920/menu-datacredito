@@ -20277,6 +20277,8 @@ class ControllerConsultante extends Controller
                                                     $aprobado = '0';
                                                     $AutorizacionGerente = '1';
                                                     $NoAgencia = $registro['AGENCIA'];
+                                                    $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                    $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                                     $id_persona = $persona->ID;
                                                     if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                         $coordinacion = 'Coordinacion 1';
@@ -20461,6 +20463,8 @@ class ControllerConsultante extends Controller
                                                 $aprobado = '0';
                                                 $AutorizacionGerente = '1';
                                                 $NoAgencia = $registro['AGENCIA'];
+                                                $existeAgencia = DB::select('SELECT NameAgencia FROM agencias WHERE NumAgencia = ?', [$NoAgencia]);
+                                                $nombreAgencia = isset($existeAgencia[0]) ? $existeAgencia[0]->NameAgencia : null;
                                                 $id_persona = $persona->ID;
                                                 if ($NoAgencia == 34 || $NoAgencia == 35 || $NoAgencia == 36 || $NoAgencia == 37 || $NoAgencia == 38 || $NoAgencia == 40 || $NoAgencia == 41 || $NoAgencia == 87 || $NoAgencia == 93 || $NoAgencia == 96) {
                                                     $coordinacion = 'Coordinacion 1';
@@ -22338,5 +22342,43 @@ class ControllerConsultante extends Controller
             ]);
 
 
+    }
+
+
+
+    public function AnularPagare($id){
+
+
+        $usuarioActual = Auth::user();
+        $nombre = $usuarioActual->name;
+        $rol = $usuarioActual->rol;
+        $cedulaagregada = $id;
+        date_default_timezone_set('America/Bogota');
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $fechaHoraActual = date('Y-m-d H:i:s');
+        $agencia = $usuarioActual->agenciau;
+        $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'PAGARE ANULADO MANUALMENTE', ?, ?, ?, ?)", [
+            null,
+            $nombre,
+            $rol,
+            $agencia,
+            $fechaHoraActual,
+            $cedulaagregada,
+            null,
+            $ip
+        ]);
+
+        $consulta = DB::select("SELECT NombreCompleto FROM pagare WHERE ID = $id");
+        $nombre = $consulta[0]->NombreCompleto;
+
+
+
+
+        $sql = DB::update("UPDATE pagare SET Aprobado = ?, AutorizacionGerente = ? WHERE ID = $id", [
+            4,
+            0
+        ]);
+
+        return back()->with("correcto", "El Crédito de la persona ".$nombre." fue anulado correctamente.");
     }
 }

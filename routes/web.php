@@ -334,16 +334,9 @@ Route::middleware('auth.consultante')->group(function () {
     Route::get('director/prueba/datatable', [ControllerConsultante::class, 'datosPagare'])
         ->name('datatable.prueba2');
 
-    Route::get('solicitudes', function () {
-        return view('Consultante/solicitarautorizacion');
-    });
 
-    Route::get('solicitudes', [ControllerConsultante::class, 'data16']);
-    Route::get('solicitudes/datatable', [ControllerConsultante::class, 'solicitudes'])->name('data.solicitudes');
-
-    Route::post('solicitudes/crear', [ControllerConsultante::class, 'solicitarAutorizacion'])->name('solicitar.autorizacion');
-
-    Route::post('solicitudes/actualizar-{id}', [ControllerConsultante::class, 'actualizardetalle'])->name('update.autorizacion');
+    Route::get('registropagares/anular{id}', [ControllerConsultante::class, 'AnularPagare'])
+    ->name('director.anularcred');
 
 
 });

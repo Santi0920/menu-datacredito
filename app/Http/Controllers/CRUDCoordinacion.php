@@ -35,7 +35,7 @@ class CRUDCoordinacion extends Controller
         JOIN proveedor P ON E.ID_Persona = P.ID_Persona
         WHERE A.Activado = 1 && A.Tipo = 'Proveedor' && Enviado = 0  && A.Agencia = '$agenciaU'
         ORDER BY Nombre ASC
-    ");
+        ");
 
         return datatables()->of($user)->toJson();
     }
@@ -12230,6 +12230,7 @@ class CRUDCoordinacion extends Controller
         $fpdf->Ln();
 
 
+
         $sql = DB::select("SELECT FechaAccion FROM pagare");
 
 
@@ -12316,105 +12317,204 @@ class CRUDCoordinacion extends Controller
         if ($linea_credito == 0) {
             $columnaFecha = 'FechaAccion';
             foreach ($agenciaColumnaMapping as $agencyName => $agencyNo) {
-                $countApproved = DB::table('pagare')
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('Aprobado', 1)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->count();
+                if($mes == "General"){
 
-                $countRejected = DB::table('pagare')
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('Aprobado', 0)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->count();
+                        $countApproved = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 1)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->count();
 
-                $totalCapitalApproved2 = DB::table('pagare')
-                    ->where('Aprobado', 1)
-                    ->where('NoAgencia', $agencyNo)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->sum('Capital');
+                    $countRejected = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 0)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->count();
 
-                $totalCapitalRejected2 = DB::table('pagare')
-                    ->where('Aprobado', 0)
-                    ->where('NoAgencia', $agencyNo)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->sum('Capital');
+                    $totalCapitalApproved2 = DB::table('pagare')
+                        ->where('Aprobado', 1)
+                        ->where('NoAgencia', $agencyNo)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->sum('Capital');
+
+                    $totalCapitalRejected2 = DB::table('pagare')
+                        ->where('Aprobado', 0)
+                        ->where('NoAgencia', $agencyNo)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->sum('Capital');
 
 
 
-                $fpdf->SetFont('Helvetica', '', 17);
-                $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
-                $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
+                    $fpdf->SetFont('Helvetica', '', 17);
+                    $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
+                    $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
 
 
-                $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
-                $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
-                $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
-                $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
-                $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
-                $fpdf->Ln();
-                $totalApproved += $countApproved;
-                $totalCapitalApproved += $totalCapitalApproved2;
-                $totalRejected += $countRejected;
-                $totalCapitalRejected += $totalCapitalRejected2;
+                    $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
+                    $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
+                    $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
+                    $fpdf->Ln();
+                    $totalApproved += $countApproved;
+                    $totalCapitalApproved += $totalCapitalApproved2;
+                    $totalRejected += $countRejected;
+                    $totalCapitalRejected += $totalCapitalRejected2;
+
+
+
+                }else{
+
+                    $countApproved = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 1)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->count();
+
+                    $countRejected = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 0)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->count();
+
+                    $totalCapitalApproved2 = DB::table('pagare')
+                        ->where('Aprobado', 1)
+                        ->where('NoAgencia', $agencyNo)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->sum('Capital');
+
+                    $totalCapitalRejected2 = DB::table('pagare')
+                        ->where('Aprobado', 0)
+                        ->where('NoAgencia', $agencyNo)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->sum('Capital');
+
+
+
+                    $fpdf->SetFont('Helvetica', '', 17);
+                    $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
+                    $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
+
+
+                    $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
+                    $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
+                    $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
+                    $fpdf->Ln();
+                    $totalApproved += $countApproved;
+                    $totalCapitalApproved += $totalCapitalApproved2;
+                    $totalRejected += $countRejected;
+                    $totalCapitalRejected += $totalCapitalRejected2;
+                }
             }
         } else {
 
             $columnaFecha = 'FechaAccion';
             foreach ($agenciaColumnaMapping as $agencyName => $agencyNo) {
-                $countApproved = DB::table('pagare')
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('Aprobado', 1)
-                    ->where('NoLC', $linea_credito)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->count();
+                if($mes == "General"){
+                    $countApproved = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 1)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->count();
 
-                $countRejected = DB::table('pagare')
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('Aprobado', 0)
-                    ->where('NoLC', $linea_credito)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->count();
+                    $countRejected = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 0)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->count();
 
-                $totalCapitalApproved2 = DB::table('pagare')
-                    ->where('Aprobado', 1)
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('NoLC', $linea_credito)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->sum('Capital');
+                    $totalCapitalApproved2 = DB::table('pagare')
+                        ->where('Aprobado', 1)
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->sum('Capital');
 
-                $totalCapitalRejected2 = DB::table('pagare')
-                    ->where('Aprobado', 0)
-                    ->where('NoAgencia', $agencyNo)
-                    ->where('NoLC', $linea_credito)
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
-                    ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
-                    ->sum('Capital');
+                    $totalCapitalRejected2 = DB::table('pagare')
+                        ->where('Aprobado', 0)
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->sum('Capital');
 
 
 
-                $fpdf->SetFont('Helvetica', '', 17);
-                $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
-                $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
+                    $fpdf->SetFont('Helvetica', '', 17);
+                    $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
+                    $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
 
 
-                $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
-                $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
-                $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
-                $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
-                $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
-                $fpdf->Ln();
-                $totalApproved += $countApproved;
-                $totalCapitalApproved += $totalCapitalApproved2;
-                $totalRejected += $countRejected;
-                $totalCapitalRejected += $totalCapitalRejected2;
+                    $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
+                    $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
+                    $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
+                    $fpdf->Ln();
+                    $totalApproved += $countApproved;
+                    $totalCapitalApproved += $totalCapitalApproved2;
+                    $totalRejected += $countRejected;
+                    $totalCapitalRejected += $totalCapitalRejected2;
+
+
+                }else{
+                    $countApproved = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 1)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->count();
+
+                    $countRejected = DB::table('pagare')
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('Aprobado', 0)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->count();
+
+                    $totalCapitalApproved2 = DB::table('pagare')
+                        ->where('Aprobado', 1)
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->sum('Capital');
+
+                    $totalCapitalRejected2 = DB::table('pagare')
+                        ->where('Aprobado', 0)
+                        ->where('NoAgencia', $agencyNo)
+                        ->where('NoLC', $linea_credito)
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $año . '%'])
+                        ->whereRaw("{$columnaFecha} LIKE ?", ['%' . $mes . '%'])
+                        ->sum('Capital');
+
+
+
+                    $fpdf->SetFont('Helvetica', '', 17);
+                    $formattedCapitalApproved2 = number_format($totalCapitalApproved2, 0, ',', '.');
+                    $formattedCapitalRejected2 = number_format($totalCapitalRejected2, 0, ',', '.');
+
+
+                    $fpdf->Cell(6, 1, utf8_decode($agencyName), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countApproved), '', 0, 'L');
+                    $fpdf->Cell(4.5, 1, utf8_decode($formattedCapitalApproved2), '', 0, 'L');
+                    $fpdf->Cell(2, 1, utf8_decode($countRejected), '', 0, 'L');
+                    $fpdf->Cell(4, 1, utf8_decode($formattedCapitalRejected2), '', 0, 'L');
+                    $fpdf->Ln();
+                    $totalApproved += $countApproved;
+                    $totalCapitalApproved += $totalCapitalApproved2;
+                    $totalRejected += $countRejected;
+                    $totalCapitalRejected += $totalCapitalRejected2;
+                }
             }
         }
 
@@ -14475,6 +14575,20 @@ class CRUDCoordinacion extends Controller
                                 $message = "<span style='font-size: 20px'>¡EL PAGARÉ DE <strong>" . e($request->NombreCompleto) . "</strong> CON CUENTA <strong>" . e($request->CuentaCoop) . "</strong> FUE APROBADO!</span>";
                                 return back()->with("correcto", $message);
                             } else {
+                                if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth()->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(2)->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                } else if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->ENTREMES == 1) {
+                                    $finalMesFechaCreditoUnMes = $fechadelCredito->copy()->addMonth(1)->endOfMonth();
+                                    Carbon::setLocale('es');
+                                    $fechadeStringCuotaEsperada = $finalMesFechaCreditoUnMes->translatedFormat('F d Y');
+                                }
+
                                 //INTERES PROPORCIONAL
                                 $fechaHoraActual = Carbon::now('America/Bogota');
                                 $endOfMonth = $fechaHoraActual->copy()->endOfMonth();
@@ -24866,7 +24980,7 @@ class CRUDCoordinacion extends Controller
     }
 
 
-           public function imprimir3($id)
+    public function imprimir3($id)
         {
             $sql=DB::select("SELECT persona.*, documentosintesis.FechaInsercion, proveedor.* FROM persona
             INNER JOIN documentosintesis ON persona.ID = documentosintesis.ID_persona
@@ -25060,102 +25174,6 @@ class CRUDCoordinacion extends Controller
             exit;
 
             }
-        }
-
-        public function solicitudes(Request $request)
-        {
-            $usuarioActual = Auth::user();
-            $agenciaU = $usuarioActual->agenciau;
-
-            $agencias = DB::select("SELECT NumAgencia FROM autorizaciones");
-
-            if($agenciaU = $usuarioActual->agenciau == "Coordinacion 1"){
-                $solicitudes = DB::select("SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                C.Concepto, C.Areas
-                FROM persona A
-                JOIN autorizaciones B ON B.ID_Persona = A.ID
-                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-                WHERE B.Solicitud = 1 AND B.NumAgencia IN (34, 36, 37, 38, 40, 41, 87, 93, 96)");
-            }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 2"){
-                $solicitudes = DB::select("
-                SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                C.Concepto, C.Areas
-                FROM persona A
-                JOIN autorizaciones B ON B.ID_Persona = A.ID
-                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-                WHERE B.Solicitud = 1 AND B.NumAgencia IN (33, 39, 46, 70, 77, 78, 80, 88, 92, 98)");
-            }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 3"){
-                $solicitudes = DB::select("
-                SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                C.Concepto, C.Areas
-                FROM persona A
-                JOIN autorizaciones B ON B.ID_Persona = A.ID
-                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-                WHERE B.Solicitud = 1 AND B.NumAgencia IN (32, 42, 47, 81, 82, 83, 85, 90, 94)");
-            }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 4"){
-                $solicitudes = DB::select("
-                SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                C.Concepto, C.Areas
-                FROM persona A
-                JOIN autorizaciones B ON B.ID_Persona = A.ID
-                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-                WHERE B.Solicitud = 1 AND B.NumAgencia IN (44, 45, 48, 49, 74, 75, 84, 89, 91, 95, 97)");
-            }else if($agenciaU = $usuarioActual->agenciau == "Coordinacion 5"){
-                $solicitudes = DB::select("
-                SELECT A.ID AS IDPersona, A.Score, A.CuentaAsociada, A.Nombre, A.Apellidos,
-                       B.ID AS IDAutorizacion, B.Observaciones, B.DocumentoSoporte, B.Fecha, B.CodigoAutorizacion, B.NumAgencia,
-                       B.NomAgencia, B.Cedula, B.Detalle, B.Estado, B.Solicitud, B.SolicitadoPor,
-                       B.Validacion, B.ValidadoPor, B.Aprobacion, B.AprobadoPor, C.Letra, C.No,
-                       C.Concepto, C.Areas
-                FROM persona A
-                JOIN autorizaciones B ON B.ID_Persona = A.ID
-                JOIN concepto_autorizaciones C ON B.ID_Concepto = C.ID
-                WHERE B.Solicitud = 1 AND B.NumAgencia IN (13, 30, 31, 43, 68, 73, 76, 86)");
-            }
-            return datatables()->of($solicitudes)->toJson();
-        }
-
-
-        public function validarAutorizacion(Request $request, $id){
-            $usuarioActual = Auth::user();
-            $nombre = $usuarioActual->name;
-            $estadoautorizacion = $request->Estado;
-
-
-            if($estadoautorizacion == '0' || $estadoautorizacion == '2' || $estadoautorizacion == '3'){
-                $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'Observaciones' => $request->input('Observaciones'),
-                    'Estado' => $request->input('Estado'),
-                    'ValidadoPor' => $nombre
-                ]);
-            }else if($estadoautorizacion == '1'){
-                $update = DB::table('autorizaciones')
-                ->where('ID', $id)
-                ->update([
-                    'Observaciones' => $request->input('Observaciones'),
-                    'Estado' => $request->input('Estado'),
-                    'ValidadoPor' => $nombre,
-                    'Validacion' => 1,
-                ]);
-            }
-
-
-
-            return response()->json(['success' => true]);
         }
 
 

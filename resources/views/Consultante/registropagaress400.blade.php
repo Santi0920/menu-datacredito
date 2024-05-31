@@ -1083,13 +1083,13 @@
                                 '<span class="text-danger blink" style="font-weight: bold; font-size: 25px">NO EXISTE EN DATACRÉDITO</span><br><a href="director"><span class="text-primary-emphasis" style="font-weight: bold; font-size: 15px">Registra en datacrédito.</span></a>';
                         } else if (row.Aprobado == 1) {
                             var AprobadoButton =
-                                '<span class="text-success" style="font-weight: bold; font-size: 30px">SI</span>';
+                                '<div class="text-center"><span class="text-success text-center" style="font-weight: bold; font-size: 30px">SI</span></div><a type="submit" name="anular" class="btn btn-danger fw-bold w-100 fs-5" href="{{ route('director.anularcred', ':id') }}" onclick="return anular()">ANULAR</a>'.replace(':id', row.ID);;
                         } else if (row.Aprobado == 0) {
                             var AprobadoButton =
-                                '<span class="text-danger" style="font-weight: bold; font-size: 30px">NO</span>';
+                                '<div class="text-center"><span class="text-danger text-center" style="font-weight: bold; font-size: 30px">NO</span></div><a type="submit" name="anular" class="btn btn-danger fw-bold w-100 fs-5" href="{{ route('director.anularcred', ':id') }}" onclick="return anular()">ANULAR</a>'.replace(':id', row.ID);;
                         } else {
                             var AprobadoButton =
-                                '<span class="" style="font-weight: bold; font-size: 30px">PENDIENTE</span>';
+                                '<span class="text-danger" style="font-weight: bold; font-size: 30px">ANULADO</span>';
                         }
                         return AprobadoButton;
 
@@ -1297,8 +1297,8 @@
             return respuesta
         }
 
-        function eliminar() {
-            var respuesta = confirm("¿Estas seguro que deseas eliminar este registro?")
+        function anular() {
+            var respuesta = confirm("¿Estas seguro que deseas anular este registro?")
             return respuesta
         }
 
