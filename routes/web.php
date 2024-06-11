@@ -331,7 +331,7 @@ Route::middleware('auth.consultante')->group(function () {
         return view('Consultante/registropagaress400');
     });
 
-    Route::get('director/prueba/datatable', [ControllerConsultante::class, 'datosPagare'])
+    Route::get('/registropagares/datatable', [ControllerConsultante::class, 'datosPagare'])
         ->name('datatable.prueba2');
 
 

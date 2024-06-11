@@ -16207,6 +16207,7 @@ class ControllerConsultante extends Controller
         }
 
         foreach ($datapagare as $registro) {
+
             //variables a usar:
             $agencia = $registro['AGENCIA'];
             $cuenta = $registro['CUENTA'];
@@ -16544,62 +16545,86 @@ class ControllerConsultante extends Controller
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                            Carbon::setLocale('es');
-                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                            //DIA REPORTE DE LA S400 PLANO
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                // Ajustar al último día del mes actual
-                                                $fechaReporteActual->endOfMonth();
-                                            }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                            $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                            //fecha primera cuota
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                            Carbon::setLocale('es');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                            $formateada = $fechaReporte->format('d/m/Y');
-                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                            //interes proporcional
-                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                            $tasa = $registro['TASA'];
-                                            $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                            $tasa = str_replace(',', '.', $tasa);
-                                            $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                            $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                            $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                            $interval = $fechadelCredito->diff($endOfMonth);
-                                            $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                            $cuotaMensual = $capital * $tasa;
-                                            $cuotaDiaria = $cuotaMensual / 30;
-                                            $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -16987,62 +17012,86 @@ class ControllerConsultante extends Controller
 
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                            Carbon::setLocale('es');
-                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                            //DIA REPORTE DE LA S400 PLANO
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                // Ajustar al último día del mes actual
-                                                $fechaReporteActual->endOfMonth();
-                                            }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                            $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                            //fecha primera cuota
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                            Carbon::setLocale('es');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                            $formateada = $fechaReporte->format('d/m/Y');
-                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                            //interes proporcional
-                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                            $tasa = $registro['TASA'];
-                                            $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                            $tasa = str_replace(',', '.', $tasa);
-                                            $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                            $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                            $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                            $interval = $fechadelCredito->diff($endOfMonth);
-                                            $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                            $cuotaMensual = $capital * $tasa;
-                                            $cuotaDiaria = $cuotaMensual / 30;
-                                            $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -17550,62 +17599,86 @@ class ControllerConsultante extends Controller
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
 
-                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                            Carbon::setLocale('es');
-                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                            //DIA REPORTE DE LA S400 PLANO
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                // Ajustar al último día del mes actual
-                                                $fechaReporteActual->endOfMonth();
-                                            }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                            $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                            //fecha primera cuota
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                            Carbon::setLocale('es');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                            $formateada = $fechaReporte->format('d/m/Y');
-                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                            //interes proporcional
-                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                            $tasa = $registro['TASA'];
-                                            $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                            $tasa = str_replace(',', '.', $tasa);
-                                            $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                            $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                            $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                            $interval = $fechadelCredito->diff($endOfMonth);
-                                            $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                            $cuotaMensual = $capital * $tasa;
-                                            $cuotaDiaria = $cuotaMensual / 30;
-                                            $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -17993,62 +18066,86 @@ class ControllerConsultante extends Controller
 
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                            Carbon::setLocale('es');
-                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                            //DIA REPORTE DE LA S400 PLANO
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                // Ajustar al último día del mes actual
-                                                $fechaReporteActual->endOfMonth();
-                                            }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                            $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                            //fecha primera cuota
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                            Carbon::setLocale('es');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                            $formateada = $fechaReporte->format('d/m/Y');
-                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                            //interes proporcional
-                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                            $tasa = $registro['TASA'];
-                                            $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                            $tasa = str_replace(',', '.', $tasa);
-                                            $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                            $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                            $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                            $interval = $fechadelCredito->diff($endOfMonth);
-                                            $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                            $cuotaMensual = $capital * $tasa;
-                                            $cuotaDiaria = $cuotaMensual / 30;
-                                            $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -18577,7 +18674,6 @@ class ControllerConsultante extends Controller
 
                                             //FECHA MES SIGUIENTE
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
                                                 $fechadelCredito = Carbon::now('America/Bogota');
 
@@ -18629,11 +18725,35 @@ class ControllerConsultante extends Controller
 
                                                 $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                                 $NoAgencia = $registro['AGENCIA'];
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -19072,11 +19192,35 @@ class ControllerConsultante extends Controller
 
                                                 $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                                 $NoAgencia = $registro['AGENCIA'];
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -19445,6 +19589,7 @@ class ControllerConsultante extends Controller
                                         //VALIDO SI EL SCORE ES MAYOR O IGUAL DE 650
                                         if ($persona->Score >= 650) {
 
+
                                             //FECHA MES ACTUAL
                                             if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 0 && $existeDia[0]->ENTREMES == 0) {
                                                 //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
@@ -19680,12 +19825,35 @@ class ControllerConsultante extends Controller
 
                                                 $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
 
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
                                                 $NoAgencia = $registro['AGENCIA'];
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
                                                     $razon = 'Aprobado por score(>=650) alto y por cumplir las fechas.';
@@ -20115,11 +20283,35 @@ class ControllerConsultante extends Controller
 
                                                 $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                                 $NoAgencia = $registro['AGENCIA'];
                                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -20501,62 +20693,86 @@ class ControllerConsultante extends Controller
 
                                         //FECHA MES SIGUIENTE
                                         if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                            //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                            $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                            Carbon::setLocale('es');
-                                            $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                            //DIA REPORTE DE LA S400 PLANO
-                                            $diaReporte = max(1, $existeDia[0]->DIAS);
-                                            $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                            // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                            if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                                // Ajustar al último día del mes actual
-                                                $fechaReporteActual->endOfMonth();
-                                            }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                            $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                            Carbon::setLocale('es');
-                                            $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                            //fecha primera cuota
-                                            $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                            Carbon::setLocale('es');
-                                            $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                            $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                            $formateada = $fechaReporte->format('d/m/Y');
-                                            $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                            //interes proporcional
-                                            $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                            $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                            $tasa = $registro['TASA'];
-                                            $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                            $tasa = str_replace(',', '.', $tasa);
-                                            $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                            $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                            $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                            $interval = $fechadelCredito->diff($endOfMonth);
-                                            $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                            $cuotaMensual = $capital * $tasa;
-                                            $cuotaDiaria = $cuotaMensual / 30;
-                                            $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                            $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                            $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                            $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                            $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                             $NoAgencia = $registro['AGENCIA'];
                                             if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -20987,11 +21203,35 @@ class ControllerConsultante extends Controller
 
                                         $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                        $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                        $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                        $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                        $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                        $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                        $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                        $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                        $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                        $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                        $resultado1 = $condicion1 && $condicion2;
+
+
+                                        $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                        $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                        $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                        $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                        $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                        $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                        $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                        if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                            $resultado3 = false;
+                                        } else {
+                                            $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                            $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                            $resultado3 = $condicion6 && $condicion7;
+                                        }
 
                                         $NoAgencia = $registro['AGENCIA'];
                                         if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -21377,62 +21617,86 @@ class ControllerConsultante extends Controller
 
                                 //FECHA MES SIGUIENTE
                                 if (($existeDia[0]->DIAS >= 1 || $existeDia[0]->DIAS <= 31) && $existeDia[0]->MESANTERIOR == 1) {
-                                    //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
-                                    $fechadelCredito = Carbon::now('America/Bogota');
+                                                //FECHA DEL SISTEMA PARA ASIGNARLO A LOS NUEVOS REGISTROS
+                                                $fechadelCredito = Carbon::now('America/Bogota');
 
-                                    Carbon::setLocale('es');
-                                    $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaStringCredito = $fechadelCredito->translatedFormat('F d Y');
 
-                                    //DIA REPORTE DE LA S400 PLANO
-                                    $diaReporte = max(1, $existeDia[0]->DIAS);
-                                    $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
+                                                //DIA REPORTE DE LA S400 PLANO
+                                                $diaReporte = max(1, $existeDia[0]->DIAS);
+                                                $fechaReporteActual = $fechadelCredito->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($diaReporte);
 
-                                    // Verificar si el día seleccionado es mayor que el último día del mes actual
-                                    if ($diaReporte > $fechaReporteActual->daysInMonth) {
-                                        // Ajustar al último día del mes actual
-                                        $fechaReporteActual->endOfMonth();
-                                    }
+                                                // Verificar si el día seleccionado es mayor que el último día del mes actual
+                                                if ($diaReporte > $fechaReporteActual->daysInMonth) {
+                                                    // Ajustar al último día del mes actual
+                                                    $fechaReporteActual->endOfMonth();
+                                                }
 
-                                    $fechaReporte = $fechaReporteActual->copy();
+                                                $fechaReporte = $fechaReporteActual->copy();
 
-                                    Carbon::setLocale('es');
-                                    $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
+                                                Carbon::setLocale('es');
+                                                $fechaReporteString = $fechaReporte->translatedFormat('F d Y');
 
-                                    //fecha primera cuota
-                                    $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
-                                    Carbon::setLocale('es');
-                                    $fechaString2 = $fecha1eraCuota->format('d/m/Y');
-                                    $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
-                                    $formateada = $fechaReporte->format('d/m/Y');
-                                    $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
+                                                //fecha primera cuota
+                                                $fecha1eraCuota = Carbon::createFromFormat('y/m/d', $anio . '/' . $mes . '/' . $dia);
+                                                Carbon::setLocale('es');
+                                                $fechaString2 = $fecha1eraCuota->format('d/m/Y');
+                                                $fechaCarbon2 = Carbon::createFromFormat('d/m/Y', $fechaString2);
+                                                $formateada = $fechaReporte->format('d/m/Y');
+                                                $formateadaCarbon = Carbon::createFromFormat('d/m/Y', $formateada);
 
-                                    //interes proporcional
-                                    $endOfMonth = $fechadelCredito->copy()->endOfMonth();
-                                    $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
-                                    $tasa = $registro['TASA'];
-                                    $capital = $registro['CAPITAL'];
+                                                //interes proporcional
+                                                $endOfMonth = $fechadelCredito->copy()->endOfMonth();
+                                                $fechaHoraActualStr = $fechadelCredito->format('Y-m-d H:i:s');
+                                                $tasa = $registro['TASA'];
+                                                $capital = $registro['CAPITAL'];
 
-                                    $tasa = str_replace(',', '.', $tasa);
-                                    $tasa = floatval($tasa);
+                                                $tasa = str_replace(',', '.', $tasa);
+                                                $tasa = floatval($tasa);
 
-                                    $tasa = $tasa / 100;
+                                                $tasa = $tasa / 100;
 
-                                    $capital = floatval($capital);
+                                                $capital = floatval($capital);
 
-                                    $interval = $fechadelCredito->diff($endOfMonth);
-                                    $c30 = $interval->days;
+                                                $interval = $fechadelCredito->diff($endOfMonth);
+                                                $c30 = $interval->days;
 
-                                    $cuotaMensual = $capital * $tasa;
-                                    $cuotaDiaria = $cuotaMensual / 30;
-                                    $interesProporcional = $cuotaDiaria * $c30;
+                                                $cuotaMensual = $capital * $tasa;
+                                                $cuotaDiaria = $cuotaMensual / 30;
+                                                $interesProporcional = $cuotaDiaria * $c30;
 
-                                    $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
+                                                $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                    $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                    $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                    $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                                    $resultado3 = false;
+                                                } else {
+                                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                                    $resultado3 = $condicion6 && $condicion7;
+                                                }
 
                                     $NoAgencia = $registro['AGENCIA'];
                                     if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
@@ -21871,11 +22135,35 @@ class ControllerConsultante extends Controller
 
                                 $interesProporcionalCorrecto = ($capital * $tasa) / 30 * $c30;
 
-                                $resultado1 = $fecha1eraCuota->month == $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+                                $finMesReportePlus2 = $fechaReporte->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                $finMesCreditoPlus3 = $fechadelCredito->copy()->addMonthsNoOverflow(3)->endOfMonth();
+                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
 
-                                $resultado2 = $fechadelCredito->addMonthsNoOverflow(3)->month || $fechadelCredito->addMonthsNoOverflow(2)->month;
+                                $condicion1 = $finMesCuota->equalTo($finMesReportePlus2);
+                                $condicion2 = $finMesCreditoPlus3 && $finMesCreditoPlus2 && $fechaReporte->diffInDays($fechadelCredito) <= 30;
 
-                                $resultado3 = $fechaReporte->diffInDays($fecha1eraCuota) <= 30;
+                                $resultado1 = $condicion1 && $condicion2;
+
+
+                                $finMesCreditoPlus2 = $fechadelCredito->copy()->addMonthsNoOverflow(2)->endOfMonth();
+                                $finMesCuota = $fecha1eraCuota->copy()->endOfMonth();
+
+                                $condicion3 = $finMesCreditoPlus2->equalTo($finMesCuota);
+                                $condicion4 = $fechaReporte->greaterThanOrEqualTo($fechadelCredito);
+                                $condicion5 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+
+                                $resultado2 = $condicion3 && $condicion4 && $condicion5;
+
+                                $finMesReportePlus1 = $fechaReporte->copy()->addMonthsNoOverflow(1)->endOfMonth();
+
+                                if ($fechadelCredito->greaterThan($fechaReporte)) {
+                                    $resultado3 = false;
+                                } else {
+                                    $condicion6 = $finMesCuota->equalTo($finMesReportePlus1);
+                                    $condicion7 = $fechaReporte->diffInDays($fechadelCredito) <= 30;
+                                    $resultado3 = $condicion6 && $condicion7;
+                                }
 
                                 $NoAgencia = $registro['AGENCIA'];
                                 if (($resultado1 == true && $resultado2 == true && $resultado3 == true) || ($resultado1 == false && $resultado2 == true && $resultado3 == true) || ($resultado1 == true && $resultado2 == false && $resultado3 == true) || ($resultado1 == true && $resultado2 == true && $resultado3 == false) || ($resultado1 == false && $resultado2 == true && $resultado3 == false)) {
