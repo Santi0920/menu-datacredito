@@ -272,7 +272,10 @@
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.coordinador') }}",
-  "deferLoading": 1000,
+  "processing": true,
+  "order": [
+                [0, 'desc']
+            ],
   "columns": [
     {data: 'ID'},
     { data: 'TipoAsociado', render: function(data, type, row) {
@@ -554,7 +557,7 @@ if (diferencia > 180) {
   ],
 
 
-  "lengthMenu": [[6], [6]],
+  "lengthMenu": [[5,10], [5,10]],
   "language": {
     "lengthMenu": "Mostrar _MENU_ registros por página",
     "zeroRecords": "No existe!",
@@ -576,12 +579,7 @@ if (diferencia > 180) {
 				titleAttr: 'Exportar a Excel',
 				className: 'btn btn-success btn-lg'
 			},
-			{
-				extend:    'print',
-				text:      '<i class="fa fa-print"></i> ',
-				titleAttr: 'Imprimir',
-				className: 'btn btn-info btn-lg'
-			}
+
       ]
 });
 

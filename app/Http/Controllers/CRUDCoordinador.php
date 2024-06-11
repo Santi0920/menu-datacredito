@@ -13,47 +13,46 @@ class CRUDCoordinador extends Controller
 {
     //
     public function data(){
+
         $user = DB::select("
-        SELECT DISTINCT A.ID, A.Inspektor, A.Observaciones, A.FechaCorreo, A.Linea, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Tipo, A.Consulta,
+        SELECT DISTINCT  A.ID, A.Inspektor, A.Observaciones, A.FechaCorreo, A.Linea, A.Cedula, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Tipo, A.Consulta,
         A.Reporte, A.TipoAsociado, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT, E.ConsecutivoA, E.NombreA
-        FROM persona A 
-        JOIN documentosintesis B ON A.ID = B.ID_Persona 
-        JOIN documentopn C ON B.ID_Persona = C.ID_Persona 
-        JOIN documentot D ON C.ID_Persona = D.ID_Persona 
-        JOIN documentoa E ON D.ID_Persona = E.ID_Persona 
+        FROM persona A
+        JOIN documentosintesis B ON A.ID = B.ID_Persona
+        JOIN documentopn C ON B.ID_Persona = C.ID_Persona
+        JOIN documentot D ON C.ID_Persona = D.ID_Persona
+        JOIN documentoa E ON D.ID_Persona = E.ID_Persona
         WHERE A.Activado = 1 AND (A.Tipo = 'Persona' OR A.Tipo = 'Empleado') AND (A.TipoAsociado = 'Asociacion' OR A.TipoAsociado = 'Empleado')
-        ORDER BY A.ID DESC
-");
-    
-        
+        ");
+
+
         return datatables()->of($user)->toJson();
-        
+
 
 
     }
 
     public function data2(){
-        $user = DB::select("
-        SELECT DISTINCT A.ID, A.Inspektor, A.ConsecutivoRC, A.ObRC, A.Observaciones, A.FechaCorreo, A.TipoAsociado, A.Cedula, A.Linea, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado,
+        $user = DB::select("SELECT DISTINCT  A.ID, A.Inspektor, A.ConsecutivoRC, A.ObRC, A.Observaciones, A.FechaCorreo, A.TipoAsociado, A.Cedula, A.Linea, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado,
         A.Reporte, A.Monto, A.NombreAnalisis, A.ConsecutivoAnalisis, A.DeudaEsp, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT, E.NombreA, E.ConsecutivoA
-        FROM persona A 
-        JOIN documentosintesis B ON A.ID = B.ID_Persona 
-        JOIN documentopn C ON B.ID_Persona = C.ID_Persona 
-        JOIN documentot D ON C.ID_Persona = D.ID_Persona 
-        JOIN documentoa E ON D.ID_Persona = E.ID_Persona 
+        FROM persona A
+        JOIN documentosintesis B ON A.ID = B.ID_Persona
+        JOIN documentopn C ON B.ID_Persona = C.ID_Persona
+        JOIN documentot D ON C.ID_Persona = D.ID_Persona
+        JOIN documentoa E ON D.ID_Persona = E.ID_Persona
         WHERE A.Activado = 1 && (A.Tipo = 'Persona' OR A.Tipo = 'Empleado') && A.TipoAsociado = 'Credito'
         ORDER BY Nombre ASC");
-       
-        
+
+
         return datatables()->of($user)->toJson();
-        
+
 
 
     }
 
 
 
-  
+
     public function update(Request $request, $id)
     {
 
@@ -117,7 +116,7 @@ class CRUDCoordinador extends Controller
 
             return back()->withErrors([
                 'message' => 'El archivo subido contiene un nombre diferente al archivo PN actual (' . $nombre_archivo2 . ').\n'
-            ]);  
+            ]);
         }
          else {
             if($request->Score == 'S/E'){
@@ -147,14 +146,14 @@ class CRUDCoordinador extends Controller
             $dir = 'Storage/files/sintesis/';
             if ($request->hasFile('archivo22') && !empty($filename)) {
                 $file = $request->file('archivo22');
-            
+
                 if ($file->getClientOriginalExtension() === 'pdf') {
                     if ($file->getClientOriginalName() !== 'Sintesis-' . $request->cedula2 . '.pdf') {
                         return back()->withErrors([
                             'message' => 'El nombre del archivo no cumple con el formato requerido ->Sintesis-' . $request->cedula2 . '.pdf'
                         ]);
                     }
-            
+
                     $uploadSuccess = $file->move($dir, $filename);
                 } else {
                     return back()->withErrors([
@@ -171,7 +170,7 @@ class CRUDCoordinador extends Controller
                         'message' => 'El nombre del archivo no cumple con el formato requerido ->PN-' . $request->cedula2 . '.pdf'
                     ]);
                 }
-          
+
                 if ($file2->getClientOriginalExtension() === 'pdf') {
                     $uploadSuccess = $file2->move($dir2, $filename2);
                 } else {
@@ -220,7 +219,7 @@ class CRUDCoordinador extends Controller
             $fechaHoraActual = date('Y-m-d H:i:s');
             $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
             $cedulaRegistrada = $cedula[0]->Cedula;
-            $agencia = $usuarioActual->agenciau;                  
+            $agencia = $usuarioActual->agenciau;
             $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoAsociacion', ?, ?, ?, ?)", [
                 null,
                 $nombre,
@@ -240,12 +239,12 @@ class CRUDCoordinador extends Controller
                 $tipo = "la Persona";
                 $agencia = $request->agencia3;
                 $usuarios = DB::table('users')->where('rol', 'Consultante')->where('agenciaU', $agencia)->pluck('email');
-                
+
                 foreach ($usuarios as $email) {
                     Mail::to($email)->send(new EnviarCorreo($Cedula->Cedula, $nombreUsuario, $talento, $tipo));
                 }
                 return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
-            
+
             } else {
                 return back()->with("incorrecto", "Error al modificar el registro!");
             }
@@ -269,7 +268,7 @@ class CRUDCoordinador extends Controller
             $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
             $cedulaRegistrada = $cedula[0]->Cedula;
             $ip = $_SERVER['REMOTE_ADDR'];
-            $agencia = $usuarioActual->agenciau;                  
+            $agencia = $usuarioActual->agenciau;
             $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'Desactivo-EliminoUsuario', ?, ?, ?, ?)", [
                 null,
                 $nombre,
@@ -282,14 +281,14 @@ class CRUDCoordinador extends Controller
             ]);
         } else {
             return back()->with("incorrecto", "Error al eliminar!");
-            
+
         }
     }
 
     public function updatecredito(Request $request, $id)
     {
 
-        
+
         $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
         $nombre_archivo = $archivo[0]->NombreS;
         $filename = $nombre_archivo;
@@ -353,8 +352,8 @@ class CRUDCoordinador extends Controller
             return back()->withErrors([
                 'message' => 'El archivo subido contiene un nombre diferente al archivo PN actual (' . $nombre_archivo2 . ').\n'
             ]);
-        } 
-        
+        }
+
 
 else {
                 if($request->Score == 'S/E'){
@@ -364,11 +363,11 @@ else {
                  ($request->Score > 950) {
                     $request->Score = 950;
                 }
-              
+
                 $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
                 $totalDeuda = $sql[0]->DeudaEsp;
 
-                
+
                 $nuevoTotalDeuda = $totalDeuda + $request->monto;
 
                 $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = UPPER(?), Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Enviado=?, Consulta=?, Observaciones = ? WHERE ID = $id", [
@@ -383,7 +382,7 @@ else {
                     0,
                     0,
                     $request->Observaciones
-    
+
                 ]);
 
 
@@ -393,14 +392,14 @@ else {
             $dir = 'Storage/files/sintesis/';
             if ($request->hasFile('archivo22') && !empty($filename)) {
                 $file = $request->file('archivo22');
-            
+
                 if ($file->getClientOriginalExtension() === 'pdf') {
                     if ($file->getClientOriginalName() !== 'Sintesis-' . $request->cedula2 . '.pdf') {
                         return back()->withErrors([
                             'message' => 'El nombre del archivo no cumple con el formato requerido ->Sintesis-' . $request->cedula2 . '.pdf'
                         ]);
                     }
-            
+
                     $uploadSuccess = $file->move($dir, $filename);
                 } else {
                     return back()->withErrors([
@@ -417,7 +416,7 @@ else {
                         'message' => 'El nombre del archivo no cumple con el formato requerido ->PN-' . $request->cedula2 . '.pdf'
                     ]);
                 }
-          
+
                 if ($file2->getClientOriginalExtension() === 'pdf') {
                     $uploadSuccess = $file2->move($dir2, $filename2);
                 } else {
@@ -469,7 +468,7 @@ else {
             $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
             $cedulaRegistrada = $cedula[0]->Cedula;
             $ip = $_SERVER['REMOTE_ADDR'];
-$agencia = $usuarioActual->agenciau;                  
+$agencia = $usuarioActual->agenciau;
 $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoCredito', ?, ?, ?, ?)", [
                 null,
                 $nombre,
@@ -482,7 +481,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
             ]);
 
 
-            
+
             if ($sql == true || $sql2 = true ) {
                 $persona = DB::selectOne('SELECT Nombre, Apellidos FROM persona WHERE ID = ?', [$id]);
                 $nombreUsuario = $persona ? ucfirst(strtolower($persona->Nombre)) . ' ' . $persona->Apellidos : '';
@@ -510,14 +509,14 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
         if ($sql == true) {
             return back()->with("correcto", "Registro eliminado correctamente!");
-            
+
         } else {
             return back()->with("incorrecto", "Error al eliminar!");
-            
+
         }
     }
 
-     
-      
-      
+
+
+
 }

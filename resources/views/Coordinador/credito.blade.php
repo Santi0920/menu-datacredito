@@ -182,6 +182,10 @@
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.coordinadorcredito') }}",
+  "processing": true,
+  "order": [
+                [0, 'desc']
+            ],
   "columns": [
     {data: 'ID'},
     { data: 'TipoAsociado', render: function(data, type, row) {

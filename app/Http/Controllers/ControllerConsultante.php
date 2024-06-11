@@ -686,6 +686,7 @@ class ControllerConsultante extends Controller
                     $extension = $file->getClientOriginalExtension();
 
                     if ($file->getClientOriginalName() !== 'Autorizacion-' . $request->Cedula . '.pdf') {
+                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                         return back()->withErrors([
                             'message' => 'El nombre del archivo no cumple con el formato requerido ->Autorizacion-' . $request->Cedula . '.pdf'
@@ -700,6 +701,7 @@ class ControllerConsultante extends Controller
                             $idPersona
                         ]);
                     } else {
+                        $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
                         $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                         return back()->withErrors([
                             'message' => 'Solo se puede subir archivos PDF.'
@@ -728,6 +730,8 @@ class ControllerConsultante extends Controller
                         $idPersona
                     ]);
                 } else {
+                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                     $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                     return back()->withErrors([
                         'message' => 'Solo se puede subir archivos PDF.'
@@ -754,6 +758,9 @@ class ControllerConsultante extends Controller
                         $dir3 = "Storage/files/t1/";
                         $ruta_carga3 = $dir3 . $file->getClientOriginalName();
                         if ($file->getClientOriginalName() !== 'T1-' . $request->Cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                             $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                             return back()->withErrors([
                                 'message' => 'El nombre del archivo no cumple con el formato requerido ->T1-' . $request->Cedula . '.pdf'
@@ -763,6 +770,9 @@ class ControllerConsultante extends Controller
                         $dir3 = "Storage/files/t2/";
                         $ruta_carga3 = $dir3 . $file->getClientOriginalName();
                         if ($file->getClientOriginalName() !== 'T2-' . $request->Cedula . '.pdf') {
+                            $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                            $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                             $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                             return back()->withErrors([
                                 'message' => 'El nombre del archivo no cumple con el formato requerido ->T2-' . $request->Cedula . '.pdf'
@@ -781,6 +791,9 @@ class ControllerConsultante extends Controller
                         $idPersona
                     ]);
                 } else {
+                    $sql4 = DB::update("DELETE FROM documentopn WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentosintesis WHERE ID_Persona=$idPersona", []);
+                    $sql4 = DB::update("DELETE FROM documentoa WHERE ID_Persona=$idPersona", []);
                     $sql4 = DB::update("DELETE FROM persona WHERE ID=$idPersona", []);
                     return back()->withErrors([
                         'message' => 'Solo se puede subir archivos PDF.'
@@ -789,7 +802,7 @@ class ControllerConsultante extends Controller
             } else {
                 $sql5 = DB::insert('INSERT INTO documentot (NombreT, Consecutivof, Tipof, ID_Persona) VALUES (?, ?, ?, ?)', [
                     null,
-                    $request->Consecutivof,
+                    $request->Consecutivof ?? null,
                     $request->Tipof ?? 'N/A',
                     $idPersona
                 ]);
@@ -798,7 +811,7 @@ class ControllerConsultante extends Controller
 
 
 
-
+            //AUDITORIA
             $nombre = $usuarioActual->name;
             $rol = $usuarioActual->rol;
             $cedulaagregada = $request->Cedula;
