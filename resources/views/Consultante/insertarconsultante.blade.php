@@ -970,13 +970,13 @@ $(document).ready(function() {
         if (data === null) {
           return '';
         } else {
-          html += '<a href="Storage/files/t1/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t1/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       } else if (row.Tipof === 'T2') {
         if (data === null) {
           return '';
         } else {
-          html += '<a href="Storage/files/t2/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t2/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       }
       return html;
@@ -1019,7 +1019,7 @@ $(document).ready(function() {
           if (data === null) {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;

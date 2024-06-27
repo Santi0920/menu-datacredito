@@ -616,7 +616,7 @@ return true;
       if (data === 'Vacío') {
         return '';
       } else {
-        return '<a href="Storage/files/rc/' + data + '" download><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/rc/' + data + '" target="__blank"><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -628,7 +628,7 @@ return true;
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;

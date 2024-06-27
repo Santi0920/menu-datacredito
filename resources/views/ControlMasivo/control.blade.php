@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -78,7 +78,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -86,26 +86,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="p-3">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover col-md-4">
@@ -126,30 +126,30 @@
               <th class="" scope="col">T</th>
               <th class="" scope="col">ID</th>
               <th class="" scope="col">INSPEKTOR</th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
 
-        
-        
-    
+
+
+
 
         <script>
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -159,51 +159,51 @@
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //SCORE
     var scoreInput = document.getElementById('score3');
     var scoreError2 = document.getElementById('scoreError3');
-    
-    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {   
+
+    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo SCORE debe contener un valor del 1-950 ó S/E!',
         confirmButtonColor: '#005E56'
       });
-      
+
       scoreError2.textContent = 'Ingrese un número del 1 al 950 ó S/E!';
       return false;
     }
-    
+
     //Reporte
     var reporteInput = document.getElementById('reporte3');
     var reporteError2 = document.getElementById('reporteError3');
-    
-    if (!/^[\w,]*$/i.test(reporteInput.value)) {   
+
+    if (!/^[\w,]*$/i.test(reporteInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo REPORTE debe contener solo letras, números o comas!',
         confirmButtonColor: '#005E56'
       });
-      
+
       reporteError2.textContent = 'Ingresar solo letras, números o comas!';
       return false;
     }
@@ -254,9 +254,9 @@
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -271,7 +271,7 @@
 <script src="ResourcesAll/dtables/botonimprimir.min.js"></script>
 <script src="ResourcesAll/dtables/imprimir2.min.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatableaso.controlmasivo') }}",
@@ -345,7 +345,7 @@
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
       }
     }
     return data;
@@ -357,7 +357,7 @@
           if (data === null) {
             return '';
           }else{
-          return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
+          return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
           }
         }
         return data;
@@ -372,13 +372,13 @@
         if (data === 'Vacío') {
           return '';
         } else {
-          html += '<a href="Storage/files/t1/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t1/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       } else if (row.Tipof === 'T2') {
         if (data === 'Vacío') {
           return '';
         } else {
-          html += '<a href="Storage/files/t2/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t2/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       }
       return html;
@@ -405,8 +405,8 @@
     }
   },
   responsive: "true",
-        dom: 'Bfrtilp',       
-        buttons:[ 
+        dom: 'Bfrtilp',
+        buttons:[
 			{
 				extend:    'excelHtml5',
 				text:      '<i class="fas fa-file-excel"></i> ',
@@ -419,7 +419,7 @@
 				titleAttr: 'Imprimir',
 				className: 'btn btn-info btn-lg'
 			}
-      ]	
+      ]
 });
 
 
@@ -431,7 +431,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 function fecha(){
@@ -443,24 +443,23 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+

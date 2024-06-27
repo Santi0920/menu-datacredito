@@ -328,7 +328,7 @@
                     </div>
                   </div>`;
                 }else{
-                  var editButton =`<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
+                  var editButton =`<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
                 }
   return editButton;
 

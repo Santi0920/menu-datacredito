@@ -78,7 +78,9 @@
                     <ul class="dropdown-menu" style="background-color: #005E56;">
                         <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold w-100"
                                 style="font-size: 25px" href="registropagares">
-                                Registrar Pagares</a></li>
+                                {{-- registropagares --}}
+                                Registrar Pagares
+                            </a></li>
                         {{-- <li class="text-center"><a class="text-center text-white dropdown-item fw-semibold "
                                 style="font-size: 25px" href="registrarpagareordinariodir"><i
                                     class="fa-solid fa-qrcode"></i> Crédito Prima</a></li> --}}

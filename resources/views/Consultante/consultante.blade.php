@@ -7,7 +7,7 @@
     <h2 class="p-4 text-secondary"><b><span id="fechaActual">Consulta Asociados</span></b></h2>
   </div>
 
-  
+
   <script>
    function obtenerFechaActual() {
       const fecha = new Date();
@@ -17,7 +17,7 @@
       const anio = fecha.getFullYear();
       let horas = fecha.getHours();
       let amPm = 'AM';
-      
+
 
       if (horas > 12) {
           horas -= 12;
@@ -25,45 +25,45 @@
       } else if (horas === 0) {
           horas = 12;
       }
-  
+
       const minutos = fecha.getMinutes();
       const segundos = fecha.getSeconds();
-      
-     
+
+
       return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
   }
-  
+
 
   function actualizarFechaActual() {
       const elementoFecha = document.getElementById('fechaActual');
       elementoFecha.textContent = `Consulta Asociados - ${obtenerFechaActual()}`;
   }
-  
+
 
   setInterval(actualizarFechaActual, 1000);
   </script>
   <div>
-    
+
     <div style="width: 40%;" class="m-4">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-4 table-bordered table-hover"  style="width:100%" >
           <thead class="" style="background-color: #005E56;">
             <tr class="text-white">
-            
+
               <th style="font-size: 1.8125rem; width: 1%;"><span style="font-size: 2.8125rem;">Cédula</span></th>
               <th style="font-size: 1.8125rem; width: 5%;"><span style="font-size: 2.8125rem;">Cuenta</span></th>
               <th style="font-size: 1.8125rem; "><span style="font-size: 2.8125rem;">SIN</span></th>
               <th style="font-size: 1.8125rem; "><span style="font-size: 2.8125rem;">PN</span></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-            
-            
-         
-              
-    
-          
+
+
+
+
+
+
         </table>
-        
+
 <br><br><br><br><br><br><br><br><br><br><br><br>
         <div id="resultado"></div>
 <script src="ResourcesAll/dtables/jquery-3.5.1.js"></script>
@@ -79,14 +79,14 @@
     data: 'CuentaAsociada',
     render: function (data, type, row) {
         var id = row.ID;
-        var cedula = row.Cedula; 
+        var cedula = row.Cedula;
 
         var url = "{{ route('consultante.imprimir', ':id') }}";
         url = url.replace(':id', id);
 
         var embedSrc = "Storage/files/tickets/Ticket-" + cedula + ".pdf";
 
-        return '<td style="font-size: 2.8125rem; position: relative;" class="fw-semibold">' + 
+        return '<td style="font-size: 2.8125rem; position: relative;" class="fw-semibold">' +
             data +
             '<a onclick="ActualizarDoc(\'' + url + '\')" id="generarPdfBtn" href="' + url + '" target="_blank" type="submit" class="text-center rounded-pill btn text-center w-50" style="position: absolute; top: 200%; left: 50%; transform: translate(-50%, -50%); background-color: #005E56; width: 180%;" name="enviar" value="ok">' +
             '<p style="font-size: 35px;" class="fw-bold text-light mt-3 ml-5">' +
@@ -105,7 +105,7 @@
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
       }
     }
     return data;
@@ -118,24 +118,24 @@
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 3.5rem"></a>';
+        return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 3.5rem"></a>';
       }
     }
     return data;
   }
 }
                   ],
-                  
+
                   "createdRow": function (row, data, dataIndex) {
                       $('td', row).addClass('fw-semibold');
                       $('td', row).css('font-size', '2.8125rem');
-                  
 
-              
+
+
                   },
-            
+
             "lengthMenu": [[1], [1]],
-            "language": 
+            "language":
             {
             "lengthMenu": "Mostrar _MENU_ registros por página",
             "zeroRecords": "No existe!",
@@ -143,13 +143,13 @@
             "infoEmpty": "No hay registros disponibles",
             "infoFiltered": "(Filtrado de _MAX_ registros totales)",
             "search": "Buscar:",
-            "paginate": 
+            "paginate":
                 {
                   "next": "Siguiente",
                   "previous": "Anterior"
                 }
 
-            } 
+            }
             });
           });
 
@@ -161,6 +161,6 @@
         var respuesta=confirm("Estas seguro que deseas cerrar sesión?")
         return respuesta
       }
-      
+
   </script>
 @endsection

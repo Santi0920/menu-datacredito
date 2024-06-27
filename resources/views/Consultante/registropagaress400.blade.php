@@ -235,7 +235,7 @@
                 //         }
 
                 //         if(row.AdjuntarAsegur == 2){
-                //           var Formato =`<a href="Storage/files/asegurabilidad/${row.NomAsegur}" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
+                //           var Formato =`<a href="Storage/files/asegurabilidad/${row.NomAsegur}" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
                 //         }
                 //         else if(row.deuda == 1 && row.AdjuntarAsegur == 1 || row.edad == 1 && row.deuda == 1 && row.AdjuntarAsegur == 1 || row.edad == 1 && row.deuda == 2 && row.AdjuntarAsegur == 1 || row.deuda == 2 && row.AdjuntarAsegur == 1 || row.edad == 1 && row.AdjuntarAsegur == 1){
                 //           var Formato = `<div class="text-center"><a title="Modificar" href="" id="modalLink_${id}" type="submit" class="btn btn-small btn-warning edit-button edit fw-bold fs-1" data-bs-toggle="modal" data-bs-target="#modalEditar_${id}" data-id="${id}" style="margin-right: "><i class="fa-regular fa-file-pdf"></i></a></div>
@@ -1112,7 +1112,7 @@
                                 `<div class="text-center fw-bold fs-2">Notificar a Coordinación</div>`;
                         } else {
                             var editButton =
-                                `<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
+                                `<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
                         }
                         return editButton;
 

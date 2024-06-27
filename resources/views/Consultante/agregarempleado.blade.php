@@ -12,8 +12,8 @@
           title: "{{session('correcto')}}",
           text: '',
           confirmButtonColor: '#005E56',
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -28,8 +28,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -43,8 +43,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -92,10 +92,10 @@
 <div class="container-fluid row p-4">
 <form action="{{route('crudc.create')}}" class="col 3 m-3" method="POST" enctype= "multipart/form-data" onsubmit="return validateForm()">
   <h2 class="p-2 text-secondary text-center"><b>Empleados</b></h2>
-  
+
  @csrf
-  
- 
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="cedula" class="form-label fw-semibold">CÉDULA<span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control" name="Cedula" id="cedula" required>
@@ -103,7 +103,7 @@
     <div id="cedulaError2" style="color: red;" class="fw-bold"></div>
 </div>
 
-  <!--VALIDACION CAMPO CEDULA--> 
+  <!--VALIDACION CAMPO CEDULA-->
   <script>
 var cedulaInput = document.getElementById('cedula');
 var cedulaError = document.getElementById('cedulaError');
@@ -120,14 +120,14 @@ cedulaInput.addEventListener('keyup', function() {
 
 cedulaInput.setAttribute("maxlength", "10");
 </script>
-   
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NOMBRE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control " name="Nombre" id="nombre" required>
     <div id="nombreError" style="color: red;" class="fw-bold"></div>
     <div id="nombreError2" style="color: red;" class="fw-bold"></div>
   </div>
-   <!--VALIDACION CAMPO NOMBRE--> 
+   <!--VALIDACION CAMPO NOMBRE-->
   <script>
   var nombreInput = document.getElementById('nombre');
   var nombreError = document.getElementById('nombreError');
@@ -153,7 +153,7 @@ nombreInput.setAttribute("maxlength", "30");
     <div id="apellidosError2" style="color: red;" class="fw-bold"></div>
   </div>
 
-  <!--VALIDACION CAMPO APELLIDOS--> 
+  <!--VALIDACION CAMPO APELLIDOS-->
   <script>
   var apellidosInput = document.getElementById('apellidos');
 var apellidosError = document.getElementById('apellidosError');
@@ -172,22 +172,22 @@ apellidosInput.setAttribute("maxlength", "60");
 
   </script>
 
- 
+
   <div class="mb-3 w-100" title="Este campo es obligatorio" style="display: none">
     <label for="exampleInputEmail1" class="form-label fw-semibold">SCORE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input list="ScoreL" type="text" class="form-control " name="Score" id="score" placeholder="0 - 950" autocomplete="off" value="S/E">
     <div id="scoreError" style="color: red;" class="fw-bold"></div>
     <div id="scoreError2" style="color: red;" class="fw-bold"></div>
     <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
-    
+
   </div>
 
   <datalist id="ScoreL">
     <option value="S/E"></option>
   </datalist>
- 
 
-<!--VALIDACION CAMPO SCORE--> 
+
+<!--VALIDACION CAMPO SCORE-->
   <script>
 var scoreInput = document.getElementById('score');
 var reporteInput = document.getElementById('reporte');
@@ -236,12 +236,12 @@ if (scoreVal === 'S/E') {
     <div id="reporteError" style="color: red;" class="fw-bold"></div>
     <div id="reporteError2" style="color: red;" class="fw-bold"></div>
   </div>
- 
+
  <script>
 $(document).ready(function() {
   $('#consecutivof').on('input', function() {
     var valor = $(this).val();
-    
+
     if ($.isNumeric(valor)) {
       $('#archivo3').prop('required', true);
     } else {
@@ -272,7 +272,7 @@ if ($(this).val() > 0) {
 });
 });
 
-  
+
  var reporteInput = document.getElementById('reporte');
 var reporteError = document.getElementById('reporteError');
 
@@ -293,11 +293,11 @@ reporteInput.setAttribute("maxlength", "15");
   font-style: italic;
 }
 </style>
-  
-  
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio" style="display: none">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NÚMERO CUENTA <span class="text-danger" style="font-size:20px;">*</span></label>
-    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" autocomplete="off"> 
+    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" autocomplete="off">
     <p class="formato-ayuda">Si la persona no tiene cuenta, ingresar <strong>N/A(No aplica)</strong>.</p>
     <div id="cuentaError" style="color: red;" class="fw-bold"></div>
     <div id="cuentaError2" style="color: red;" class="fw-bold"></div>
@@ -307,9 +307,9 @@ reporteInput.setAttribute("maxlength", "15");
     <option value="N/A"></option>
   </datalist>
 
-  <!--VALIDACION CAMPO NUMERO DE CUENTA--> 
+  <!--VALIDACION CAMPO NUMERO DE CUENTA-->
   <script>
-var cuentaInput = document.getElementById('cuenta');  
+var cuentaInput = document.getElementById('cuenta');
 var cuentaError = document.getElementById('cuentaError');
 
 cuentaInput.addEventListener('keyup', function() {
@@ -396,7 +396,7 @@ var estadoError = document.getElementById('estadoError');
     <option value="N/A"></option>
   </datalist>
 
-  
+
 
 
 <script>
@@ -410,7 +410,7 @@ var estadoError = document.getElementById('estadoError');
       }
     });
   });
-  
+
 
 
 
@@ -450,11 +450,11 @@ InspektorInput.setAttribute("maxlength", "10");
 
 var reporteInput = document.getElementById('reporte');
 reporteInput.addEventListener('input', function() {
-  reporteInput.value = reporteInput.value.toUpperCase(); 
+  reporteInput.value = reporteInput.value.toUpperCase();
 });
 var scoreInput = document.getElementById('score');
 scoreInput.addEventListener('input', function() {
-scoreInput.value = scoreInput.value.toUpperCase(); 
+scoreInput.value = scoreInput.value.toUpperCase();
 });
 
 
@@ -537,21 +537,21 @@ consecutivofInput.setAttribute("maxlength", "6");
             $('#consecutivoa').attr('placeholder', 'Obligatorio');
         }
     });
-    
+
     $('#cedula, #nombre, #apellidos, #score, #cuenta, #agencia, #estado, #consecutivoa').on('input', function() {
         if ($(this).val() !== '') {
             $(this).css('background-color', '');
             $(this).attr('placeholder', '');
         }
     });
-    
+
     //VALIDACION REGISTRO
       function validateForm() {
         //Cedula
     var cedulaInput = document.getElementById('cedula');
     var cedulaError2 = document.getElementById('cedulaError2');
-    
-    if (!/^[0-9]+$/.test(cedulaInput.value)) {   
+
+    if (!/^[0-9]+$/.test(cedulaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -563,12 +563,12 @@ consecutivofInput.setAttribute("maxlength", "6");
       cedulaInput.focus();
       return false;
     }
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre');
     var nombreError2 = document.getElementById('nombreError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -580,63 +580,63 @@ consecutivofInput.setAttribute("maxlength", "6");
       nombreInput.focus();
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos');
     var apellidosError2 = document.getElementById('apellidosError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = '';
       apellidosInput.focus();
       return false;
     }
-    
 
-    
+
+
     //Reporte
     var reporteInput = document.getElementById('reporte');
     var reporteError2 = document.getElementById('reporteError2');
-    
-    if (!/^[\w,]*$/i.test(reporteInput.value)) {   
+
+    if (!/^[\w,]*$/i.test(reporteInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo REPORTE debe contener solo letras, números o comas!',
         confirmButtonColor: '#005E56'
       });
-      
+
       reporteError2.textContent = '';
       reporteInput.focus();
       return false;
     }
 
-        
+
       var consecutivofInput = document.getElementById('consecutivoa');
       var consecutivofError2 = document.getElementById('consecutivofError2');
 
-      if (!/^[0-9]+$/.test(consecutivofInput.value)) {   
+      if (!/^[0-9]+$/.test(consecutivofInput.value)) {
         Swal.fire({
           icon: 'error',
           title: '¡Error!',
           text: 'El campo CONSECUTIVO AUTORIZACIÓN debe contener dígitos numéricos o N/A!',
           confirmButtonColor: '#005E56'
         });
-        
+
         consecutivofError2.textContent = '';
         consecutivofInput.focus();
         return false;
       }
       var InspektorInput = document.getElementById('Inspektor');
     var InspektorError2 = document.getElementById('InspektorError2');
-    
-    if (!/^[0-9]+$/.test(InspektorInput.value)) {   
+
+    if (!/^[0-9]+$/.test(InspektorInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -650,9 +650,9 @@ consecutivofInput.setAttribute("maxlength", "6");
     }
         return true;
       }
-    
+
     </script>
-    
+
     </form>
     {{-- FECHA --}}
     <div class="col-9">
@@ -671,7 +671,7 @@ consecutivofInput.setAttribute("maxlength", "6");
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -679,26 +679,26 @@ consecutivofInput.setAttribute("maxlength", "6");
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div class="table-responsive">
     <table id="personas" class="hover table table-striped shadow-lg mt-4 table-bordered table-hover">
@@ -717,24 +717,24 @@ consecutivofInput.setAttribute("maxlength", "6");
           <th class="" scope="col">FECHA CORREO</th>
           <th class="" scope="col">OBSERVACIONES</th>
           <th style="width: 77px"></th>
-        </tr> 
-      </thead> 
+        </tr>
+      </thead>
       <tbody class="table-group-divider">
-        
+
       </tbody>
     </table>
-        
-      
+
+
 
         <script>
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -744,35 +744,35 @@ consecutivofInput.setAttribute("maxlength", "6");
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-  
+
 
       var consecutivofInput = document.getElementById('consecutivof33');
         var consecutivofError2 = document.getElementById('consecutivofError2');
-        
-        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {   
+
+        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {
           Swal.fire({
             icon: 'error',
             title: '¡Error!',
             text: 'El campo CONSECUTIVO debe contener dígitos numéricos ó N/A!',
             confirmButtonColor: '#005E56'
           });
-          
+
           consecutivofError2.textContent = '';
           consecutivofInput.focus();
           return false;
@@ -800,9 +800,9 @@ return true;
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -811,7 +811,7 @@ return true;
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.cempleado') }}",
@@ -842,7 +842,7 @@ return true;
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -855,7 +855,7 @@ return true;
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/cedula/' + data + '" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 2.5rem;"></a>';
+          return '<a href="Storage/files/cedula/' + data + '" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 2.5rem;"></a>';
           }
         }
         return data;
@@ -867,7 +867,7 @@ return true;
     var fecha_insercion = new Date(data);
 
     var fecha_actual = new Date();
-    var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24)); 
+    var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24));
 
     if (parseInt(row.Consulta) === 1 && diferencia > 180) {
   html += data + '<span class="text-danger fw-bold blink" style="font-size: 20px;"><br><span style="background-color: yellow;">RENOVAR</span></span>';
@@ -882,7 +882,7 @@ return true;
 } else {
   html += data + '<span class="fw-bold" style="color: #1565c0;"><br>Al día</span>';
 }
-        
+
         return html;
     }
 },
@@ -891,13 +891,13 @@ return true;
 {data: 'Observaciones'},
     {    data: null,
       render: function(data, type, row) {
-        var id = row.ID; 
+        var id = row.ID;
         var url = "{{ route('crudc.update', ':id') }}";
         var today = new Date().toISOString().split('T')[0];
         url = url.replace(':id', id);
 
         var html = '';
-var fecha_insercion = new Date(data.FechaInsercion); 
+var fecha_insercion = new Date(data.FechaInsercion);
 var fecha_actual = new Date();
 var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24));
 function toggleCheckbox() {
@@ -924,21 +924,21 @@ function toggleCheckbox() {
                 <input type="text" class="form-control" name="cedula2" id="cedula2" readonly value="${row.Cedula}" style="background-color: #EBEBEB; cursor: not-allowed;">
                 <input type="hidden" name="cedula3"  value="">
               </div>
-  
+
               <div class="mb-3">
                 <label for="nombre3" id="izquierda3" class="form-label fw-bold">NOMBRE</label>
                 <input type="text" class="form-control" id="nombre3" name="nombre3" value="${row.Nombre}" maxlength="30" required>
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
-        
-              
-              
+
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda6" class="form-label fw-bold">APELLIDOS</label>
                   <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="${row.Apellidos}" maxlength="60" oninput="this.value = this.value.toUpperCase()" required>
                   <div id="apellidosError3" style="color: red;" class="fw-bold"></div>
               </div>
-  
+
 
               <!--Label5-->
               <div class="mb-3">
@@ -952,7 +952,7 @@ function toggleCheckbox() {
                   <input type="file" class="form-control" name="archivo3" id="archivo3" accept="application/pdf" value="${row.NombreA}">
                   <p class="formato-ayuda2">Debe contener el formato: <strong>Autorizacion-(Cédula).pdf</strong></strong></p>
                   </div>
-                     
+
                   <div class="mb-3">
                     <label for="label" id="izquierda11" class="form-label fw-bold" style="margin-left: -48%;">CONSECUTIVO AUTORIZACIÓN</label>
                     <input type="text" class="form-control" name="consecutivof33" id="consecutivof33" value="${row.ConsecutivoA}" maxlength="8" required>
@@ -1029,7 +1029,7 @@ $(document).ready(function() {
     $("#archivo11").val(data["NombrePN"]);
 
 
-    
+
 
 
   });
@@ -1042,7 +1042,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 
@@ -1065,7 +1065,7 @@ function showUnauthorizedMessage() {
             var respuesta=confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
@@ -1075,17 +1075,16 @@ function showUnauthorizedMessage() {
             var respuesta=confirm("POR FAVOR REVISAR LA CÉDULA. LOS CAMBIOS PUEDEN SER IRREVERSIBLES.")
             return respuesta
           }
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
     @endsection
-    
- 
+

@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -60,24 +60,24 @@
     <link href="css/index.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/logoo.png" type="img/png">
   </head>
-  
-  
+
+
 <body>
     <!-- NAV DE LISTA-->
   <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
     <div class="container-fluid">
       <!-- Coopserp.com-->
-      
-      <!-- Botón que aparece al reducir pantalla--> 
+
+      <!-- Botón que aparece al reducir pantalla-->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
       </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <!-- Foto Coopserp--> 
+    <!-- Foto Coopserp-->
     <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data"></a>
-      <ul class="navbar-nav me-auto mb-lg-0">        
-       
+      <ul class="navbar-nav me-auto mb-lg-0">
+
       </ul>
       <a href="{{route('login.index')}}"><button class="btn btn-outline-success"><b style="font-size: 18px;">Iniciar Sesión</b></button></a>
     </div>
@@ -138,7 +138,7 @@
 
       <br>
 
-  
+
       <br><br><br><br>
       <div class="row tm-content-row">
     <div class="tabla-container">
@@ -176,7 +176,7 @@
 
               setInterval(actualizarHoraActual, 1000);
             </script>
-          </form>  
+          </form>
         </div>
       </div>
       <div class="">
@@ -186,7 +186,7 @@
               <th scope="col" style="font-size: 280%;">CC</th>
               <th scope="col" style="font-size: 280%;border-left: 2px solid black;">TICKET</th>
               <th scope="col" style="font-size: 280%;border-left: 2px solid black;">SIN</th>
-              <th scope="col" style="font-size: 280%;border-left: 2px solid black;">PN</th> 
+              <th scope="col" style="font-size: 280%;border-left: 2px solid black;">PN</th>
             </tr>
           </thead>
         </table>
@@ -203,10 +203,10 @@ $(document).ready(function() {
     "searching": false,
     "ajax": "{{ route('datatable.documentos', ['id' => $id]) }}",
     "columns": [
-      { 
+      {
         data: 'Cedula',
         "createdCell": function(td, cellData, rowData, row, col) {
-          $(td).css('font-size', '16px'); 
+          $(td).css('font-size', '16px');
         }
       },
       {
@@ -216,7 +216,7 @@ $(document).ready(function() {
       if (data === 'null') {
         return '';
       } else {
-        return '<a href="Storage/files/tickets/Ticket-' + data + '.pdf" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+        return '<a href="Storage/files/tickets/Ticket-' + data + '.pdf" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
       }
     }
     return data;
@@ -229,7 +229,7 @@ $(document).ready(function() {
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
       }
     }
     return data;
@@ -242,7 +242,7 @@ $(document).ready(function() {
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 3.5rem"></a>';
+        return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 3.5rem"></a>';
       }
     }
     return data;
@@ -262,7 +262,7 @@ $(document).ready(function() {
       "previous": "Anterior"
     }
   }
-    
+
   });
 });
 
@@ -276,7 +276,7 @@ $(document).ready(function() {
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
 
 
@@ -288,7 +288,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 function fecha(){
@@ -300,24 +300,23 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+

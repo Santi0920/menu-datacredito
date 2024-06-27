@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -71,7 +71,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -79,26 +79,26 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
       <div style="overflow: auto;" class="mb-4 p-3">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover col-md-4">
@@ -124,11 +124,11 @@
           <th scope="col">INSPEKTOR</th>
           <th scope="col">OBSERVACIONES</th>
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
@@ -140,14 +140,14 @@
             </style>
         </table>
 
-        
-        
-    
+
+
+
 
         <script>
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
 
         var agenciaInput = document.getElementById('agencia3');
       var agenciaError = document.getElementById('agenciaError3');
@@ -195,9 +195,9 @@
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -206,7 +206,7 @@
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.tproveedor') }}",
@@ -249,7 +249,7 @@
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/rc/' + data + '" download><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/rc/' + data + '" target="__blank"><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -262,7 +262,7 @@
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank"><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -274,7 +274,7 @@
           if (data === null) {
             return '';
           }else{
-          return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" title="'+data+'" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -286,7 +286,7 @@
           if (data === null) {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -373,7 +373,7 @@ if (diferencia > 180) {
                   <p class="formato-ayuda">Ingresar N = Normal, D = Dudoso Recaudo, C = Cartera Castigada ó 1 - 6 (Si cuenta con Mora).</p>
                 </div>
 
-              
+
 
               <!--Label5-->
               <div class="mb-3">
@@ -381,7 +381,7 @@ if (diferencia > 180) {
                 <input list="agencia" type="text" class="form-control" id="agencia3" name="agencia3" value="${row.Agencia}" maxlength="20" readonly style="background-color: #EBEBEB; cursor: not-allowed;" autocomplete="off">
                 <div id="agenciaError3" style="color: red;" class="fw-bold"></div>
               </div>
-  
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold" style="background-color: #bedffb;">FECHA</label>
                   <input type="date" class="form-control" name="fecha3" id="fecha3" min="2022-08-01" max="`+today+`" value="${row.FechaInsercion}" required>
@@ -391,8 +391,8 @@ if (diferencia > 180) {
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="">
                 <p class="formato-ayuda2">Formato: <strong>Sintesis-(Cédula).pdf</strong></p>
-              </div> 
-              
+              </div>
+
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="">
@@ -404,7 +404,7 @@ if (diferencia > 180) {
                 <input type="text" class="form-control" name="Inspektor2" id="Inspektor2" value="${row.Inspektor}" readonly style="background-color: #EBEBEB; cursor: not-allowed;">
                 <input type="hidden" name="cedula3"  value="">
               </div>
-              
+
                   <div class="mb-3">
                   <label for="exampleInputEmail1" id="" class="form-label fw-bold" style="background-color: #bedffb; margin-left: -70%">OBSERVACIONES</label>
                   <input type="text" class="form-control" id="reporte3" name="Observaciones" maxlength="255" value="${row.Observaciones}">
@@ -445,7 +445,7 @@ ${html}
                 <input type="text" class="form-control" id="razonsocial2" name="razonsocial2" value="${row.RazonSocial}" maxlength="30" readonly style="background-color: #EBEBEB; cursor: not-allowed;">
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
-        
+
 
               <div class="mb-3">
                   <label for="label"  id="izquierda" class="form-label fw-bold" style="background-color: #bedffb;">SCORE</label>
@@ -453,32 +453,32 @@ ${html}
                   <div id="scoreError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
               </div>
-  
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda4" class="form-label fw-bold" style="background-color: #bedffb;">REPORTE DATACRÉDITO</label>
                   <input type="text" class="form-control" id="reporte4" name="reporte4" maxlength="15" value="${row.Reporte}" oninput="this.value = this.value.toUpperCase()">
                   <div id="reporteError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Ingresar N = Normal, D = Dudoso Recaudo, C = Cartera Castigada ó 1 - 6 (Si cuenta con Mora).</p>
               </div>
-  
+
               <!--Label5-->
               <div class="mb-3">
                   <label for="click" id="izquierda7" class="form-label fw-bold">AGENCIA</label>
                   <input list="agencia" type="text" class="form-control" id="agencia4" name="agencia4" value="${row.Agencia}" maxlength="20" readonly style="background-color: #EBEBEB; cursor: not-allowed;" autocomplete="off">
                   <div id="agenciaError3" style="color: red;" class="fw-bold"></div>
               </div>
-                
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold" style="background-color: #bedffb;">FECHA</label>
                   <input type="date" class="form-control" name="fecha4" id="fecha4" min="2022-08-01" max="`+today+`" value="${row.FechaInsercion}" required>
                 </div>
-  
+
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="">
                 <p class="formato-ayuda2">Formato: <strong>Sintesis-(NIT).pdf</strong></p>
-              </div> 
-              
+              </div>
+
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="">
@@ -537,7 +537,7 @@ function showUnauthorizedMessage() {
     text: 'No tienes permiso para realizar esta acción.',
     confirmButtonColor: '#005E56'
   });
-  
+
   return false;
 }
 
@@ -551,24 +551,23 @@ function fecha(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
 
     @endsection
-    
- 
+

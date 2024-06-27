@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -53,21 +53,21 @@
 <!-- NAV DE LISTA-->
 <a name="arriba"></a>
 <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-  <div class="container-fluid menu-bar" style="" > 
+  <div class="container-fluid menu-bar" style="" >
     <!-- Coopserp.com-->
-    
-    <!-- Botón que aparece al reducir pantalla--> 
+
+    <!-- Botón que aparece al reducir pantalla-->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
     </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <!-- Foto Coopserp--> 
+  <!-- Foto Coopserp-->
   <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2" style="filter: drop-shadow(0 2px 0.8px white);">
-    
-  
-  <ul class="navbar-nav me-auto mb-lg-0 header">        
-      <!-- DataCreditos-->       
+
+
+  <ul class="navbar-nav me-auto mb-lg-0 header">
+      <!-- DataCreditos-->
       <div class="dropdown nav-item">
         <li class="nav-link active text-white dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
           Datacrédito
@@ -75,39 +75,39 @@
         <ul class="dropdown-menu" style="background-color: #005E56;">
         <ul class="dropend">
         <li class="dropdown-toggle text-white" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Solicitud Datacrédito</a></li>
-         
+
         <ul class="dropdown-menu" style="background-color: #005E56;">
           <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px" href="admin">CRUD Asociación</a></li>
           <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="adminempleado">CRUD Empleados</a></li>
           <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="adminproveedor">CRUD Proveedores</a></li>
-          
+
         </ul>
         </ul>
         <li class="text-white dropdown-divider"></li>
         <ul class="dropend">
           <li class="dropdown-toggle text-white text-start" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Eliminados</a></li>
-           
+
               <ul class="dropdown-menu" style="background-color: #005E56;">
                 <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px" href="admineliminadoa">Asociados</a></li>
                 <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="admineliminadoe">Empleados</a></li>
                 <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="admineliminadop">Proveedores</a></li>
-                
+
               </ul>
           </ul></li>
           <li class="text-white dropdown-divider"></li>
     </ul>
   </div>
-      <!-- Anticipados-->  
+      <!-- Anticipados-->
       <li class="nav-item">
         <a class="nav-link active text-white" aria-current="page" href="adminpagare" id="data" style="font-size: 25px">Pagare</a>
       </li>
 
     </ul>
-    
+
     <span class="mx-4 text-white" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-1" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
     <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-light"><b style="font-size: 25px;">Cerrar Sesión</b></button></a>
 
-   
+
   </div>
 </div>
 </nav>
@@ -127,37 +127,37 @@
             <div class="modal-content">
             <button type="button" data-bs-dismiss="modal" class="btn-close p-3" aria-label="Close"></button>
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    
+
                     <h1 class="modal-title text-center fw-semibold" id="modificar">AGREGAR ROL</h1>
 
                  </div>
                 <hr>
 
                 <div class="modal-body">
-    
-                
+
+
                 <div style="max-height: 12.5rem; overflow: auto;">
                 <table class="table">
                     <thead class="" style="background-color: #005E56;">
                       <tr class="text-white">
-                        
+
                         <th scope="col">USUARIO</th>
                         <th>ROL</th>
                         {{-- <th>EMAIL</th> --}}
                         <th></th>
                         <th></th>
                         <th></th>
-                        
 
-                        
+
+
                       </tr>
                       </thead>
-                    
+
 
                       <tbody>
                         @foreach($datos2 as $item)
                         <tr>
-                        
+
                         <td title="{{ $item->email }}">{{$item->name}}</td>
                         <td title="{{ $item->email }}">{{ $item->rol == 'Asociacion' ? 'Coordinador' : $item->rol }}</td>
                         <td><a onclick="return activar()" type="submit" href="{{route('rol.activo',$item->id)}}" name="activar" id="activar" class="btn btn-small btn-warning">Activar</a></td>
@@ -165,19 +165,19 @@
                         <td><a onclick="return eliminar()" href="{{route('rol.delete',$item->id)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></td>
                       </tr>
                         @endforeach
-                    
+
                       </tbody>
                 </table>
                 </div>
                <hr>
-               
-            <!--Label1-->  
+
+            <!--Label1-->
             <div class="mb-3 mt-3">
                 <label for="label" id="consul1" class="form-label fw-bold" value="">NOMBRE COMPLETO</label>
                 <input type="text" class="form-control" name="name" id="name" required>
                 <div id="nameError" style="color: red;" class="fw-bold"></div>
             </div>
-            <!--VALIDACION CAMPO USUARIO--> 
+            <!--VALIDACION CAMPO USUARIO-->
             <script>
             var usernameInput = document.getElementById('name');
             var usernameError = document.getElementById('nameError');
@@ -196,8 +196,8 @@
             </script>
 
 
-     
-            <!--Label2--> 
+
+            <!--Label2-->
             <div class="mb-3">
                 <label for="label" id="consul2" class="form-label fw-bold">CORREO ELECTRÓNICO</label>
                 <input type="email" class="form-control" name="email" id="email" required>
@@ -353,7 +353,7 @@
               <option value="Riohacha">Riohacha</option>
               <option value="Yopal">Yopal</option>
               <option value="Facatativá">Facatativá</option>
-              <option value="Girardot">Girardot</option>   
+              <option value="Girardot">Girardot</option>
               <option value="Reporte Bogota">Reporte Bogota</option>
     <option value="Reporte Cali">Reporte Cali</option>
     <option value="Juridico Zona Centro">Juridico Zona Centro</option>
@@ -373,14 +373,14 @@
     <option value="Coordinacion 5">Coordinacion 5</option>
     <option value="Coordinacion 6">Coordinacion 6</option>
     <option value="Coordinacion 7">Coordinacion 7</option>
-    <option value="Coordinacion 8">Coordinacion 8</option>           
+    <option value="Coordinacion 8">Coordinacion 8</option>
             </select>
           </div>
         </div>
         <div class="text-center p-2">
         <button  type="submit" class=" btn btn-primary w-50" name="btnregistrar2" style="background-color: #005E56;">Registrar</button>
         </div>
-            
+
             </div>
         </div>
     </div>
@@ -388,7 +388,7 @@
 
 
 
-    
+
     </form>
     {{-- FECHA --}}
     <div class="col-11" style="margin-left:3.5%">
@@ -396,9 +396,9 @@
         <form action="" method="post">
         <div class="" style="margin-top: 0px; margin-right: -14px;">
 
-      
+
     </div>
-    
+
     <h2 class="p-2 mb-0 text-secondary text-start"><b>Registros Empleados Eliminados -
     <span class="text-end" id="fechaActual"></b></span></h2>
     <script>
@@ -410,7 +410,7 @@
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -418,28 +418,28 @@
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
-      
+
     <div style="overflow: auto;" class="mb-4 p-3">
         <table id="personas" class="hover table table-responsive table-striped shadow-lg mt-2 table-bordered table-hover col-md-4">
           <thead class="" style="background-color: #005E56;">
@@ -459,17 +459,17 @@
               <th class="" scope="col">CONTRATO</th>
 
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
-        
+
         <div class="w-100 text-center text-secondary">
     <style>
         .boton {
@@ -490,15 +490,15 @@
 </div>
         <script>
 
-    
+
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -508,23 +508,23 @@
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
 
 
         var agenciaInput = document.getElementById('agencia3');
@@ -573,9 +573,9 @@
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -584,7 +584,7 @@
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable4.admin') }}",
@@ -606,7 +606,7 @@
   data: 'Score',
   render: function(data, type, row) {
     var html = ''; // Variable para almacenar el HTML generado
-    
+
     if (data === 'S/E') {
       html += data+'<span class="fw-bold" style="color: #1565c0;"><br></span>';
     } else if (650 <= data && data <= 699) {
@@ -636,16 +636,16 @@
     render: function(data, type, row) {
         var html = '';
         var fecha_insercion = new Date(data);
-        
+
         var fecha_actual = new Date();
         var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24)); // Calcular la diferencia en días
-        
+
         if (diferencia > 180) {
             html += data+'<span class="text-danger fw-bold blink" style="font-size: 20px;"><br>RENOVAR</span>';
         } else {
             html += data+'<span class="fw-bold" style="color: #1565c0;"><br>Al día</span>';
         }
-        
+
         return html;
     }
 },
@@ -656,7 +656,7 @@
       if (data === 'Vacío') {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -668,7 +668,7 @@
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -680,7 +680,7 @@
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -693,7 +693,7 @@
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/contrato/' + data + '" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 2.5rem;"></a>';
+          return '<a href="Storage/files/contrato/' + data + '" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 2.5rem;"></a>';
           }
         }
         return data;
@@ -736,7 +736,7 @@
 
 
 
-    
+
           function activate(){
             var respuesta=confirm("¿Estas seguro que deseas recuperar este usuario?")
             return respuesta
@@ -756,27 +756,26 @@
             var respuesta=confirm("¿Estas seguro que deseas eliminar este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
           function eliminar2(){
             var respuesta=confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
             return respuesta
           }
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
     @endsection
-    
- 
+

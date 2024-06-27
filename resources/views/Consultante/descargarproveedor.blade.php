@@ -218,9 +218,9 @@ $(document).ready(function() {
       render: function(data, type, row) {
         var html = '';
         if(row.TipoProveedor == 'PJ'){
-          html += '<a href="Storage/files/tickets/Ticket-' + data.NIT + '.pdf" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+          html += '<a href="Storage/files/tickets/Ticket-' + data.NIT + '.pdf" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
         }else{
-          html += '<a href="Storage/files/tickets/Ticket-' + data.Cedula + '.pdf" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';;
+          html += '<a href="Storage/files/tickets/Ticket-' + data.Cedula + '.pdf" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';;
         }
         return html;
       }
@@ -232,7 +232,7 @@ $(document).ready(function() {
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
       }
     }
     return data;
@@ -245,7 +245,7 @@ $(document).ready(function() {
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 3.5rem"></a>';
+        return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 3.5rem"></a>';
       }
     }
     return data;

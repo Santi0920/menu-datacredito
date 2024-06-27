@@ -93,7 +93,7 @@
       if (data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank" ><img src="img/pdf.png" style="height: 3.5rem;"></a>';
       }
     }
     return data;
@@ -127,7 +127,7 @@
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 3.5rem"></a>';
+        return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 3.5rem"></a>';
       }
     }
     return data;

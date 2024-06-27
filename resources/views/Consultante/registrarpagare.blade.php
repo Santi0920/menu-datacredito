@@ -9,7 +9,7 @@
     Swal.fire
       ({
           icon: 'success',
-          title: "¡APROBADO!",
+          title: "Exitoso!",
           html: `{!! session('correcto') !!}`,
           confirmButtonColor: '#005E56',
 
@@ -124,21 +124,7 @@
 <div class="container-fluid row p-4">
     <form action="{{ route('cruddir.createpagare')}}" class="col m-3" method="POST" enctype= "multipart/form-data" id="pagare">
     @csrf
-    <h2 class="p-2 text-secondary text-center"><b>Escanear Pagaré</b></h2>
-
-
-    <div class="mb-3 w-100" title="Este campo es obligatorio" id="id">
-        <label for="input1" class="form-label fw-semibold">ID <span class="text-danger" style="font-size:20px;">*</span></label>
-        <input type="text" class="form-control" id="input1" autocomplete="off" autofocus required>
-
-      </div>
-
-
-      <div class="mb-3 w-100" title="Este campo es obligatorio">
-        <label for="input2" class="form-label fw-semibold">NÚMERO DE AGENCIA <span class="text-danger" style="font-size:20px;">*</span></label>
-        <input type="number" class="form-control " name="NoAgencia" id="input2" autocomplete="off" required>
-
-      </div>
+    <h2 class="p-2 text-secondary text-center"><b>Ingresar Pagaré</b></h2>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input3" class="form-label fw-semibold">CUENTA ASOCIADO <span class="text-danger" style="font-size:20px;">*</span></label>
@@ -160,7 +146,7 @@
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input6" class="form-label fw-semibold">ID PAGARE <span class="text-danger" style="font-size:20px;">*</span></label>
-        <input type="number" class="form-control " name="ID_Pagare" id="input6" autocomplete="off" required>
+        <input type="text" class="form-control " name="ID_Pagare" id="input6" autocomplete="off" required>
 
       </div>
 
@@ -197,6 +183,8 @@
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input12" class="form-label fw-semibold">FECHA CRÉDITO <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="FechaCredito" id="input12" autocomplete="off" required>
+        <p class="formato-ayuda">Ejemplo: <strong>1240130</strong>. 124 - es el año, 01 - es el mes y 30 - es el
+            día.</p>
 
       </div>
 
@@ -221,12 +209,16 @@
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input16" class="form-label fw-semibold">FECHA 1ra CUOTA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="Fecha1Cuota" id="input16" autocomplete="off" required>
+        <p class="formato-ayuda">Ejemplo: <strong>1240130</strong>. 124 - es el año, 01 - es el mes y 30 - es el
+            día.</p>
 
       </div>
 
       <div class="mb-3 w-100" title="Este campo es obligatorio">
         <label for="input17" class="form-label fw-semibold">Fecha ULTIMA CUOTA <span class="text-danger" style="font-size:20px;">*</span></label>
         <input type="text" class="form-control " name="FechaUltimaCuota" id="input17" autocomplete="off" required>
+        <p class="formato-ayuda">Ejemplo: <strong>1240130</strong>. 124 - es el año, 01 - es el mes y 30 - es el
+            día.</p>
 
       </div>
 
@@ -262,362 +254,6 @@
       </div>
 
     </form>
-
-
-<script>
-document.getElementById('input20').addEventListener('input', function() {
-    setTimeout(function() {
-        document.getElementById('agregar').focus();
-    }, 400);
-});
-
-var existeNominaDepenData = null;
-var loadingTimer;
-
-
-$(document).ready(function(){
-
-    function handleInputChanges() {
-        var fechaCredito = $('#input12').val();
-        var fecha1eraCuota = $('#input16').val();
-
-        if (fechaCredito && fecha1eraCuota) {
-            $.ajax({
-                url: "{{ route('cruddir.FechaReporte') }}",
-                method: 'POST',
-                data: {
-                    CuentaCoop: $('#input3').val(),
-                    fechaCredito: fechaCredito,
-                    fecha1eraCuota: fecha1eraCuota,
-                    _token: "{{ csrf_token() }}"
-                },
-                beforeSend: function() {
-                    Swal.fire({
-                        title: 'Cargando...',
-                        text: 'Por favor, espere mientras se consulta al asociado.',
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                },
-                success: function(response){
-                    if(response.existeNominaDepen){
-                        existeNominaDepenData = response.existeNominaDepen;
-                        FechaValue = response.fechaCredito;
-                        FechaValue1eraCuota = response.Cuota1;
-                        Validar = response.fechaValidar;
-                        FechaReporte = response.fechaStringFechaReporteAjax;
-                    }
-
-                    // Llamar a confirmVote aquí
-                    confirmVote();
-
-                },
-                error: function(response){
-                      document.getElementById('pagare').submit();
-                }
-            });
-        }
-    }
-$('#input20').off('blur').on('blur', function() {
-    handleInputChanges();
-});
-
-$('#input3').on('change', function(){
-        if($('#input12').val() && $('#input16').val() && $('#input20').val()) {
-            handleInputChanges();
-        }
-    });
-
-});
-function isValidEmail(email) {
-    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return regex.test(email);
-}
-
-function confirmVote(event) {
-    if (event && event.preventDefault) {
-        event.preventDefault();
-    }
-
-    let allInputsFilled = true;
-    let isEmailValid = true;
-    let emailValue = '';
-
-    for (let i = 1; i <= 20; i++) {
-        let inputElement = document.getElementById('input' + i);
-        if (!inputElement || inputElement.value.trim() === '') {
-            allInputsFilled = false;
-            break;
-        }
-        if (inputElement.id === 'input19') {
-            emailValue = inputElement.value.trim();
-            isEmailValid = isValidEmail(emailValue);
-        }
-    }
-    if (!isEmailValid) {
-        Swal.fire({
-            title: '¡PAGARE DEVUELTO!',
-            html: 'El correo electrónico ingresado <strong>' + emailValue + '</strong> no es válido. Por favor, ingrese un correo electrónico válido.',
-            icon: 'warning',
-            confirmButtonColor: '#005E56',
-            didClose: () => {
-                limpiarCampos();
-            }
-        });
-        return;
-    }
-
-    if (allInputsFilled && existeNominaDepenData) {
-        var dataDisplay = existeNominaDepenData.map(function(item) {
-            return "<span style='font-size: 25px'><strong>Nomina:</strong> " + item.NOMBRENOMINA + '</span><br>'+
-                   "<span style='font-size: 25px'><strong>Dependencia:</strong> "+ item.CODDEPENDENCIA + ' - '+ item.NOMDEPENDENCIA + '</span><br>'+
-                   "<span style='font-size: 25px'><strong>Fecha de Reporte:</strong> <span style='font-size: 25px; text-transform: uppercase;'>"+ FechaReporte+ '</span></span>';
-        }).join('<br><br>');
-
-        if (Validar === 'verdadero') {
-            showConfirmModal(dataDisplay);
-        } else {
-            let timerInterval;
-            Swal.fire({
-                icon: 'warning',
-                title: 'CARGANDO...',
-                html: dataDisplay,
-                timer: 5000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                onBeforeOpen: () => {
-                    Swal.showLoading();
-                    timerInterval = setInterval(() => {
-                        const content = Swal.getContent();
-                        if (content) {
-                            const b = content.querySelector('b');
-                            if (b) {
-                                b.textContent = Swal.getTimerLeft();
-                            }
-                        }
-                    }, 100);
-                },
-                onClose: () => {
-                    clearInterval(timerInterval);
-                }
-            }).then(() => {
-                if (existeNominaDepenData.some(item => item.FECHAREPORTE === 'SIN FECHA')) {
-                  Swal.fire({
-                  title: '¡ERROR!',
-                  text: '¡NO TIENE FECHA DE REPORTE! INFORMAR AL COORDINADOR PARA ASIGNAR FECHA A LA NOMINA.',
-                  icon: 'error',
-                  confirmButtonColor: '#005E56',
-              }).then((result) => {
-                  if (result.value) {
-                      Swal.fire({
-                          title: 'Limpiando...',
-                          text: 'Limpiando los campos.',
-                          icon: 'info',
-                          allowOutsideClick: false,
-                          allowEscapeKey: false,
-                          showConfirmButton: false,
-                          timer: 1000,
-                          didOpen: () => {
-                              Swal.showLoading();
-                          }
-                      }).then(() => {
-                          window.location.reload();
-                        });
-                    }
-                });
-                } else {
-                    Swal.fire({
-                        title: 'Procesando...',
-                        text: 'Por favor, espere se está analizando el Pagare.',
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-                    document.getElementById('pagare').submit();
-                }
-            });
-        }
-    } else if (!allInputsFilled) {
-      displayAlertWithEmptyInputs();
-    }
-}
-
-function checkEmptyInputs() {
-    let emptyInputNames = [];
-    for (let i = 1; i <= 20; i++) {
-        let inputId = 'input' + i;
-        let inputElement = document.getElementById(inputId);
-        if (inputElement && inputElement.value.trim() === '') {
-            if (inputElement.name) {
-                // Remove the asterisk (*) from the name
-                let cleanName = inputElement.name.replace(/\s*\*$/, '');
-                emptyInputNames.push(cleanName);
-            }
-        }
-    }
-    return emptyInputNames;
-}
-
-function displayAlertWithEmptyInputs() {
-    let emptyInputNames = checkEmptyInputs();
-    let message = emptyInputNames.length > 0
-        ? '<span style="font-size:23px">Los siguientes campos están vacíos: <strong>' + emptyInputNames.join(', ')+'</strong><br>Por favor, complete todos los campos antes de registrar el pagaré!</span>'
-        : 'Por favor, complete todos los campos antes de registrar el pagaré.';
-
-    Swal.fire({
-        title: '¡PAGARE DEVUELTO!',
-        html: `<span>${message}</span>`,
-        icon: 'warning',
-        confirmButtonColor: '#005E56',
-        confirmButtonText: '<div style="font-size: 20px">OK</div>',
-        didClose: () => {
-            limpiarCampos();
-        }
-    });
-}
-
-function showConfirmModal(dataDisplay) {
-    Swal.fire({
-        icon: 'question',
-        title: '¿ESTÁ SEGURO DE REGISTRAR EL PAGARÉ?',
-        html: dataDisplay,
-        confirmButtonColor: '#005E56',
-        denyButtonText: '<div style="font-size: 30px">NO</div>',
-        confirmButtonText: '<div style="font-size: 30px">CONFIRMAR</div>',
-        reverseButtons: true,
-        showDenyButton: true,
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Procesando...',
-                text: 'Por favor, espere se esta comprobando el Pagare.',
-                icon: 'info',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            document.getElementById('pagare').submit();
-        } else if (result.isDenied) {
-            Swal.fire({
-                title: 'Limpiando...',
-                text: 'Limpiando los campos.',
-                icon: 'info',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false,
-                timer: 1000,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then(() => {
-                window.location.reload();
-            });
-        }
-    });
-}
-
-function limpiarCampos() {
-    for (let i = 1; i <= 20; i++) {
-        let inputId = 'input' + i;
-        let inputElement = document.getElementById(inputId);
-        if (inputElement) {
-            inputElement.value = '';
-            inputElement.removeAttribute('readonly');
-        }
-    }
-
-    if (input2.value.trim() !== '') {
-        input1.style.display = 'none';
-    } else {
-        input1.style.display = 'block';
-        input3.style.display = 'block';
-    }
-    document.getElementById('input1').focus();
-}
-
-            $('button[name="btnregistrar"]').on('click', function() {
-              for (let i = 2; i <= 20; i++) {
-        let inputId = '#input' + i;
-        if ($(inputId).val() === '') {
-            $(inputId).css('background-color', 'mistyrose');
-            $(inputId).attr('placeholder', 'Obligatorio');
-        }
-    }
-    });
-
-    $('#input2, #input3, #input4, #input5, #input6, #input7, #input8, #input9, #input10, #input11, #input12, #input13, #input14, #input15, #input16, #input17, #input18, #input19, #input20').on('input', function() {
-        if ($(this).val() !== '') {
-            $(this).css('background-color', '');
-            $(this).attr('placeholder', '');
-        }
-    });
-
-
-    document.querySelectorAll('input').forEach((input, index) => {
-    input.addEventListener('keydown', (event) => {
-        if (event.key === ';') {
-            event.preventDefault();
-            input.readOnly = true; // Establece el input actual en readonly
-            const nextInput = document.getElementById('input' + (index + 1));
-            if (nextInput) {
-                nextInput.focus();
-            }
-        } else if (event.key === '*') {
-            const nextInput = document.getElementById('input' + (index));
-            if (nextInput) {
-                nextInput.focus();
-            }
-        }
-    });
-});
-
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(event) {
-        if (event.target.matches("#input2, #input3, #input4, #input5, #input6, #input7, #input8, #input9, #input10, #input11, #input12, #input13, #input14, #input15, #input16, #input17, #input18, #input19, #input20")) {
-            document.getElementById('input1').focus();
-        }
-        var isClickInsideInput = event.target.closest('input') !== null;
-
-
-if (!isClickInsideInput) {
-    document.getElementById('input1').focus();
-}
-    });
-});
-
-
-
-    const input1 = document.getElementById('input1');
-    const input2 = document.getElementById('input2');
-    const input3 = document.getElementById('id');
-
-    input2.addEventListener('input', () => {
-        if (input2.value.trim() !== '') {
-            input1.style.display = 'none';
-            input3.style.display = 'none';
-        } else {
-            input1.style.display = 'block';
-        }
-    });
-
-        </script>
-
-
     {{-- FECHA --}}
     <div class="col-sm-12 col-md-12 col-lg-9 col-xl-9 col-xxl-9">
       <div class="">
@@ -775,7 +411,7 @@ if (!isClickInsideInput) {
         }else if(row.Aprobado == 0){
             var AprobadoButton = '<span class="text-danger" style="font-weight: bold; font-size: 30px">R</span>';
         }else{
-            var AprobadoButton = '<span class="text-secondary-emphasis" style="font-weight: bold; font-size: 30px">FA</span>';
+            var AprobadoButton = '<span class="text-secondary-emphasis" style="font-weight: bold; font-size: 30px">PENDIENTE</span>';
         }
 
 
@@ -828,7 +464,7 @@ if (!isClickInsideInput) {
       //               </div>
       //             </div>`;
                 }else{
-                  var editButton =`<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" download style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
+                  var editButton =`<a href="Storage/files/autorizacionpagare/${row.DocuAutorizacion}" target="__blank" style="display: flex; justify-content: center;"><img src="img/pdf.png" style="height: 4.0rem; width: 3.0rem"></a>`
                 }
   return editButton;
 
@@ -874,7 +510,7 @@ if (!isClickInsideInput) {
         var Linea_Credito = row.Linea_Credito;
 
 
-        return NoLC+'-'+Linea_Credito;
+        return Linea_Credito;
       }
     },
     {data: 'Capital'},

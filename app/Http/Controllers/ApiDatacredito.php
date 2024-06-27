@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Pagare;
 use App\Models\Persona;
@@ -94,5 +95,35 @@ class ApiDatacredito extends Controller
             ]
         ]);
     }
+
+
+
+    public function showUsers($email)
+    {
+        $usuarios = User::select('id','email', 'password', 'rol', 'agenciau', 'name')
+                        ->where('email', $email)
+                        ->get();
+    
+        $usuarios = $usuarios->map(function($usuario) {
+            return [
+                'id' => $usuario->id,
+                'email' => strtolower($usuario->email),
+                'password' => $usuario->password,
+                'rol' => $usuario->rol,
+                'agenciau' => $usuario->agenciau,
+                'name' => $usuario->name,
+            ];
+        });
+    
+
+        if ($usuarios->isEmpty()) {
+            return response()->json(['status' => 404, 'persona' => 'No hay usuarios existentes.']);
+        }
+    
+
+        return response()->json(['status' => 200, 'usuarios' => $usuarios]);
+    }
+    
+    
     
 }

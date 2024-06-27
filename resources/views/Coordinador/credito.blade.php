@@ -247,7 +247,7 @@ if(row.FechaInsercion == null){
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
       }
     }
     return data;
@@ -260,7 +260,7 @@ if(row.FechaInsercion == null){
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
+        return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a><span class="d-none fw-bold blink" style="font-size: 20px;"><br>1</span>';
       }
     }
     return data;
@@ -273,7 +273,7 @@ if(row.FechaInsercion == null){
           if (data === null) {
             return '';
           }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -287,7 +287,7 @@ if(row.FechaInsercion == null){
       if (data === 'null.html' || data === null) {
         return '';
       } else {
-        return '<a href="Storage/files/rccreditos/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/rccreditos/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -443,6 +443,17 @@ if(row.FechaInsercion == null){
       "previous": "Anterior"
     }
   },
+  "initComplete": function(settings, json) {
+                    var buttonsHtml = '<div class="custom-buttons">' +
+                        '<button id="btnT" class="custom-btn" title="ACTUALIZAR INFORMACIÓN"><i class="fa-solid fa-rotate-right"></i></button>' +
+                        //   '<button id="btnFA" class="custom-btn" title="FALTA POR APROBAR">FA</button>' +
+                        '</div>';
+                    $(buttonsHtml).prependTo('.dataTables_filter');
+                    $('#btnT').on('click', function() {
+                        table.ajax.reload(null, false);
+
+                    });
+                },
   responsive: "true",
         dom: 'Bfrtilp',
         buttons:[
@@ -500,7 +511,28 @@ function showUnauthorizedMessage() {
 
         </script>
 
+        <style>
+            .custom-buttons {
+                display: inline-block;
+                margin-right: 10px;
+            }
 
+            .custom-btn {
+                background-color: #646464;
+                font-weight: bold;
+                font-size: 20px;
+                color: white;
+                padding: 5px 10px;
+                margin: 2px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .custom-btn:hover {
+                background-color: #aeaeae;
+            }
+        </style>
 
     </div>
 

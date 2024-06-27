@@ -323,7 +323,7 @@
                                     var DocumentoSoporte = `
                                     <tr>
                                         <th scope="row">SOPORTE:</th>
-                                        <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" download><img src="img/pdf.png" style="height: 2.5rem"></a></td>
+                                        <td id="tipo"><a href="Storage/files/soporteautorizaciones/${row.DocumentoSoporte}" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a></td>
                                     </tr>
                                     `
                                 }else{

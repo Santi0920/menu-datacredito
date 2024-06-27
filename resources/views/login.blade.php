@@ -23,8 +23,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -39,8 +39,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -49,8 +49,8 @@
       <div class="col-lg-7 d-none d-lg-block">
         <!-- corousel -->
         <div id="carouselExampleIndicators" class="carousel slide">
-          
-          
+
+
           <div class="carousel-inner">
             <div class="carousel-item imagen-1 min-vh-100 active">
             <div class="overlay"></div>
@@ -58,7 +58,7 @@
             <div class="carousel-item imagen-2 min-vh-100">
             </div>
           </div>
-        
+
         </div>
       </div>
       <div class="col-lg-5" id="id">
@@ -69,10 +69,10 @@
                 <a href="index" class="regresar" id=""><img src="{{ asset('img/arrow.png') }}" class="img-fluid" style="height: 2.5rem; width: 2.5rem"></a>
             </div>
           </div>
-          <img src="img/CoopserpPH.png" class="img-fliud mx-auto d-block mb-4 " style="height: 10rem; width: 30rem">
-          
+          <img src="img/CoopserpPH.png" class="img-fluid mx-auto d-block mb-4 " style="height: 10rem; width: 30rem">
+
         </div>
-        
+
         <!-- Formulario -->
         <div class="px-lg-5 py-lg-4 p-4">
           <form action="" method="post">
@@ -94,15 +94,15 @@
                       title: "Error!\n Email o Contraseña incorrectos!",
                       text: '',
                       confirmButtonColor: '#005E56'
-                
-                  });  
+
+                  });
               </script>
               </div>
             @enderror
-        
+
           <button type="submit" class="btn fw-bold fs-5 text-light mt-4 w-100" name="Sesion" style="background-color: #005E56;" value="" id="Sesion">INGRESAR</button>
           </form>
-          
+
         </div>
       </div>
     </div>

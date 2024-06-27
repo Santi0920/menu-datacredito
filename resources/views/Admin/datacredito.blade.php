@@ -13,8 +13,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 3000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -29,8 +29,8 @@
           text: '',
           confirmButtonColor: '#005E56',
           timer: 10000
-    
-      });  
+
+      });
   </script>
   </div>
 @endif
@@ -44,8 +44,8 @@
         title: "Error al registrar!\n{{$message}}",
         text: '',
         confirmButtonColor: '#005E56'
-  
-    });  
+
+    });
 </script>
 </div>
 @enderror
@@ -53,21 +53,21 @@
 <!-- NAV DE LISTA-->
 <a name="arriba"></a>
 <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-  <div class="container-fluid menu-bar" style="" > 
+  <div class="container-fluid menu-bar" style="" >
     <!-- Coopserp.com-->
-    
-    <!-- Botón que aparece al reducir pantalla--> 
+
+    <!-- Botón que aparece al reducir pantalla-->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
     </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <!-- Foto Coopserp--> 
+  <!-- Foto Coopserp-->
   <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2" style="filter: drop-shadow(0 2px 0.8px white);">
-    
-  
-  <ul class="navbar-nav me-auto mb-lg-0 header">        
-      <!-- DataCreditos-->       
+
+
+  <ul class="navbar-nav me-auto mb-lg-0 header">
+      <!-- DataCreditos-->
       <div class="dropdown nav-item">
         <li class="nav-link active text-white dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
           Datacrédito
@@ -75,39 +75,39 @@
         <ul class="dropdown-menu" style="background-color: #005E56;">
         <ul class="dropend">
         <li class="dropdown-toggle text-white" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Solicitud Datacrédito</a></li>
-         
+
         <ul class="dropdown-menu" style="background-color: #005E56;">
           <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px" href="admin">CRUD Asociación</a></li>
           <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="adminempleado">CRUD Empleados</a></li>
           <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="adminproveedor">CRUD Proveedores</a></li>
-          
+
         </ul>
         </ul>
         <li class="text-white dropdown-divider"></li>
         <ul class="dropend">
           <li class="dropdown-toggle text-white text-start" style=" list-style-type: none; font-size: 25px" ><a class="fw-semibold text-white" style=" font-size: 25px; text-decoration: none; text-aling:start">Eliminados</a></li>
-           
+
               <ul class="dropdown-menu" style="background-color: #005E56;">
                 <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px" href="admineliminadoa">Asociados</a></li>
                 <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="admineliminadoe">Empleados</a></li>
                 <li><a class="text-white dropdown-item fw-semibold"  style="font-size: 25px" href="admineliminadop">Proveedores</a></li>
-                
+
               </ul>
           </ul></li>
           <li class="text-white dropdown-divider"></li>
     </ul>
   </div>
-      <!-- Anticipados-->  
+      <!-- Anticipados-->
       <li class="nav-item">
         <a class="nav-link active text-white" aria-current="page" href="adminpagare" id="data" style="font-size: 25px">Pagare</a>
       </li>
 
     </ul>
-    
+
     <span class="mx-4 text-white" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-1" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
     <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-light"><b style="font-size: 25px;">Cerrar Sesión</b></button></a>
 
-   
+
   </div>
 </div>
 </nav>
@@ -135,37 +135,37 @@
             <div class="modal-content">
             <button type="button" data-bs-dismiss="modal" class="btn-close p-3" aria-label="Close"></button>
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    
+
                     <h1 class="modal-title text-center fw-semibold" id="modificar">AGREGAR ROL</h1>
 
                  </div>
                 <hr>
 
                 <div class="modal-body">
-    
-                
+
+
                 <div style="max-height: 12.5rem; overflow: auto;">
                 <table class="table">
                     <thead class="" style="background-color: #005E56;">
                       <tr class="text-white">
-                        
+
                         <th scope="col">USUARIO</th>
                         <th>ROL</th>
                         {{-- <th>EMAIL</th> --}}
                         <th></th>
                         <th></th>
                         <th></th>
-                        
 
-                        
+
+
                       </tr>
                       </thead>
-                    
+
 
                       <tbody>
                         @foreach($datos2 as $item)
                         <tr>
-                        
+
                         <td title="{{ $item->email }}">{{$item->name}}</td>
                         <td title="{{ $item->email }}">{{$item->rol == 'Asociacion' ? 'Coordinador' : $item->rol }}</td>
                         <td><a onclick="return activar()" type="submit" href="{{route('rol.activo',$item->id)}}" name="activar" id="activar" class="btn btn-small btn-warning">Activar</a></td>
@@ -173,19 +173,19 @@
                         <td><a onclick="return eliminar()" href="{{route('rol.delete',$item->id)}}" type="submit" class="btn btn-small btn-danger" name="eliminar" value="ok"><i class="fa-solid fa-trash"></i></a></td>
                       </tr>
                         @endforeach
-                    
+
                       </tbody>
                 </table>
                 </div>
                <hr>
-               
-            <!--Label1-->  
+
+            <!--Label1-->
             <div class="mb-3 mt-3">
                 <label for="label" id="consul1" class="form-label fw-bold" value="">NOMBRE COMPLETO</label>
                 <input type="text" class="form-control" name="name" id="name" required>
                 <div id="nameError" style="color: red;" class="fw-bold"></div>
             </div>
-            <!--VALIDACION CAMPO USUARIO--> 
+            <!--VALIDACION CAMPO USUARIO-->
             <script>
             var usernameInput = document.getElementById('name');
             var usernameError = document.getElementById('nameError');
@@ -204,8 +204,8 @@
             </script>
 
 
-     
-            <!--Label2--> 
+
+            <!--Label2-->
             <div class="mb-3">
                 <label for="label" id="consul2" class="form-label fw-bold">CORREO ELECTRÓNICO</label>
                 <input type="email" class="form-control" name="email" id="email" required>
@@ -361,7 +361,7 @@
               <option value="Riohacha">Riohacha</option>
               <option value="Yopal">Yopal</option>
               <option value="Facatativá">Facatativá</option>
-              <option value="Girardot">Girardot</option> 
+              <option value="Girardot">Girardot</option>
               <option value="Reporte Bogota">Reporte Bogota</option>
     <option value="Reporte Cali">Reporte Cali</option>
     <option value="Juridico Zona Centro">Juridico Zona Centro</option>
@@ -381,7 +381,7 @@
     <option value="Coordinacion 5">Coordinacion 5</option>
     <option value="Coordinacion 6">Coordinacion 6</option>
     <option value="Coordinacion 7">Coordinacion 7</option>
-    <option value="Coordinacion 8">Coordinacion 8</option>             
+    <option value="Coordinacion 8">Coordinacion 8</option>
             </select>
           </div>
         </div>
@@ -391,7 +391,7 @@
         <div class="text-center p-2">
         <button  type="submit" class=" btn btn-primary w-50" name="btnregistrar2" style="background-color: #005E56;">Registrar</button>
         </div>
-            
+
             </div>
         </div>
     </div>
@@ -401,10 +401,10 @@
 <div class="container-fluid row p-4">
 <form action="{{route('crud.create')}}" class="col 3 m-3" method="POST" enctype= "multipart/form-data" onsubmit="return validateForm()">
   <h2 class="p-2 text-secondary text-center"><b>Datacrédito Asociación</b></h2>
-  
+
  @csrf
-  
- 
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="cedula" class="form-label fw-semibold">CÉDULA<span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control" name="Cedula" id="cedula" required>
@@ -412,7 +412,7 @@
     <div id="cedulaError2" style="color: red;" class="fw-bold"></div>
 </div>
 
-  <!--VALIDACION CAMPO CEDULA--> 
+  <!--VALIDACION CAMPO CEDULA-->
   <script>
 var cedulaInput = document.getElementById('cedula');
 var cedulaError = document.getElementById('cedulaError');
@@ -429,14 +429,14 @@ cedulaInput.addEventListener('keyup', function() {
 
 cedulaInput.setAttribute("maxlength", "10");
 </script>
-   
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NOMBRE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input type="text" class="form-control " name="Nombre" id="nombre" required>
     <div id="nombreError" style="color: red;" class="fw-bold"></div>
     <div id="nombreError2" style="color: red;" class="fw-bold"></div>
   </div>
-   <!--VALIDACION CAMPO NOMBRE--> 
+   <!--VALIDACION CAMPO NOMBRE-->
   <script>
   var nombreInput = document.getElementById('nombre');
   var nombreError = document.getElementById('nombreError');
@@ -462,7 +462,7 @@ nombreInput.setAttribute("maxlength", "30");
     <div id="apellidosError2" style="color: red;" class="fw-bold"></div>
   </div>
 
-  <!--VALIDACION CAMPO APELLIDOS--> 
+  <!--VALIDACION CAMPO APELLIDOS-->
   <script>
   var apellidosInput = document.getElementById('apellidos');
 var apellidosError = document.getElementById('apellidosError');
@@ -481,22 +481,22 @@ apellidosInput.setAttribute("maxlength", "60");
 
   </script>
 
- 
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">SCORE <span class="text-danger" style="font-size:20px;">*</span></label>
     <input list="ScoreL" type="text" class="form-control " name="Score" id="score" required placeholder="0 - 950" autocomplete="off">
     <div id="scoreError" style="color: red;" class="fw-bold"></div>
     <div id="scoreError2" style="color: red;" class="fw-bold"></div>
     <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
-    
+
   </div>
 
   <datalist id="ScoreL">
     <option value="S/E"></option>
   </datalist>
- 
 
-<!--VALIDACION CAMPO SCORE--> 
+
+<!--VALIDACION CAMPO SCORE-->
   <script>
 var scoreInput = document.getElementById('score');
 var reporteInput = document.getElementById('reporte');
@@ -545,12 +545,12 @@ if (scoreVal === 'S/E') {
     <div id="reporteError" style="color: red;" class="fw-bold"></div>
     <div id="reporteError2" style="color: red;" class="fw-bold"></div>
   </div>
- 
+
  <script>
 $(document).ready(function() {
   $('#consecutivof').on('input', function() {
     var valor = $(this).val();
-    
+
     if ($.isNumeric(valor)) {
       $('#archivo3').prop('required', true);
     } else {
@@ -581,7 +581,7 @@ if ($(this).val() > 0) {
 });
 });
 
-  
+
  var reporteInput = document.getElementById('reporte');
 var reporteError = document.getElementById('reporteError');
 
@@ -602,11 +602,11 @@ reporteInput.setAttribute("maxlength", "15");
   font-style: italic;
 }
 </style>
-  
-  
+
+
   <div class="mb-3 w-100" title="Este campo es obligatorio">
     <label for="exampleInputEmail1" class="form-label fw-semibold">NÚMERO CUENTA <span class="text-danger" style="font-size:20px;">*</span></label>
-    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" required autocomplete="off"> 
+    <input list="cuentaL" type="text" class="form-control " name="CuentaAsociada" id="cuenta" required autocomplete="off">
     <p class="formato-ayuda">Si la persona no tiene cuenta, ingresar <strong>N/A(No aplica)</strong>.</p>
     <div id="cuentaError" style="color: red;" class="fw-bold"></div>
     <div id="cuentaError2" style="color: red;" class="fw-bold"></div>
@@ -616,9 +616,9 @@ reporteInput.setAttribute("maxlength", "15");
     <option value="N/A"></option>
   </datalist>
 
-  <!--VALIDACION CAMPO NUMERO DE CUENTA--> 
+  <!--VALIDACION CAMPO NUMERO DE CUENTA-->
   <script>
-var cuentaInput = document.getElementById('cuenta');  
+var cuentaInput = document.getElementById('cuenta');
 var cuentaError = document.getElementById('cuentaError');
 
 cuentaInput.addEventListener('keyup', function() {
@@ -653,7 +653,7 @@ cuentaInput.setAttribute("maxlength", "7");
   </datalist>
 
 
-  <!--VALIDACION CAMPO AGENCIA--> 
+  <!--VALIDACION CAMPO AGENCIA-->
   <script>
   var agenciaInput = document.getElementById('Agencia');
   var agenciaError = document.getElementById('agenciaError');
@@ -678,7 +678,7 @@ cuentaInput.setAttribute("maxlength", "7");
   });
 
   agenciaInput.setAttribute('maxlength', '20');
-  
+
 </script>
 
 <div class="mb-3 w-100" title="Este campo es obligatorio">
@@ -769,7 +769,7 @@ var estadoError = document.getElementById('estadoError');
         $("#tipof option[value='N/A']").prop("disabled", false);
       }
     });
-  
+
     $("#consecutivof").on("blur", function() {
       if($(this).val().toUpperCase() === "N/A") {
         $("#tipof").val("N/A").prop("disabled", true);
@@ -793,11 +793,11 @@ var estadoError = document.getElementById('estadoError');
 <script>
 var reporteInput = document.getElementById('reporte');
 reporteInput.addEventListener('input', function() {
-  reporteInput.value = reporteInput.value.toUpperCase(); 
+  reporteInput.value = reporteInput.value.toUpperCase();
 });
 var scoreInput = document.getElementById('score');
 scoreInput.addEventListener('input', function() {
-scoreInput.value = scoreInput.value.toUpperCase(); 
+scoreInput.value = scoreInput.value.toUpperCase();
 });
 
 var cuentaInput = document.getElementById('cuenta');
@@ -863,21 +863,21 @@ consecutivofInput.setAttribute("maxlength", "6");
             $('#tipof').attr('placeholder', 'Obligatorio');
         }
     });
-    
+
     $('#cedula, #nombre, #apellidos, #score, #cuenta, #agencia, #estado, #tipof').on('input', function() {
         if ($(this).val() !== '') {
             $(this).css('background-color', '');
             $(this).attr('placeholder', '');
         }
     });
-    
+
     //VALIDACION REGISTRO
       function validateForm() {
         //Cedula
     var cedulaInput = document.getElementById('cedula');
     var cedulaError2 = document.getElementById('cedulaError2');
-    
-    if (!/^[0-9]+$/.test(cedulaInput.value)) {   
+
+    if (!/^[0-9]+$/.test(cedulaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -889,12 +889,12 @@ consecutivofInput.setAttribute("maxlength", "6");
       cedulaInput.focus();
       return false;
     }
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre');
     var nombreError2 = document.getElementById('nombreError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -906,70 +906,70 @@ consecutivofInput.setAttribute("maxlength", "6");
       nombreInput.focus();
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos');
     var apellidosError2 = document.getElementById('apellidosError2');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = '';
       apellidosInput.focus();
       return false;
     }
-    
+
     //SCORE
     var scoreInput = document.getElementById('score');
     var scoreError2 = document.getElementById('scoreError2');
-    
-    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {   
+
+    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo SCORE debe contener un valor del 1-950 ó S/E!',
         confirmButtonColor: '#005E56'
       });
-      
+
       scoreError2.textContent = '';
       scoreInput.focus();
       return false;
     }
-    
+
     //Reporte
     var reporteInput = document.getElementById('reporte');
     var reporteError2 = document.getElementById('reporteError2');
-    
-    if (!/^[\w,]*$/i.test(reporteInput.value)) {   
+
+    if (!/^[\w,]*$/i.test(reporteInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo REPORTE debe contener solo letras, números o comas!',
         confirmButtonColor: '#005E56'
       });
-      
+
       reporteError2.textContent = '';
       reporteInput.focus();
       return false;
     }
-    
+
     //Núm. de Cuenta
     var cuentaInput = document.getElementById('cuenta');
     var cuentaError2 = document.getElementById('cuentaError2');
-    
-    if (!/^\d{0,10}$|^N\/A$/i.test(cuentaInput.value)) {   
+
+    if (!/^\d{0,10}$|^N\/A$/i.test(cuentaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo NÚMERO DE CUENTA debe contener dígitos numéricos ó N/A!',
         confirmButtonColor: '#005E56'
       });
-    
+
       cuentaError2.textContent = '';
           cuentaInput.focus();
           return false;
@@ -1012,18 +1012,18 @@ consecutivofInput.setAttribute("maxlength", "6");
       }
 
 
-        
+
         var consecutivofInput = document.getElementById('consecutivof');
         var consecutivofError2 = document.getElementById('consecutivofError2');
-        
-        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {   
+
+        if (!/^\d{0,10}$|^N\/A$/i.test(consecutivofInput.value)) {
           Swal.fire({
             icon: 'error',
             title: '¡Error!',
             text: 'El campo CONSECUTIVO debe contener dígitos numéricos ó N/A!',
             confirmButtonColor: '#005E56'
           });
-          
+
           consecutivofError2.textContent = '';
           consecutivofInput.focus();
           return false;
@@ -1031,9 +1031,9 @@ consecutivofInput.setAttribute("maxlength", "6");
         return true;
       }
 
-      
+
     </script>
-    
+
     </form>
     {{-- FECHA --}}
     <div class="col-9">
@@ -1052,7 +1052,7 @@ consecutivofInput.setAttribute("maxlength", "6");
         const anio = fecha.getFullYear();
         let horas = fecha.getHours();
         let amPm = 'AM';
-        
+
         // AM/PM
         if (horas > 12) {
             horas -= 12;
@@ -1060,26 +1060,26 @@ consecutivofInput.setAttribute("maxlength", "6");
         } else if (horas === 0) {
             horas = 12;
         }
-    
+
         const minutos = fecha.getMinutes();
         const segundos = fecha.getSeconds();
-        
-        
+
+
         return `${mes} ${dia}, ${anio} - ${horas}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')} ${amPm}`;
     }
-    
-    
+
+
     function actualizarFechaActual() {
         const elementoFecha = document.getElementById('fechaActual');
         elementoFecha.textContent = `${obtenerFechaActual()}`;
     }
-    
-    
+
+
     setInterval(actualizarFechaActual, 1000);
     </script>
-    
-    
-        </form>  
+
+
+        </form>
       </div>
     <div style="overflow: auto;" class="table-responsive">
         <table id="personas" class="hover table table-striped shadow-lg mt-4 table-bordered table-hover col-md-5">
@@ -1105,31 +1105,31 @@ consecutivofInput.setAttribute("maxlength", "6");
               <th class="" scope="col">IDA</th>
               <th class="" scope="col">MONTO</th>
               <th class="" scope="col">DEUDAESP</th>
-      
-              
+
+
               <th class="" style="width: 77px"></th>
-            </tr> 
-          </thead> 
+            </tr>
+          </thead>
           <tbody class="table-group-divider">
-           
-            
+
+
           </tbody>
 
 
-          
+
         </table>
-        
-      
+
+
 
         <script>
               //VALIDACION REGISTRO
       function validateForm2() {
-    
+
     //Nombre
     var nombreInput = document.getElementById('nombre3');
     var nombreError2 = document.getElementById('nombreError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(nombreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -1139,51 +1139,51 @@ consecutivofInput.setAttribute("maxlength", "6");
       nombreError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //Apellidos
     var apellidosInput = document.getElementById('apellidos3');
     var apellidosError2 = document.getElementById('apellidosError3');
-    
-    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {   
+
+    if (!/^[a-zA-Z\sñÑ]+$/u.test(apellidosInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo APELLIDOS debe contener solo caracteres alfabéticos!',
         confirmButtonColor: '#005E56'
       });
-      
+
       apellidosError2.textContent = 'Ingrese solo letras!';
       return false;
     }
-    
+
     //SCORE
     var scoreInput = document.getElementById('score3');
     var scoreError2 = document.getElementById('scoreError3');
-    
-    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {   
+
+    if (!/^(0*[1-9]|[1-9][0-9]{0,2}|950|S\/E)$/.test(scoreInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo SCORE debe contener un valor del 1-950 ó S/E!',
         confirmButtonColor: '#005E56'
       });
-      
+
       scoreError2.textContent = 'Ingrese un número del 1 al 950 ó S/E!';
       return false;
     }
-    
+
     //Reporte
     var reporteInput = document.getElementById('reporte3');
     var reporteError2 = document.getElementById('reporteError3');
-    
-    if (!/^[\w,]*$/i.test(reporteInput.value)) {   
+
+    if (!/^[\w,]*$/i.test(reporteInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
         text: 'El campo REPORTE debe contener solo letras, números o comas!',
         confirmButtonColor: '#005E56'
       });
-      
+
       reporteError2.textContent = 'Ingresar solo letras, números o comas!';
       return false;
     }
@@ -1214,8 +1214,8 @@ consecutivofInput.setAttribute("maxlength", "6");
       }
     var consecutivofInput = document.getElementById('consecutivof33');
     var consecutivofError2 = document.getElementById('consecutivofError3');
-    
-    if (!/^[0-9]+$|^N\/A$/i.test(consecutivofInput.value)) {   
+
+    if (!/^[0-9]+$|^N\/A$/i.test(consecutivofInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -1228,8 +1228,8 @@ consecutivofInput.setAttribute("maxlength", "6");
     }
     var consecutivoaInput = document.getElementById('consecutivoa');
     var consecutivoaError2 = document.getElementById('analisisError3');
-    
-    if (!/^[0-9]+$|^N\/A$/i.test(consecutivoaInput.value)) {   
+
+    if (!/^[0-9]+$|^N\/A$/i.test(consecutivoaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -1242,8 +1242,8 @@ consecutivofInput.setAttribute("maxlength", "6");
     }
     var montoInput = document.getElementById('monto');
     var montoError2 = document.getElementById('montoError3');
-    
-    if (!/^[0-9]+$/.test(montoInput.value)) {   
+
+    if (!/^[0-9]+$/.test(montoInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -1257,8 +1257,8 @@ consecutivofInput.setAttribute("maxlength", "6");
 
     var deudaInput = document.getElementById('deudaesp');
     var deudaError2 = document.getElementById('deudaError3');
-    
-    if (!/^[0-9]+$/.test(deudaInput.value)) {   
+
+    if (!/^[0-9]+$/.test(deudaInput.value)) {
       Swal.fire({
         icon: 'error',
         title: '¡Error!',
@@ -1269,7 +1269,7 @@ consecutivofInput.setAttribute("maxlength", "6");
       deudaError2.innerHTML = 'Ingrese solo números!';
       return false;
     }
-    
+
         return true;
 }
 
@@ -1292,9 +1292,9 @@ consecutivofInput.setAttribute("maxlength", "6");
             $('#password_confirmation').css('background-color', 'mistyrose');
             $('#password_confirmation').attr('placeholder', 'Obligatorio');
         }
-    
+
     });
-    
+
     </script>
 
           </div>
@@ -1303,7 +1303,7 @@ consecutivofInput.setAttribute("maxlength", "6");
         <script src="ResourcesAll/dtables/jquerydataTables.js"></script>
         <script src="ResourcesAll/dtables/dataTablesbootstrap5.js"></script>
         <script>
- 
+
 
  var table = $('#personas').DataTable({
   "ajax": "{{ route('datatable.admin') }}",
@@ -1325,8 +1325,8 @@ consecutivofInput.setAttribute("maxlength", "6");
     {
   data: 'Score',
   render: function(data, type, row) {
-    var html = ''; 
-    
+    var html = '';
+
     if (data === 'S/E') {
       html += data+'<span class="fw-bold" style="color: #1565c0;"><br></span>';
     } else if (650 <= data && data <= 699) {
@@ -1356,16 +1356,16 @@ consecutivofInput.setAttribute("maxlength", "6");
     render: function(data, type, row) {
         var html = '';
         var fecha_insercion = new Date(data);
-        
+
         var fecha_actual = new Date();
         var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24)); // Calcular la diferencia en días
-        
+
         if (diferencia > 180) {
             html += data+'<span class="text-danger fw-bold blink" style="font-size: 20px;"><br>RENOVAR</span>';
         } else {
             html += data+'<span class="fw-bold" style="color: #1565c0;"><br>Al día</span>';
         }
-        
+
         return html;
     }
 },
@@ -1378,7 +1378,7 @@ consecutivofInput.setAttribute("maxlength", "6");
       if (data === 'Vacío') {
         return '';
       } else {
-        return '<a href="Storage/files/sintesis/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/sintesis/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -1390,7 +1390,7 @@ consecutivofInput.setAttribute("maxlength", "6");
           if (data === 'Vacío') {
             return '';
           }else{
-          return '<a href="Storage/files/pn/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          return '<a href="Storage/files/pn/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
           }
         }
         return data;
@@ -1400,18 +1400,18 @@ consecutivofInput.setAttribute("maxlength", "6");
   data: 'NombreT',
   render: function(data, type, row) {
     if (type === 'display') {
-      var html = ''; 
+      var html = '';
       if (row.Tipof === 'T1') {
         if (data === 'Vacío') {
           return '';
         } else {
-          html += '<a href="Storage/files/t1/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t1/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       } else if (row.Tipof === 'T2') {
         if (data === 'Vacío') {
           return '';
         } else {
-          html += '<a href="Storage/files/t2/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+          html += '<a href="Storage/files/t2/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
         }
       }
       return html;
@@ -1427,7 +1427,7 @@ consecutivofInput.setAttribute("maxlength", "6");
       if (data === 'Vacío') {
         return '';
       } else {
-        return '<a href="Storage/files/analisis/' + data + '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+        return '<a href="Storage/files/analisis/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
       }
     }
     return data;
@@ -1438,7 +1438,7 @@ consecutivofInput.setAttribute("maxlength", "6");
     {data: 'DeudaEsp'},
     {    data: null,
       render: function(data, type, row) {
-        var id = row.ID; 
+        var id = row.ID;
         var url = "{{ route('crud.update', ':id') }}";
         var today = new Date().toISOString().split('T')[0];
         url = url.replace(':id', id);
@@ -1461,22 +1461,22 @@ consecutivofInput.setAttribute("maxlength", "6");
                 <input type="text" class="form-control" name="cedula2" id="cedula2" readonly value="" style="background-color: #EBEBEB; cursor: not-allowed;">
                 <input type="hidden" name="cedula3"  value="">
               </div>
-  
+
               <div class="mb-3">
                 <label for="nombre3" id="izquierda3" class="form-label fw-bold">NOMBRE</label>
                 <input type="text" class="form-control" id="nombre3" name="nombre3" value="" maxlength="30" required>
                 <div id="nombreError3" style="color: red;" class="fw-bold"></div>
               </div>
-        
-              
-              
+
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda6" class="form-label fw-bold">APELLIDOS</label>
                   <input type="text" class="form-control" id="apellidos3" name="apellidos3" value="" maxlength="60" oninput="this.value = this.value.toUpperCase()" required>
                   <div id="apellidosError3" style="color: red;" class="fw-bold"></div>
               </div>
-  
-  
+
+
               <!--Label3-->
               <div class="mb-3">
                   <label for="label"  id="izquierda" class="form-label fw-bold">SCORE</label>
@@ -1484,21 +1484,21 @@ consecutivofInput.setAttribute("maxlength", "6");
                   <div id="scoreError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Si cuenta con score 0, ingresar <strong>S/E(Sin experiencia)</strong>.</p>
               </div>
-  
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda4" class="form-label fw-bold">REPORTE DATACRÉDITO</label>
                   <input type="text" class="form-control" id="reporte3" name="reporte3" maxlength="15" value="" oninput="this.value = this.value.toUpperCase()">
                   <div id="reporteError3" style="color: red;" class="fw-bold"></div>
                   <p class="formato-ayuda">Ingresar N = Normal, D = Dudoso Recaudo, C = Cartera Castigada ó 1 - 6 (Si cuenta con Mora).</p>
               </div>
-  
+
               <!--Label4-->
               <div class="mb-3 ">
                   <label for="label" id="izquierda2" class="form-label fw-bold">CUENTA ASOCIADA</label>
                   <input type="text" class="form-control" name="cuenta3" id="cuenta3" readonly value="" style="background-color: #EBEBEB; cursor: not-allowed;">
                   <input type="hidden" name="cuenta" value="">
               </div>
-  
+
               <!--Label5-->
               <div class="mb-3">
                   <label for="click" id="izquierda7" class="form-label fw-bold">AGENCIA</label>
@@ -1506,13 +1506,13 @@ consecutivofInput.setAttribute("maxlength", "6");
                   <div id="agenciaError3" style="color: red;" class="fw-bold"></div>
               </div>
 
-  
-  
+
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda" class="form-label fw-bold">FECHA</label>
                   <input type="date" class="form-control" name="fecha3" id="fecha3" min="2022-08-01" max="`+today+`" value="" required>
                 </div>
-  
+
               <div class="mb-3">
                   <label for="exampleInputEmail1" id="izquierda9" class="form-label fw-bold">ESTADO</label>
                   <select class="form-control" name="estado3" id="estado3">
@@ -1524,14 +1524,14 @@ consecutivofInput.setAttribute("maxlength", "6");
                       <option value="I">Insolvente</option>
                       <option value="R">Renovar</option>
                   </select>
-                  
+
               </div>
-  
+
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold">ADJUNTAR ARCHIVO SINTESIS</label>
                 <input type="file" class="form-control" name="archivo22" id="archivo22" accept="application/pdf" value="">
-              </div> 
-              
+              </div>
+
                 <div class="mb-3">
                     <label for="label" id="izquierda8" class="form-label fw-bold">ADJUNTAR ARCHIVO PN</label>
                   <input type="file" class="form-control" name="archivo11" id="archivo11" accept="application/pdf" value="">
@@ -1635,8 +1635,8 @@ $('#personas').on('click', '.edit', function() {
   $("#archivo22").val(rowData["NombreS"]);
   $("#archivo11").val(rowData["NombrePN"]);
   $("#archivo33").val(rowData["NombreT"]);
-  
-  
+
+
 });
 
 
@@ -1659,23 +1659,22 @@ $('#personas').on('click', '.edit', function() {
             var respuesta=confirm("¿Estas seguro que deseas eliminar definitivamente este registro?")
             return respuesta
           }
-    
+
           function csesion(){
             var respuesta=confirm("¿Estas seguro que deseas cerrar sesión?")
             return respuesta
           }
 
-         
+
         </script>
-        
-        
+
+
     </div>
-    
+
     </div>
-    
-</div>    
+
+</div>
 
 
     @endsection
-    
- 
+

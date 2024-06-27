@@ -1015,7 +1015,7 @@
                                     return '';
                                 } else {
                                     return '<a href="Storage/files/autorizacion/' + data +
-                                        '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+                                        '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
                                 }
                             }
                             return data;
@@ -1032,7 +1032,7 @@
                                     return '';
                                 } else {
                                     return '<a href="Storage/files/rccreditos/' + data +
-                                        '" download><img src="img/pdf.png" style="height: 2.5rem"></a>';
+                                        '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
                                 }
                             }
                             return data;
