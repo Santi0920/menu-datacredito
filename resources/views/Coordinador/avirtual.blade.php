@@ -137,17 +137,8 @@
               <th class="" scope="col">CUENTA</th>
               <th class="text-center" scope="col">AGENCIA</th>
               <th class="" scope="col">FECHAGNR</th>
-              <th class="" scope="col">ESTADO</th>
               <th class="" scope="col">SIN</th>
               <th class="" scope="col">PN</th>
-              <th class="" scope="col">AUTORIZACION Y/O ANALISIS</th>
-              <th class="" scope="col">ID AUTORIZACION Y/O ANALISIS</th>
-              <th class="" scope="col" title="Recibo de Caja">RC</th>
-              <th class="" scope="col">CONSECUTIVO RC</th>
-              <th class="" scope="col">OBSER RC</th>
-              <th class="" scope="col">LINEA</th>
-              <th class="" scope="col">MONTO</th>
-              <th class="" scope="col">TOTAL DEUDA</th>
               <th class="" scope="col">FECHA CORREO</th>
               <th class="w-25" scope="col">OBSERVACIONES</th>
 
@@ -197,25 +188,14 @@
       },
     {data: 'Cedula'},
     {
-      data: 'Nombre',
-      render: function(data, type, row) {
-        if (type === 'display') {
-          var formattedName = data.charAt(0).toUpperCase() + data.slice(1).toLowerCase();
-          return formattedName;
-        }
-        return data;
-      }
+      data: 'Nombre'
     },
     {data: 'Apellidos'},
     {data: 'Score'},
     {data: 'Reporte'},
     {data: 'CuentaAsociada'},
     {
-      data: 'Agencia',
-      render: function (data, type, row) {
-        var agencia = data.charAt(0).toUpperCase() + data.slice(1).toLowerCase();
-        return agencia;
-      }
+      data: 'Agencia'
     },
     {
   data: 'FechaInsercion',
@@ -238,7 +218,6 @@ if(row.FechaInsercion == null){
     return html;
   }
 },
-    {data: 'Estado'},
     {
   data: 'NombreS',
   render: function(data, type, row) {
@@ -265,45 +244,12 @@ if(row.FechaInsercion == null){
     return data;
   }
 },
-
-{data: 'NombreA',
-      "render": function(data, type, row) {
-        if (type === 'display') {
-          if (data === null) {
-            return '';
-          }else{
-          return '<a href="Storage/files/autorizacion/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
-          }
-        }
-        return data;
-      }
-    },
-    {data: 'ConsecutivoA'},
-    {
-  data: 'NombreAnalisis',
-  render: function(data, type, row) {
-    if (type === 'display') {
-      if (data === 'null.html' || data === null) {
-        return '';
-      } else {
-        return '<a href="Storage/files/rccreditos/' + data + '" target="__blank"><img src="img/pdf.png" style="height: 2.5rem"></a>';
-      }
-    }
-    return data;
-  }
-},
-   {data: 'ConsecutivoRC'},
-   {data: 'ObRC'},
-   {data: 'Linea'},
-    {data: 'Monto'
-},
-    {data: 'DeudaEsp'},
     {data: 'FechaCorreo'},
     {data: 'Observaciones'},
     {    data: null,
       render: function(data, type, row) {
   var id = row.ID;
-  var url = "{{ route('crud.updatecreditoo', ['id' => ':id']) }}";
+  var url = "{{ route('crud.updatescoreavirtual', ['id' => ':id']) }}";
   url = url.replace(':id', id);
   var today = new Date().toISOString().split('T')[0];
   var modalLinkId = `modalLink_${id}`;

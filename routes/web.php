@@ -237,6 +237,10 @@ Route::get('avirtual/datatable', [CRUDCoordinador::class, 'data3'])
     ->name('datatable.avirtual');
 
 
+Route::post('avirtual/modificar{id}', [CRUDCoordinador::class, 'updateavirtual'])
+->name('crud.updatescoreavirtual');
+
+
 
 //DIRECTOR DE AGENCIA
 

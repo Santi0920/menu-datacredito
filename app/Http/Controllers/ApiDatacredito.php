@@ -129,12 +129,11 @@ class ApiDatacredito extends Controller
     {
         $validatedData = $request->validate([
             'Cedula' => 'required|max:255|string',
-            // 'Nombre' => 'required|string|max:255',
-            // 'Apellidos' => 'required|string|max:255',
-            // 'CuentaAsociada' => 'required|string|max:255',
-            // 'Agencia' => 'required|string|max:255',
-            'TipoAsociado' => 'nullable|string|max:255',
-            // 'FechaCorreo' => 'required|date'
+            'Nombre' => 'required|string|max:255',
+            'Apellidos' => 'required|string|max:255',
+            'CuentaAsociada' => 'required|string|max:255',
+            'Agencia' => 'required|string|max:255',
+            'TipoAsociado' => 'nullable|string|max:255'
         ]);
 
         // Buscar si ya existe una persona con la misma cédula
@@ -151,12 +150,11 @@ class ApiDatacredito extends Controller
         } else {
             $personaId = DB::table('persona')->insertGetId([
                 'Cedula' => $request->Cedula,
-                // 'Nombre' => $request->Nombre,
-                // 'Apellidos' => $request->Apellidos,
-                // 'CuentaAsociada' => $request->CuentaAsociada,
-                // 'Agencia' => $request->Agencia,
-                'TipoAsociado' => $request->TipoAsociado,
-                // 'FechaCorreo' => $request->FechaCorreo
+                'Nombre' => $request->Nombre,
+                'Apellidos' => $request->Apellidos,
+                'CuentaAsociada' => $request->CuentaAsociada,
+                'Agencia' => $request->Agencia,
+                'TipoAsociado' => 'Asociacion Virtual'
             ]);
 
 

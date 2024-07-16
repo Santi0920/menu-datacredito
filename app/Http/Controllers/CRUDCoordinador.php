@@ -533,6 +533,214 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
     }
 
+    public function updateavirtual(Request $request, $id)
+    {
+
+
+        $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo = $archivo[0]->NombreS;
+        $filename = $nombre_archivo;
+        if ($archivo) {
+            $nombre_archivo = $archivo[0]->NombreS;
+            if ($request->hasFile('archivo22')) {
+                $file = $request->file('archivo22');
+                $filename =  $file->getClientOriginalName();
+            }
+
+
+
+            $nuevo_archivo = $filename;
+            if ($archivo) {
+                $pdfactual = $nombre_archivo;
+            } else {
+                $pdfactual = null;
+            }
+        }
+        if (!empty($archivo) && $archivo != $pdfactual) {
+            $nuevo_nombre = $nuevo_archivo;
+        }
+
+        if (isset($nombre_archivo) && isset($nuevo_nombre) && $nombre_archivo !== $nuevo_nombre) {
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo SINTESIS ' . $nombre_archivo . ' actual (' . $nombre_archivo . ').\n'
+            ]);
+        }
+
+        $fecha = DB::select("SELECT FechaInsercion FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+        $fechai = $fecha[0]->FechaInsercion;
+        $fechadef = $request->fecha3;
+
+
+
+        $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
+        $nombre_archivo2 = $archivo2[0]->NombrePN;
+        $filename2 = $nombre_archivo2;
+        if ($archivo2) {
+            $nombre_archivo2 = $archivo2[0]->NombrePN;
+            if ($request->hasFile('archivo11')) {
+                $file2 = $request->file('archivo11');
+                $filename2 =  $file2->getClientOriginalName();
+            }
+
+
+            $nuevo_archivo2 = $filename2;
+            if ($archivo2) {
+                $pdfactual2 = $nombre_archivo2;
+            } else {
+                $pdfactual2 = null;
+            }
+        }
+
+        if (!empty($archivo2) && $archivo2 != $pdfactual2) {
+            $nuevo_nombre2 = $nuevo_archivo2;
+        }
+
+        if (isset($nombre_archivo2) && isset($nuevo_nombre2) && $nombre_archivo2 !== $nuevo_nombre2) {
+
+            return back()->withErrors([
+                'message' => 'El archivo subido contiene un nombre diferente al archivo PN actual (' . $nombre_archivo2 . ').\n'
+            ]);
+        }
+
+
+        else {
+                if($request->Score == 'S/E'){
+                    $request->Score = 'S/E';
+                }
+                 elseif
+                 ($request->Score > 950) {
+                    $request->Score = 950;
+                }
+
+                $sql = DB::select("SELECT DeudaEsp FROM persona WHERE ID = ?", [$id]);
+                $totalDeuda = $sql[0]->DeudaEsp;
+
+
+                $nuevoTotalDeuda = $totalDeuda + $request->monto;
+
+                $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = UPPER(?), Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Enviado=?, Consulta=?, Observaciones = ? WHERE ID = $id", [
+                    $request->cedula2,
+                    $request->nombre3,
+                    $request->apellidos3,
+                    $request->score3,
+                    $request->agencia3,
+                    $request->estado3,
+                    $request->reporte3,
+                    $request->cuenta3,
+                    0,
+                    0,
+                    $request->Observaciones
+
+                ]);
+
+
+
+
+
+            $dir = 'Storage/files/sintesis/';
+            if ($request->hasFile('archivo22') && !empty($filename)) {
+                $file = $request->file('archivo22');
+
+                if ($file->getClientOriginalExtension() === 'pdf') {
+                    if ($file->getClientOriginalName() !== 'Sintesis-' . $request->cedula2 . '.pdf') {
+                        return back()->withErrors([
+                            'message' => 'El nombre del archivo no cumple con el formato requerido ->Sintesis-' . $request->cedula2 . '.pdf'
+                        ]);
+                    }
+
+                    $uploadSuccess = $file->move($dir, $filename);
+                } else {
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
+                }
+            }
+
+            $dir2 = 'Storage/files/pn/';
+            if ($request->hasFile('archivo11') && !empty($filename2)) {
+                $file2 = $request->file('archivo11');
+                if ($file2->getClientOriginalName() !== 'PN-' . $request->cedula2 . '.pdf') {
+                    return back()->withErrors([
+                        'message' => 'El nombre del archivo no cumple con el formato requerido ->PN-' . $request->cedula2 . '.pdf'
+                    ]);
+                }
+
+                if ($file2->getClientOriginalExtension() === 'pdf') {
+                    $uploadSuccess = $file2->move($dir2, $filename2);
+                } else {
+                    return back()->withErrors([
+                        'message' => 'Solo se puede subir archivos PDF.'
+                    ]);
+                }
+            }
+
+            $archivo = DB::select("SELECT NombreS FROM documentosintesis WHERE ID_Persona = ?", [$id]);
+            $nombre_archivo = $archivo[0]->NombreS;
+
+            $archivo2 = DB::select("SELECT NombrePN FROM documentopn WHERE ID_Persona = ?", [$id]);
+            $nombre_archivo2 = $archivo2[0]->NombrePN;
+
+
+            if ($request->hasFile('archivo22')) {
+
+                $sql2 = DB::update("UPDATE documentosintesis SET FechaInsercion = ?, NombreS = ? WHERE ID_Persona = $id", [
+                    $request->fecha3,
+                    $nuevo_archivo
+                ]);
+            } else {
+
+                $sql2 = DB::update("UPDATE documentosintesis SET FechaInsercion = ? WHERE ID_Persona = $id", [
+                    $request->fecha3
+                ]);
+            }
+
+            if ($request->archivo11 != null) {
+
+                $sql3 = DB::update("UPDATE documentopn SET NombrePN = ? WHERE ID_Persona = $id", [
+                    $nuevo_archivo2
+                ]);
+            }
+
+
+            $sql2 = DB::update("UPDATE persona SET Enviado = ? WHERE ID = $id", [
+                    0
+
+            ]);
+
+            $usuarioActual = Auth::user();
+            $nombre = $usuarioActual->name;
+            $rol = $usuarioActual->rol;
+            $cedulaagregada = $request->Cedula;
+            date_default_timezone_set('America/Bogota');
+            $fechaHoraActual = date('Y-m-d H:i:s');
+            $cedula = DB::select("SELECT Cedula FROM persona WHERE ID = $id");
+            $cedulaRegistrada = $cedula[0]->Cedula;
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $agencia = $usuarioActual->agenciau;
+            $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_Rol, AgenciaU, Acción_realizada, Hora_Accion, Cedula_Registrada, cerro_sesion, IP) VALUES (?, ?, ?, ?, 'ActualizoCredito', ?, ?, ?, ?)", [
+                null,
+                $nombre,
+                $rol,
+                $agencia,
+                $fechaHoraActual,
+                $cedulaRegistrada,
+                null,
+                $ip
+            ]);
+
+
+
+            if ($sql == true || $sql2 = true ) {
+
+                return back()->with("correcto", "El usuario " . ucwords($request->nombre3) . " " . strtoupper($request->apellidos3) . " con identificación $request->cedula2 fue actualizado correctamente!");
+
+            } else {
+                return back()->with("incorrecto", "Error al modificar el registro!");
+            }
+
+        }
+    }
+
 
 
 }
