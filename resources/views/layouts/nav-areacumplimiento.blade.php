@@ -1,21 +1,21 @@
 <!-- NAV DE LISTA-->
 <a name="arriba"></a>
 <nav class="navbar navbar-expand-lg bg-body-secondary p-0" id="Menu">
-  <div class="container-fluid menu-bar" style="" > 
+  <div class="container-fluid menu-bar" style="" >
     <!-- Coopserp.com-->
-    
-    <!-- Botón que aparece al reducir pantalla--> 
+
+    <!-- Botón que aparece al reducir pantalla-->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
     </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <!-- Foto Coopserp--> 
+  <!-- Foto Coopserp-->
   <img src="img/CoopserpPH.png" alt="Coopserp.icono" width="150px" height="60px" id="data" class="navbar-brand mb-2 mt-2" style="filter: drop-shadow(0 2px 0.8px white);">
-    
-  
-  <ul class="navbar-nav me-auto mb-lg-0 header">        
-      <!-- DataCreditos-->       
+
+
+  <ul class="navbar-nav me-auto mb-lg-0 header">
+      <!-- DataCreditos-->
       <div class="dropdown nav-item">
         <li class="nav-link active text-white dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 25px">
           Datacrédito
@@ -31,12 +31,18 @@
               Solicitud Crédito
             </li>
             </a>
+            <li class="text-white dropdown-divider"></li>
+            <a href="avirtual" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
+            <li class="text-white active" style="list-style-type: none; font-size: 25px">
+              Solicitud Asociación Virtual
+            </li>
+            </a>
           </a>
         </ul>
 
       </div>
     </ul>
-    
+
     <span class="mx-4 text-white" style="font-size: 25px;"><img style="height: 2.5rem" class="mx-1" src="img/perfil.png">Bienvenid@ <strong>{{ auth()->user()->name }}</strong></span>
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
       <symbol id="circle-half" viewBox="0 0 16 16" class="text-white">
@@ -79,7 +85,7 @@
                 aria-expanded="false"
                 data-bs-toggle="dropdown"
                 data-bs-display="static"
-                
+
               >
                 <svg
                   class="bi my-1 theme-icon-active"
@@ -153,7 +159,7 @@
     </button>
     <a onclick="return csesion()" href="{{route('login.destroy')}}"><button class="btn btn-light"><b style="font-size: 25px;">Cerrar Sesión</b></button></a>
 
-   
+
   </div>
 </div>
 </nav>

@@ -10,5 +10,8 @@ class documentot extends Model
     use HasFactory;
 
     protected $table = 'documentot';
-    
+
+    protected $fillable = [
+        'ID_Persona',
+    ];
 }

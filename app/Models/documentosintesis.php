@@ -11,5 +11,7 @@ class documentosintesis extends Model
 
     protected $table = 'documentosintesis';
 
-    
+    protected $fillable = [
+        'ID_Persona',
+    ];
 }

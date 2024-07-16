@@ -11,5 +11,7 @@ class documentopn extends Model
 
     protected $table = 'documentopn';
 
-    
+    protected $fillable = [
+        'ID_Persona',
+    ];
 }

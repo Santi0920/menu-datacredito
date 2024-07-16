@@ -13,6 +13,7 @@ class Persona extends Model
 
     protected $table = 'persona';
 
+
     // protected $fillable = [
     //     'Cedula',
     //     'Nombre',
@@ -29,6 +30,5 @@ class Persona extends Model
     //     'Tipo',
     //     'TipoAsociado',
     //     'FechaCorreo',
-    //     // Agrega aquí los demás atributos a los que deseas acceder
     // ];
 }

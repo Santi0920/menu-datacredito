@@ -3936,7 +3936,7 @@ class ControllerConsultante extends Controller
             $lineacredito = $credito[0]->Credito;
 
 
-            
+
             $usuarioActual = Auth::user();
             $agencia = $usuarioActual->agenciau;
             $existingAgencia = DB::select('SELECT * FROM agencias WHERE NameAgencia = ?', [$agencia]);
@@ -3990,7 +3990,7 @@ class ControllerConsultante extends Controller
                 $idpagare = $request->ID_Pagare;
                 $correo = $request->Correo;
                 $existingAgencia = DB::select('SELECT ID, Agencia, Score FROM persona WHERE Cedula = ?', [$cedula]);
-    
+
 
                 $sql = DB::insert('INSERT INTO pagare (Aprobado, CoorAsignada, AutorizacionGerente, FechaAccion, NoAgencia, NombreAgencia, CuentaCoop, Cedula_Persona, NombreCompleto, ID_Pagare, Linea_Credito, Capital, NoCuotas, ValorCuota, Tasa, FechaCredito, Direccion, TelFijo, Fecha1Cuota, FechaUltimaCuota, Celular, Correo, GeneradorPagare, ID_Persona, Nomina) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                     3,
@@ -11356,7 +11356,7 @@ class ControllerConsultante extends Controller
                             $response2 = Http::get($url . 'deudatotal/' . $cuenta);
                             $data2 = $response2->json();
 
-                            
+
                             $response3 = Http::get($url . 'deudaespecial/' . $cuenta);
                             $data3 = $response3->json();
 
@@ -11371,7 +11371,7 @@ class ControllerConsultante extends Controller
                             usleep($retryDelay * 1000);
                         }
                     } while ($attempts < $maxAttempts);
-                    
+
                     if ($data3['creditoespecial']['ESPECIAL'] === null) {
                         $especialapi = 0;
                     } else {

@@ -517,6 +517,22 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
     }
 
 
+    public function data3(){
+        $user = DB::select("SELECT DISTINCT  A.ID, A.Inspektor, A.ConsecutivoRC, A.ObRC, A.Observaciones, A.FechaCorreo, A.TipoAsociado, A.Cedula, A.Linea, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado,
+        A.Reporte, A.Monto, A.NombreAnalisis, A.ConsecutivoAnalisis, A.DeudaEsp, B.FechaInsercion, B.NombreS, C.NombrePN, D.Consecutivof, D.Tipof, D.NombreT, E.NombreA, E.ConsecutivoA
+        FROM persona A
+        JOIN documentosintesis B ON A.ID = B.ID_Persona
+        JOIN documentopn C ON B.ID_Persona = C.ID_Persona
+        JOIN documentot D ON C.ID_Persona = D.ID_Persona
+        JOIN documentoa E ON D.ID_Persona = E.ID_Persona
+        WHERE A.Activado = 1 && (A.Tipo = 'Persona' OR A.Tipo = 'Empleado' OR A.Tipo = 'NuevoEmpleado') && A.TipoAsociado = 'Asociacion Virtual'
+        ORDER BY Nombre ASC");
+
+
+        return datatables()->of($user)->toJson();
+
+    }
+
 
 
 }

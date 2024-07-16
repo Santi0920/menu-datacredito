@@ -10,6 +10,7 @@ use App\Models\documentoa;
 use App\Models\documentopn;
 use App\Models\documentosintesis;
 use App\Models\documentot;
+use Illuminate\Support\Facades\DB;
 
 class ApiDatacredito extends Controller
 {
@@ -17,25 +18,25 @@ class ApiDatacredito extends Controller
 
     public function show($cedula){
         $persona = Persona::where('Cedula', $cedula)->first();
-    
+
         if (!$persona) {
-            return response()->json(['status' => 404, 'persona' => 'Persona con '.$cedula .' no encontrada.']);
+            return response()->json(['status' => 422, 'persona' => 'Persona con '.$cedula .' no encontrada.']);
         }
-    
+
         $ID = $persona->ID;
-    
+
         $documentoa = Documentoa::where('ID_Persona', $ID)->first();
         $documentopn = Documentopn::where('ID_Persona', $ID)->first();
         $documentosintesis = Documentosintesis::where('ID_Persona', $ID)->first();
         $documentot = Documentot::where('ID_Persona', $ID)->first();
-    
+
         $documentos = [
             'documentoa' => $documentoa,
             'documentopn' => $documentopn,
             'documentosintesis' => $documentosintesis,
             'documentot' => $documentot
         ];
-    
+
         return response()->json(['status' => 200, 'persona' => $persona, 'documentos' => $documentos]);
     }
 
@@ -44,9 +45,9 @@ class ApiDatacredito extends Controller
     public function showPagare($cedula){
         $pagare = Pagare::where('Cedula_Persona', $cedula)->first();
 
-    
+
         if (!$pagare) {
-            return response()->json(['status' => 404, 'pagare' => 'Pagare vinculado a cédula  No.'.$cedula .' no encontrada.']);
+            return response()->json(['status' => 422, 'pagare' => 'Pagare vinculado a cédula  No.'.$cedula .' no encontrada.']);
         }
 
         if($pagare->Correo == null){
@@ -61,7 +62,7 @@ class ApiDatacredito extends Controller
         }else{
             $idpagare = $pagare->ID_Pagare;
         }
-    
+
         return response()->json([
             'status' => 200,
             'pagare' => [
@@ -103,7 +104,7 @@ class ApiDatacredito extends Controller
         $usuarios = User::select('id','email', 'password', 'rol', 'agenciau', 'name')
                         ->where('email', $email)
                         ->get();
-    
+
         $usuarios = $usuarios->map(function($usuario) {
             return [
                 'id' => $usuario->id,
@@ -114,16 +115,78 @@ class ApiDatacredito extends Controller
                 'name' => $usuario->name,
             ];
         });
-    
+
 
         if ($usuarios->isEmpty()) {
-            return response()->json(['status' => 404, 'persona' => 'No hay usuarios existentes.']);
+            return response()->json(['status' => 422, 'persona' => 'No hay usuarios existentes.']);
         }
-    
+
 
         return response()->json(['status' => 200, 'usuarios' => $usuarios]);
     }
-    
-    
-    
+
+    public function createDatacredito(Request $request)
+    {
+        $validatedData = $request->validate([
+            'Cedula' => 'required|max:255|string',
+            // 'Nombre' => 'required|string|max:255',
+            // 'Apellidos' => 'required|string|max:255',
+            // 'CuentaAsociada' => 'required|string|max:255',
+            // 'Agencia' => 'required|string|max:255',
+            'TipoAsociado' => 'nullable|string|max:255',
+            // 'FechaCorreo' => 'required|date'
+        ]);
+
+        // Buscar si ya existe una persona con la misma cédula
+        $persona = DB::table('persona')->where('Cedula', $request->Cedula)->first();
+
+        if ($persona) {
+            // Si existe, actualizar el campo TipoAsociado
+            DB::table('persona')->where('Cedula', $request->Cedula)->update([
+                'TipoAsociado' => 'Asociacion Virtual'
+            ]);
+
+
+            return response()->json(['success' => true, 'message' => 'Persona con cedula: '.$request->Cedula.' se le cambio el tipo .']);
+        } else {
+            $personaId = DB::table('persona')->insertGetId([
+                'Cedula' => $request->Cedula,
+                // 'Nombre' => $request->Nombre,
+                // 'Apellidos' => $request->Apellidos,
+                // 'CuentaAsociada' => $request->CuentaAsociada,
+                // 'Agencia' => $request->Agencia,
+                'TipoAsociado' => $request->TipoAsociado,
+                // 'FechaCorreo' => $request->FechaCorreo
+            ]);
+
+
+            // Insertar en la tabla documentosintesis usando el ID de persona
+            DB::table('documentosintesis')->insert([
+                'ID_Persona' => $personaId,
+            ]);
+
+            // Insertar en la tabla documentopn usando el ID de persona
+            DB::table('documentopn')->insert([
+                'ID_Persona' => $personaId,
+            ]);
+
+            // Insertar en la tabla documentoa usando el ID de persona
+            DB::table('documentoa')->insert([
+                'ID_Persona' => $personaId,
+            ]);
+
+            // Insertar en la tabla documentot usando el ID de persona
+            DB::table('documentot')->insert([
+                'ID_Persona' => $personaId,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Persona se registro en datacredito: '.$request->Cedula.'.']);
+        }
+
+
+    }
+
+
+
+
 }

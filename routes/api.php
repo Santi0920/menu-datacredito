@@ -20,3 +20,4 @@ use App\Http\Controllers\ApiDatacredito;
     Route::get('persona/{cedula}', [ApiDatacredito::class, 'show']);
     Route::get('pagare/{cedula}', [ApiDatacredito::class, 'showPagare']);
     Route::get('usuarios/{email}', [ApiDatacredito::class, 'showUsers']);
+    Route::post('crear', [ApiDatacredito::class, 'createDatacredito']);

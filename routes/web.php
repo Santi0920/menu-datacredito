@@ -228,6 +228,14 @@ Route::get('credito/datatable', [CRUDCredito::class, 'data'])
 
 Route::post('credito/modificar{id}', [CRUDCredito::class, 'update']);
 
+Route::get('avirtual', function () {
+    return view('Coordinador/avirtual');
+})->middleware('auth.asociacion');
+
+Route::get('avirtual/datatable', [CRUDCoordinador::class, 'data3'])
+    ->middleware('auth.asociacion')
+    ->name('datatable.avirtual');
+
 
 
 //DIRECTOR DE AGENCIA

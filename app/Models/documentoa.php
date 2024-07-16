@@ -10,4 +10,8 @@ class documentoa extends Model
     use HasFactory;
 
     protected $table = 'documentoa';
+
+    protected $fillable = [
+        'ID_Persona',
+    ];
 }
