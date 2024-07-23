@@ -161,6 +161,7 @@ class ApiDatacredito extends Controller
             // Insertar en la tabla documentosintesis usando el ID de persona
             DB::table('documentosintesis')->insert([
                 'ID_Persona' => $personaId,
+                'FechaInsercion' => null
             ]);
 
             // Insertar en la tabla documentopn usando el ID de persona

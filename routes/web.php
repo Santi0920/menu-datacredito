@@ -742,6 +742,17 @@ Route::get('proveedorcontrolmasivo/datatable', [CRUDControlMasivo::class, 'data6
     ->name('datatableprov.controlmasivo');
 
 
+Route::get('avirtualcontrolmasivo', function () {
+    return view('ControlMasivo/avirtual');
+})->middleware('auth.controlmasivo');
+
+Route::get('avirtualcontrolmasivo/datatable', [CRUDControlMasivo::class, 'data7'])
+    ->middleware('auth.controlmasivo')
+    ->name('datatableavirtual.controlmasivo');
+
+
+
+
 
 
 

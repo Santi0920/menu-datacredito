@@ -618,7 +618,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
 
                 $nuevoTotalDeuda = $totalDeuda + $request->monto;
 
-                $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = UPPER(?), Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Enviado=?, Consulta=?, Observaciones = ? WHERE ID = $id", [
+                $sql = DB::update("UPDATE persona SET Cedula=?, Nombre =?, Apellidos = UPPER(?), Score = ?, Agencia = ?, Estado = ?, Reporte = ? , CuentaAsociada= ?, Enviado=?, Consulta=?, Inspektor=?, Observaciones = ? WHERE ID = $id", [
                     $request->cedula2,
                     $request->nombre3,
                     $request->apellidos3,
@@ -629,6 +629,7 @@ $login = DB::insert("INSERT INTO auditoria (Hora_login, Usuario_nombre, Usuario_
                     $request->cuenta3,
                     0,
                     0,
+                    $request->Inspektor2,
                     $request->Observaciones
 
                 ]);

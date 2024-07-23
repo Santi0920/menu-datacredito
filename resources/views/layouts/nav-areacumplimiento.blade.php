@@ -21,23 +21,34 @@
           Datacrédito
          </li>
          <ul class="dropdown-menu" style="background-color: #005E56;">
-          <a href="coordinador" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
-            <li class="text-white active" style="list-style-type: none; font-size: 25px">
-              Solicitud Asociación
-            </li>
+         @if (auth()->user() && auth()->user()->agenciau == 'Asociacion Virtual')
+            <a href="avirtual" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
+                <li class="text-white active" style="list-style-type: none; font-size: 25px">
+                Solicitud Asociación Virtual
+                </li>
+            </a>
+         @else
+            <a href="coordinador" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
+                <li class="text-white active" style="list-style-type: none; font-size: 25px">
+                Solicitud Asociación
+                </li>
             <li class="text-white dropdown-divider"></li>
             <a href="coordinadorcredito" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
-            <li class="text-white active" style="list-style-type: none; font-size: 25px">
-              Solicitud Crédito
-            </li>
+                <li class="text-white active" style="list-style-type: none; font-size: 25px">
+                Solicitud Crédito
+                </li>
             </a>
             <li class="text-white dropdown-divider"></li>
             <a href="avirtual" class="fw-semibold text-white" style="font-size: 25px; text-decoration: none; text-align: center">
-            <li class="text-white active" style="list-style-type: none; font-size: 25px">
-              Solicitud Asociación Virtual
-            </li>
+                <li class="text-white active" style="list-style-type: none; font-size: 25px">
+                Solicitud Asociación Virtual
+                </li>
             </a>
           </a>
+
+         @endif
+
+
         </ul>
 
       </div>

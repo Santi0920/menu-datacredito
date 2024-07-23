@@ -139,7 +139,7 @@
               <th class="" scope="col">FECHAGNR</th>
               <th class="" scope="col">SIN</th>
               <th class="" scope="col">PN</th>
-              <th class="" scope="col">FECHA CORREO</th>
+              <th class="" scope="col">INSPEKTOR</th>
               <th class="w-25" scope="col">OBSERVACIONES</th>
 
 
@@ -244,7 +244,7 @@ if(row.FechaInsercion == null){
     return data;
   }
 },
-    {data: 'FechaCorreo'},
+    {data: 'Inspektor'},
     {data: 'Observaciones'},
     {    data: null,
       render: function(data, type, row) {
@@ -321,19 +321,7 @@ if(row.FechaInsercion == null){
                   <input type="date" class="form-control" name="fecha3" id="fecha3" min="2022-08-01" max="`+today+`" value="${row.FechaInsercion}">
                 </div>
 
-              <div class="mb-3">
-                <label for="exampleInputEmail1" id="izquierda9" class="form-label fw-bold">ESTADO</label>
-                <select class="form-control" name="estado3" id="estado3" disabled style="background-color: #EBEBEB; cursor: not-allowed;">
-                  <option value=""></option>
-                  <option value="N" ${row.Estado === 'N' ? 'selected' : ''}>Normal</option>
-                  <option value="B" ${row.Estado === 'B' ? 'selected' : ''}>Bloqueado</option>
-                  <option value="S" ${row.Estado === 'S' ? 'selected' : ''}>Suspendido</option>
-                  <option value="J" ${row.Estado === 'J' ? 'selected' : ''}>Judicial</option>
-                  <option value="I" ${row.Estado === 'I' ? 'selected' : ''}>Insolvente</option>
-                  <option value="R" ${row.Estado === 'R' ? 'selected' : ''}>Renovar</option>
-                </select>
-                <input type="hidden" name="estado3" value="${row.Estado}">
-              </div>
+
 
               <div class="mb-3">
                 <label for="exampleInputEmail1" id="izquierda5" class="form-label fw-bold" style="background-color: #bedffb;">ADJUNTAR ARCHIVO SINTESIS</label>
@@ -349,7 +337,7 @@ if(row.FechaInsercion == null){
 
                   <div class="mb-3">
                 <label for="cedula2" id="" style="margin-left: -80%" class="form-label fw-bold" value="">INSPEKTOR</label>
-                <input type="text" class="form-control" name="Inspektor2" id="Inspektor2" value="${row.Inspektor}" readonly style="background-color: #EBEBEB; cursor: not-allowed;">
+                <input type="text" class="form-control" name="Inspektor2" id="Inspektor2" value="${row.Inspektor}" style="">
                 <input type="hidden" name="cedula3"  value="">
               </div>
 
