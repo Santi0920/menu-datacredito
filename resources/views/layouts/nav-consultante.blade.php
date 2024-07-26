@@ -59,6 +59,8 @@
                                                 href="directorconsultare">Empleados Nuevos</a></li>
                                         <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px"
                                                 href="directorconsultarp">Proveedores y Terceros</a></li>
+                                        <li><a class="text-white dropdown-item fw-semibold" style="font-size: 25px"
+                                            href="consultaravirtual">Asociacion Virtual</a></li>
 
                                     </ul>
 

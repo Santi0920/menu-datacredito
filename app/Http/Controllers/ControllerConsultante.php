@@ -493,11 +493,17 @@ class ControllerConsultante extends Controller
                 $diferencia_str = "Vencido";
             }
 
+            if($resultado->CuentaAsociada == null){
+                $cuenta = 'N/A';
+            }else{
+                $cuenta = $resultado->CuentaAsociada;
+            }
+
             //Cedula
             $fpdf->SetFont('Helvetica', 'B', 30);
             $fpdf->Cell(85, 5, utf8_decode('DATACRÉDITO:'));
             $fpdf->SetFont('Helvetica', 'B', 38);
-            $fpdf->Cell(20, 5, $resultado->CuentaAsociada);
+            $fpdf->Cell(20, 5, $cuenta);
             $fpdf->Cell(20, 12, "");
             $fpdf->Ln();
 
@@ -5014,6 +5020,8 @@ class ControllerConsultante extends Controller
             return back()->with("incorrecto", "¡Error al adjuntar la Autorización!");
         }
     }
+
+    // Crear pagaré ordinario manual **NOTA: FALTA HABILITAR VISTA**
 
     // public function createpagareordinario(Request $request)
     // {
@@ -14525,5 +14533,25 @@ class ControllerConsultante extends Controller
         ]);
 
         return back()->with("correcto", "El Crédito de la persona ".$nombre." fue anulado correctamente.");
+    }
+
+
+    public function data17()
+    {
+        $usuarioActual = Auth::user();
+        $agenciaU = $usuarioActual->agenciau;
+        $user = DB::select("
+        SELECT DISTINCT A.ID, A.Cedula, A.FechaCorreo, A.Nombre, A.Apellidos, A.Score, A.CuentaAsociada, A.Agencia, A.Estado, A.Activado, A.Tipo, A.Consulta,
+        A.Reporte, B.FechaInsercion, B.NombreS, C.NombrePN,E.NombreA, E.ConsecutivoA, E.NombreContrato, D.Consecutivof, D.Tipof, D.NombreT
+        FROM persona A
+        JOIN documentosintesis B ON A.ID = B.ID_Persona
+        JOIN documentopn C ON B.ID_Persona = C.ID_Persona
+        JOIN documentot D ON C.ID_Persona = D.ID_Persona
+        JOIN documentoa E ON D.ID_Persona = E.ID_Persona
+        WHERE A.Activado = 1 && (A.Tipo = 'Persona' || A.Tipo = 'NuevoEmpleado') && A.Enviado = 0 && A.Agencia = '$agenciaU' && A.TipoAsociado = 'Asociacion Virtual'
+        ORDER BY Nombre ASC");
+
+        return datatables()->of($user)->toJson();
+
     }
 }

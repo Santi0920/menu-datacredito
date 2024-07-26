@@ -350,6 +350,11 @@ Route::middleware('auth.consultante')->group(function () {
     Route::get('registropagares/anular{id}', [ControllerConsultante::class, 'AnularPagare'])
     ->name('director.anularcred');
 
+    Route::get('consultaravirtual/datatable', [ControllerConsultante::class, 'data17'])->name('datatable.avirtualdirector');
+    Route::get('consultaravirtual', function () {
+        return view('Consultante/asociacionvirtual');
+    });
+
 
 });
 

@@ -1036,18 +1036,18 @@ $(document).ready(function() {
         url = url.replace(':id', id);
 
         var html = '';
-var fecha_insercion = new Date(data.FechaInsercion); // Assuming "FechaInsercion" is a property in the "data" object
-var fecha_actual = new Date();
-var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24));
-function toggleCheckbox() {
-    var checkbox = document.getElementById("Consulta");
-    checkbox.checked = !checkbox.checked;
-}
+        var fecha_insercion = new Date(data.FechaInsercion); // Assuming "FechaInsercion" is a property in the "data" object
+        var fecha_actual = new Date();
+        var diferencia = Math.floor((fecha_actual - fecha_insercion) / (1000 * 60 * 60 * 24));
+        function toggleCheckbox() {
+            var checkbox = document.getElementById("Consulta");
+            checkbox.checked = !checkbox.checked;
+        }
 
-function toggleCheckbox2() {
-    var checkbox2 = document.getElementById("Tipoasociado");
-    checkbox2.checked = !checkbox2.checked;
-}
+        function toggleCheckbox2() {
+            var checkbox2 = document.getElementById("Tipoasociado");
+            checkbox2.checked = !checkbox2.checked;
+        }
     console.log(url)
       var deleteButton = '<a onclick="showUnauthorizedMessage()" href="#" type="" class="btn btn-small btn-danger" name="" value=""><i class="fa-solid fa-trash"></i></a>';
       var editButton = `<a href="" id="modalLink_${id}" type="submit" class="btn btn-small btn-warning edit-button edit" data-bs-toggle="modal" data-bs-target="#modalEditar_${id}" data-id="${id}" style="margin-right: "><i class="fa-regular fa-pen-to-square"></i></a>
